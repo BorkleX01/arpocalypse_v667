@@ -10,7 +10,7 @@
 }
 
 .keyboard-outer {
-    width: 99%;
+    width: 100%;
 }
 .keyboard > * {
     padding: 0px 0px;
@@ -50,28 +50,47 @@
 }
 
 .white-key {
-    margin-left:  0;
-    margin-right:  0;
+    margin: 0%;
     width: 4.6%;
     height: 200px;
     transition: all 0.5s;
 }
+
 .black-key {
-    margin-left:  -2.3%;
-    margin-right:  -2.3%;
+    margin: 0 -2.3%;
     width: 4.6%;
     height: 130px;
     transition: all 0.5s;
 }
-@media (max-width: 640px) {
+
+@media (min-width: 1024px) {
     .white-key, .black-key {
-	width: 14.28%
+	width: 2.3%
   }
     .black-key {
-	margin-left:  -7.14%;
-	margin-right:  -7.14%;
+	margin:  0 -1.15%;
   }
 }
+@media (max-width: 800px) {
+    .white-key, .black-key {
+	width: 6.9%;
+  }
+    .black-key {
+	margin:  0 -3.45%;
+  }
+}
+
+@media (max-width: 480px) {
+    .white-key, .black-key {
+	width: 14.28%;
+        height: 33vh;
+  }
+    .black-key {
+	margin:  0 -7.14%;
+        height: 16vh;
+  }
+}
+
 .squares {
     margin-left:  0;
     margin-right:  0;
@@ -81,7 +100,7 @@
 
 .logarithmic{
     padding : 0px;
-    height: 7vw;
+    height: 15vh;
     margin-left:  0px;
     margin-right:  0px;
 }
@@ -110,15 +129,37 @@
     background-color: black;
 }
 
-
-
 .bass > .key-inner {
     background: blue;
+    color: white;
 }
-.mel > .key-inner {
+.treble > .key-inner {
+    background: red;
+    color: white;
+}
+
+.bass.treble > .key-inner {
+    background: purple;
+    color: white;
+    text-transform: capitalize;
+}
+
+.bass , .treble {
+    display: inline;
+    text-transform: capitalize;
+}
+
+.rhs-tabs > .bass {
+    background: blue;
+}
+
+.rhs-tabs > .treble {
     background: red;
 }
 
+.rhs-tabs > * {
+    color: white;
+}
 .note-on > .key-inner {
     background: yellow;
     color: black

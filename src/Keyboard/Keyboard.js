@@ -4,7 +4,6 @@ import './Keyboard.css'
 import { keys } from '../Scale/Diatonic'
 import { Role }  from '../Role'
 import { EngineContext } from '../Engine/EngineContext'
-import { KeyboardState } from '../Keyboard/KeyboardState'
 
 class Keyboard extends Component {
   constructor(props){
@@ -19,8 +18,8 @@ class Keyboard extends Component {
       intervals: [],
       keyArr: [],
       keyObj: {},
-      seqBass: [],
-      seqMel: [],
+      bass: {},
+      treble: {},
       nom: [],
       time: 0,
     }
@@ -37,48 +36,46 @@ class Keyboard extends Component {
 	      pos: (o === 1 ? pos : pos++),
 	      freq: this.state.freq[i],
 	      type: (o === 0.5 ? 'white-key' : 'black-key'),
-	      nom: this.state.nom[pos-1]}
+	      nom: this.state.nom[pos-1],
+              active: []}
     })
     
     this.state.keyObj = {...keyObj}
     this.state.keyArr = keyObj
     
     this.keyListener = (key, ...rest) => {
-      console.log(key);
       if(rest.includes('add')){
-	if(this.state.mode==='bass'){
-	this.setState(state=>{
-	  state.seqBass = [...state.seqBass, key]
-	  state.keyObj[key].active = state.seqBass.includes(key)?'bass':''
-	  return state})}
-	if(this.state.mode==='mel'){
-	  this.setState(state=>{
-	    state.seqMel = [...state.seqMel, key]
-	  state.keyObj[key].active = state.seqMel.includes(key)?'mel':''
-	  return state})}
-	}
+        this.setState(state=>{
+          state[state.mode] =  {...state[state.mode], [Object.keys(state[state.mode]).length] : key };
+          state.keyObj[key].active[state.mode] = 0;
+          return state
+        })
+      }
+      
     }
     
-    
-    this.clearSeq = () => {
-      for (let i in this.state.keyObj){this.state.keyObj[i].active = ''};
-      this.state.mode==='bass' ? this.setState({seqBass : []}) : this.setState({seqMel : []})
+    this.clearSeq = (mode) => {
+      this.setState(state=>{
+        for(let key of Object.values(state.keyObj)){key.active[mode] != undefined && delete key.active[mode]}
+        state[mode] = {}
+        return state
+      })
     }
 
-    this.roleListener = (v, i) => {
-	    
-      let newArr = this.state.mode==='bass'? this.state.seqBass : this.state.seqMel;
-      newArr.splice(i, 1);
+    this.roleListener = (v, i, mode) => {
+      delete this.state[mode][i] 
       this.setState(state=>{
-	state[state.mode==='bass'?'seqBass':'seqMel'] = newArr,
-	state.keyObj[v].active = newArr.includes(+v) ? state.mode==='bass'?'bass':'mel':'none'
-	return state})
+        Object.values(state[mode]).includes(+v) !== true && delete state.keyObj[v].active[mode]
+        return state
+      })
     }
     
     this.viewClick = (e) => {
       this.setState({view: e.target.name})
     }
+    
     this.modeClick = (e) => {
+      console.log(e.target.name);
       this.setState({mode: e.target.name})
     }
   }
@@ -95,8 +92,8 @@ class Keyboard extends Component {
               <button onClick={this.viewClick} name='logarithmic'>Logarithmic</button>
             </div>
 	    <div className='rhs-tabs'>
-	      <button onClick={this.modeClick} name='bass'>Bass</button>
-	      <button onClick={this.modeClick} name='mel'>Melody</button>
+	        <button className='bass' onClick={this.modeClick} name='bass'>Bass</button>
+	        <button className='treble' onClick={this.modeClick} name='treble'>Treble</button>
 	    </div>
             <div className='keyboard'>
 
@@ -121,18 +118,19 @@ class Keyboard extends Component {
 		     <div className='instruments'>
 		       <Role
 			 clear={this.clearSeq}
-			 module={this.state.mode}
+			 module='bass'
 			 listener={this.roleListener}
 			 freq={this.state.freq}
-			 seq={this.state.seqBass}
+			 seq={this.state.bass}
 			 playNote={engine.playNote}
 	                 tempo={engine.tempo} />
-	                <Role
+
+	               <Role
 			 clear={this.clearSeq}
-			 module={this.state.mode}
+			 module='treble'
 			 listener={this.roleListener}
 			 freq={this.state.freq}
-			 seq={this.state.seqMel}
+			 seq={this.state.treble}
 			 playNote={engine.playNote}
 			 tempo={engine.tempo} />
 		     </div>

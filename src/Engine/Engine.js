@@ -32,7 +32,7 @@ class Engine extends Component {
     this.createOsc = (id, hz) => {
       if(!isNaN(hz) ){
         !isNaN(id) ? this.setState({noteOn: [id, 'note-on']}) : console.log(id);
-	let g = 0.3/Math.pow(10, (+id-60)/36)
+	let g = 0.6/Math.pow(10, (+id-60)/36)
         let gainNode = audioCtx.createGain();
 	gainNode.gain.value=g;
         gainNode.connect(this.gainNodeMaster)
@@ -41,7 +41,7 @@ class Engine extends Component {
         osc.frequency.linearRampToValueAtTime(hz, audioCtx.currentTime);
         osc.connect(gainNode);
         osc.start();
-        gainNode.gain.exponentialRampToValueAtTime((+id>60)?g:1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(g, audioCtx.currentTime);
         let sus =  Number(this.state.sustain);
         gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + Number(sus));
         osc.stop(audioCtx.currentTime + sus);

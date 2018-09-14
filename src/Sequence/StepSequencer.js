@@ -23,7 +23,7 @@ class Transport extends Component{
     }
 
     var procNotes= () => {
-      if (startTime >= this.props.seq.length ){startTime = 0}
+      if (startTime >= Object.keys(this.props.seq).length ){startTime = 0}
       this.setState({timer: startTime})
       if(this.props.seq[startTime] != undefined){
         this.props.play(this.props.seq[startTime])

@@ -18,6 +18,7 @@ class Keys extends Component {
     }
 
     this.pressRelease = () => {
+      this.props.obj.active.map &&
       props.listener(props.index);
       this.props.obj.noteOn = false;
     }
@@ -32,9 +33,10 @@ class Keys extends Component {
 	      'key ' +
 		this.props.obj.type + ' ' +
 		this.props.view  + ' ' +
-		this.props.obj.active + ' ' +
-		(engine.noteOn[0] === this.props.index ? 
-		engine.noteOn[1]
+	        //this.props.obj.active[0] + ' ' + 
+	      Object.keys(this.props.obj.active).join(' ') + ' ' +
+	      (engine.noteOn[0] === this.props.index ? 
+	       engine.noteOn[1]
 	    : 'note-off')}
 
 	    onMouseDown = {this.press}
