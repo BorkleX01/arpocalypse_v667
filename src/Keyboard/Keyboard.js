@@ -18,8 +18,8 @@ class Keyboard extends Component {
       intervals: [],
       keyArr: [],
       keyObj: {},
-      bass: {},
-      treble: {},
+      bass: [],
+      treble: [],
       nom: [],
       time: 0,
     }
@@ -41,31 +41,34 @@ class Keyboard extends Component {
     })
     
     this.state.keyObj = {...keyObj}
-    this.state.keyArr = keyObj
+
+    this.seq = []
     
     this.keyListener = (key, ...rest) => {
       if(rest.includes('add')){
-        this.setState(state=>{
-          state[state.mode] =  {...state[state.mode], [Object.keys(state[state.mode]).length] : key };
-          state.keyObj[key].active[state.mode] = 0;
-          return state
-        })
+        this.seq[this.state.mode].set(this.seq[this.state.mode].size, key)
+        this.setState(state=> {
+          state[state.mode] = Array.from(this.seq[state.mode].values())
+          state.keyObj[key].active[state.mode] = true;
+          return state})
       }
       
     }
-    
+
     this.clearSeq = (mode) => {
       this.setState(state=>{
+        
         for(let key of Object.values(state.keyObj)){key.active[mode] != undefined && delete key.active[mode]}
-        state[mode] = {}
+        this.seq[this.state.mode].clear()
+        state[mode] = []
         return state
       })
     }
 
     this.roleListener = (v, i, mode) => {
-      delete this.state[mode][i] 
       this.setState(state=>{
-        Object.values(state[mode]).includes(+v) !== true && delete state.keyObj[v].active[mode]
+        state[mode].splice(i,1)
+        !state[mode].includes(+v) && delete state.keyObj[+v].active[mode]
         return state
       })
     }
@@ -75,13 +78,17 @@ class Keyboard extends Component {
     }
     
     this.modeClick = (e) => {
-      console.log(e.target.name);
       this.setState({mode: e.target.name})
     }
   }
-  
+  componentDidUpdate(){
+    this.seq[this.state.mode] == undefined ? this.seq[this.state.mode] = new Map() : console.log(this.state.mode);
+  }
+  componentDidMount(){
+    this.seq[this.state.mode] = new Map()
+  }
   render() {
-    return this.state.keyArr.length > 0 && (
+    return Object.keys(this.state.keyObj).length > 0 && (
       <EngineContext.Consumer>
 	{engine =>(
           <div className='keyboard-outer'>

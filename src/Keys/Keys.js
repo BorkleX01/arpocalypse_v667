@@ -39,8 +39,11 @@ class Keys extends Component {
 	       engine.noteOn[1]
 	    : 'note-off')}
 
+            touchStart = {this.press}
+            touchEnd = {this.pressRelease}
 	    onMouseDown = {this.press}
             onMouseUp = {this.pressRelease}
+            
 
 	    style = {
 	      this.props.view === 'logarithmic' ?
@@ -53,7 +56,6 @@ class Keys extends Component {
                 <div>
 		  {Math.round(this.props.obj.freq)}Hz <br/>
                   {this.props.index} <br/>
-                  {this.props.obj.active} <br/>
                   {this.props.obj.nom} {this.props.obj.type === 'black-key' ? '#' : ''}  <br/>
                   {this.props.obj.type === 'white-key' ? this.props.obj.pos % 7 + 1 : ''} <br/>
 		</div>

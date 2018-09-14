@@ -33,8 +33,8 @@ class Role extends Component {
         <Transport tempo={this.props.tempo} seq={this.props.seq} play={this.play}/>
         <div className='note-collection'>
           <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
-          {Object.values(this.props.seq).length > 0 ?
-            Object.values(this.props.seq).map((o, i) => <button className='role-edit' key={i} id={Object.keys(this.props.seq)[i]} value={o} onClick={this.doToNote}>{o}</button>)
+          {this.props.seq.length > 0 ?
+            this.props.seq.map((o, i) => <button className='role-edit' key={i} id={i} value={o} onClick={this.doToNote}>{o}</button>)
            :
            <div className='messages'>Delete sequence entries that appear here</div>}
       </div>
