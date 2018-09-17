@@ -4,27 +4,51 @@
     margin: 1vh auto
 }
 
-.note-collection {
+.note-collection, .sequence-collection {
     border: 0.5px solid black;
     display: flex;
     flex-flow: row wrap;
     margin:  auto;
-    padding: 5px
+    padding: 5px;
+    width: 100%;
 }
+.sequence-collection {
+    
+}
+
 
 .role-edit {
     text-align: center;
     font-size: 0.70em;
     margin: auto 0;
+    min-width: 50px;
 }
 
-.role-edit.bass button{
+.role-edit button{
+    width: 10%
+}
+
+.role-edit.bass button {
     background: blue;
         color: white;
 }
 
-.role-edit.treble button{
+.role-edit.treble button {
 
     background: red;
         color: white;
 }
+
+.read-outs {
+    display: block;
+}
+
+.ins-header{
+    padding: 5px;
+    transition: all 0.5s;
+}
+.ins-header:hover {
+    filter: invert(100%);
+    border: 1px solid black;
+}
+

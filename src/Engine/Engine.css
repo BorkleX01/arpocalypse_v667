@@ -1,12 +1,16 @@
 
 .engine {
-    border: 1px solid black;
-    width: 90vw;
+    width: 95%;
     margin: 0 auto;
     padding: 1vw;
     margin: 0 auto;
 }
 
+.engine > .ins-header {
+    background: black;
+    color: white
+                    
+}
 .engine-panel {
 
 }

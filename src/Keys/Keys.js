@@ -8,11 +8,13 @@ class Keys extends Component {
   constructor(props){
     super()
     this.state = {
+      button: false
     }
     
     this.props = props;
-    
+
     this.press = () => {
+      this.props.playNote(props.index, props.obj.freq)
       props.listener(props.index, 'add');
       this.props.obj.noteOn = true;
     }
@@ -23,7 +25,9 @@ class Keys extends Component {
       this.props.obj.noteOn = false;
     }
   }
-
+  componentDidUpdate(){
+    
+  }
   render(){
     return(
       <EngineContext.Consumer>
@@ -31,20 +35,14 @@ class Keys extends Component {
           <div
 	    className = {
 	      'key ' +
+                (this.state.button ? 'hardware' : '') + ' ' +
 		this.props.obj.type + ' ' +
 		this.props.view  + ' ' +
-	        //this.props.obj.active[0] + ' ' + 
-	      Object.keys(this.props.obj.active).join(' ') + ' ' +
-	      (engine.noteOn[0] === this.props.index ? 
-	       engine.noteOn[1]
-	    : 'note-off')}
-
-
+	        Object.keys(this.props.obj.active).join(' ') + ' ' +
+	    (engine.noteOn[0] === this.props.index ? engine.noteOn[1] : 'note-off')}
 	    //onMouseDown = {this.press}
             //onTouchStart = {this.press}
             onClick = {this.press}
-            
-
 	    style = {
 	      this.props.view === 'logarithmic' ?
 		{width : 11*1/Math.pow(2, (this.props.widget)/12)+'%'}

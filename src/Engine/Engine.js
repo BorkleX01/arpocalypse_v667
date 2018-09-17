@@ -14,8 +14,10 @@ class Engine extends Component {
       timer: 0,
       engineOn: false,
       isPlaying: false,
-      playNote: '',
-      noteOn: []
+      playNote: 'No Function',
+      noteOn: [],
+      elapsed: 0,
+      panelVis: false
     }
     
     var audioCtx = false
@@ -65,6 +67,13 @@ class Engine extends Component {
       let val = e.target.value;
       this.setState({sustain : val})
     }
+
+    this.requestElapsed = () => {
+      console.log(this.state.elapsed);
+    }
+    this.engineHeaderClick = () => {
+      this.setState({panelVis: !this.state.panelVis})
+    }
   }
   componentDidMount(){
     this.startEngine()
@@ -73,8 +82,10 @@ class Engine extends Component {
     return (
       <EngineContext.Provider value={this.state}>
         {this.props.children}
+        
         <div className='engine'>
-          <div className='panel' >
+          <div className='key-inner ins-header' onClick={this.engineHeaderClick}>ENGINE</div>
+          <div className='panel' style={{display: this.state.panelVis ? 'block':'none' }} >
             <div className='control'>
               <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }</button>
             </div>
@@ -89,7 +100,7 @@ class Engine extends Component {
             </div>
             <div className='control'>
               Sustain: {this.state.sustain}
-              <input type="range" min="0.01" max="1" value={this.state.sustain} className="slider" onChange={this.slideSustain}  step='0.01'/>
+              <input type="range" min="0.01" max="3" value={this.state.sustain} className="slider" onChange={this.slideSustain}  step='0.01'/>
             </div>
           </div>
         </div>
