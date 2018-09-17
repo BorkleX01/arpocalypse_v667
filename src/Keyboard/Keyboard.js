@@ -42,13 +42,10 @@ class Keyboard extends Component {
     
     this.state.keyObj = {...keyObj}
 
-    this.seq = []
-    
     this.keyListener = (key, ...rest) => {
       if(rest.includes('add')){
-        this.seq[this.state.mode].set(this.seq[this.state.mode].size, key)
         this.setState(state=> {
-          state[state.mode] = Array.from(this.seq[state.mode].values())
+          state[state.mode].push(key)
           state.keyObj[key].active[state.mode] = true;
           return state})
       }
@@ -57,9 +54,7 @@ class Keyboard extends Component {
 
     this.clearSeq = (mode) => {
       this.setState(state=>{
-        
         for(let key of Object.values(state.keyObj)){key.active[mode] != undefined && delete key.active[mode]}
-        this.seq[this.state.mode].clear()
         state[mode] = []
         return state
       })
@@ -80,12 +75,6 @@ class Keyboard extends Component {
     this.modeClick = (e) => {
       this.setState({mode: e.target.name})
     }
-  }
-  componentDidUpdate(){
-    this.seq[this.state.mode] == undefined ? this.seq[this.state.mode] = new Map() : console.log(this.state.mode);
-  }
-  componentDidMount(){
-    this.seq[this.state.mode] = new Map()
   }
   render() {
     return Object.keys(this.state.keyObj).length > 0 && (

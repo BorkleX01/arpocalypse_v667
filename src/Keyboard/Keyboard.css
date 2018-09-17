@@ -3,10 +3,13 @@
 }
 
 .keyboard {
-    width: 100%;
+    width: 95%;
+    padding-left: 10px;
+    padding-right: 10px;
     display: flex;
     flex-flow: row wrap;
     margin: 0 auto;
+    justify-content: center;
 }
 
 .keyboard-outer {
@@ -19,6 +22,7 @@
 }
 .messages {
     margin: auto 10px;
+    width: 65%;
 }
 
 .key {
@@ -81,13 +85,18 @@
 }
 
 @media (max-width: 480px) {
+    .keyboard {
+        width: 85%;
+    }
     .white-key, .black-key {
 	width: 14.28%;
         height: 33vh;
+        max-height: 175px;
   }
     .black-key {
 	margin:  0 -7.14%;
         height: 16vh;
+        max-height: 95px;
   }
 }
 
@@ -160,7 +169,13 @@
 .rhs-tabs > * {
     color: white;
 }
-.note-on > .key-inner {
+
+.bass.note-on > .key-inner {
+    background: yellow;
+    color: black
+}
+
+.treble.note-on > .key-inner {
     background: yellow;
     color: black
 }

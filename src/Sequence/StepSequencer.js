@@ -25,6 +25,7 @@ class Transport extends Component{
     var procNotes= () => {
       if (startTime >= Object.keys(this.props.seq).length ){startTime = 0}
       this.setState({timer: startTime})
+      this.props.tick(this.state.timer)
       if(this.props.seq[startTime] != undefined){
         this.props.play(this.props.seq[startTime])
         startTime = startTime+1;

@@ -6,7 +6,6 @@
 
 .note-collection {
     border: 0.5px solid black;
-    height: 5vh;
     display: flex;
     flex-flow: row wrap;
     margin:  auto;
@@ -14,9 +13,18 @@
 }
 
 .role-edit {
-    width: 4vh;
-    height: 4vh;
     text-align: center;
     font-size: 0.70em;
     margin: auto 0;
+}
+
+.role-edit.bass button{
+    background: blue;
+        color: white;
+}
+
+.role-edit.treble button{
+
+    background: red;
+        color: white;
 }

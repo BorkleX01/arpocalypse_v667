@@ -23,9 +23,9 @@
 button {
     width: 12vw;
     height: 4.6vh;
-    /*min-width: 75px;
+    min-width: 75px;
     min-height: 50px;
-    max-width: 100px;
+    /*max-width: 100px;
     max-height: 75px;*/
     margin: auto 0;
     font-size: x-small

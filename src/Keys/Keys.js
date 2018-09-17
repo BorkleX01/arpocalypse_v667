@@ -39,10 +39,10 @@ class Keys extends Component {
 	       engine.noteOn[1]
 	    : 'note-off')}
 
-            touchStart = {this.press}
-            touchEnd = {this.pressRelease}
-	    onMouseDown = {this.press}
-            onMouseUp = {this.pressRelease}
+
+	    //onMouseDown = {this.press}
+            //onTouchStart = {this.press}
+            onClick = {this.press}
             
 
 	    style = {
