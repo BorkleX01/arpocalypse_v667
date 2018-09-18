@@ -1,4 +1,10 @@
+html{
+    background: black;
+    color: white;
+}
+.App{
 
+}
 .engine {
     width: 95%;
     margin: 0 auto;
@@ -12,14 +18,14 @@
                     
 }
 .engine-panel {
-
+    background: black;
 }
 
 .panel {
     margin: 1vh auto;
     font-size: 0.75em;
     padding: 5px;
-    border: 0.5px solid black;
+    border: 0.25px solid grey;
     display: flex;
     flex-flow: row wrap
 }
@@ -32,10 +38,12 @@ button {
     /*max-width: 100px;
     max-height: 75px;*/
     margin: auto 0;
-    font-size: x-small
+    font-size: x-small;
+    background: black;
+    color: white;
 }
 .control {
-    flex-basis: 25%
+    flex-basis: 25%;
 }
 .input {
     width: 50%

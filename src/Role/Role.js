@@ -23,6 +23,7 @@ class Role extends Component {
 
     this.doToClip = (e) => {
       //play clip
+      
       let obj = e.target.value
       const itr = this.state.clips[obj].values()
       var notes = []
@@ -89,7 +90,7 @@ class Role extends Component {
                                          <button id={i} value={i} onClick={this.doToClip}>{i}</button>
                                        </div>)
                 :
-                <div>'Sequences'</div>
+                <div className='messages'>Pattern library</div>
               }
       </div>
         <div className='note-collection'>
