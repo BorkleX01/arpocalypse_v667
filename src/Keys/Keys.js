@@ -8,7 +8,7 @@ class Keys extends Component {
   constructor(props){
     super()
     this.state = {
-      button: false
+      button: false,
     }
     
     this.props = props;
@@ -39,9 +39,9 @@ class Keys extends Component {
 		this.props.obj.type + ' ' +
 		this.props.view  + ' ' +
 	        Object.keys(this.props.obj.active).join(' ') + ' ' +
-	    (engine.noteOn[0] === this.props.index ? engine.noteOn[1] : 'note-off')}
-	    //onMouseDown = {this.press}
-            //onTouchStart = {this.press}
+	        (engine.noteOn[0] === this.props.index ? engine.noteOn[1] : 'note-off')}
+	  //onMouseDown = {this.press}
+          //onTouchStart = {this.press}
             onClick = {this.press}
 	    style = {
 	      this.props.view === 'logarithmic' ?
@@ -56,6 +56,7 @@ class Keys extends Component {
                   {this.props.index} <br/>
                   {this.props.obj.nom} {this.props.obj.type === 'black-key' ? '#' : ''}  <br/>
                   {this.props.obj.type === 'white-key' ? this.props.obj.pos % 7 + 1 : ''} <br/>
+                  <h4>{this.state.qwert}</h4>
 		</div>
               </div>
             </div>
