@@ -119,44 +119,37 @@
     width: 8.33%;
 }
 
-.arp {
-    border: 0.25px solid blue;
-}
-
-.step {
-    border: 0.25px solid red;
-}
-
-.arp.note-on {
-    background-color: hsla(240, 50%, 50%, 0.5);
-}
-
-.step.note-on {
-    background-color: hsla(0, 50%, 50%, 0.5);
-}
 
 .press > .key-inner {
     background-color: black;
 }
 
-.bass > .key-inner {
+.key.bass > .key-inner {
     background: blue;
     color: white;
 }
-.treble > .key-inner {
+
+.key.treble > .key-inner {
     background: red;
     color: white;
 }
 
-.bass.treble > .key-inner {
-    background: purple;
+.role.bass > .key-inner {
+    background: blue;
     color: white;
+}
+
+.role.treble > .key-inner {
+    background: red;
+    color: white;
+}
+
+.role > .key-inner {
     text-transform: capitalize;
 }
 
 .bass , .treble {
     display: inline;
-    text-transform: capitalize;
 }
 
 .rhs-tabs > .bass {

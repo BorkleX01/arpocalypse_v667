@@ -7,7 +7,9 @@
     align-items: center;
     user-select: none;
 }
-
+.spinner>*{
+    user-selectable: none
+}
 .spinner .icon {
 }
 

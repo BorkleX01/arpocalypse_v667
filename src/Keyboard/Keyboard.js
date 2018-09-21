@@ -74,7 +74,6 @@ class Keyboard extends Component {
         this.keyRef[key].current.setState({button: true})
         this.keyRef[key].current.press()
       }
-      
       if(rest.includes('add')){
         this.setState(state=> {
           state[state.mode].notes.push(key)
@@ -98,6 +97,7 @@ class Keyboard extends Component {
     this.roleListener = (v, i, mode, ...rest) => {
       if(rest.includes('load'))
       {
+        console.log('load a sequence');
         this.setState(state => {
           state[mode].notes = v
           state[mode].queue = i
@@ -106,6 +106,7 @@ class Keyboard extends Component {
       }
       else
       {
+        console.log('delete notes from a sequence');
         this.setState(state=>{
           state[mode].notes.splice(i,1)
           state[mode].queue.splice(i,1)

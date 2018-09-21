@@ -8,7 +8,7 @@ class Engine extends Component {
   constructor(props) {
     super()
     this.state = {
-      gain : 0.10,
+      gain : 0.05,
       part: 1000,
       sustain: 1,
       tempo: 135,
@@ -34,11 +34,12 @@ class Engine extends Component {
     
     this.createOsc = (id, hz) => {
       if(!isNaN(hz) ){
-        !isNaN(id) ? this.setState({noteOn: [id, 'note-on']}) : console.log(id);
+        !isNaN(id) ? this.setState({noteOn: [id, 'note-on']}) : ()=>{};
 	let g = 0.6/Math.pow(10, (+id-60)/36)
         let gainNode = audioCtx.createGain();
-	gainNode.gain.value=g;
+	gainNode.gain.value = g;
         gainNode.connect(this.gainNodeMaster)
+        //gainNode.connect(audioCtx.destination, 0)
         let osc = audioCtx.createOscillator();
         osc.type = 'sine';
         osc.frequency.linearRampToValueAtTime(hz, audioCtx.currentTime);
@@ -48,7 +49,7 @@ class Engine extends Component {
         let sus =  Number(this.state.sustain);
         gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + Number(sus));
         osc.stop(audioCtx.currentTime + sus);
-        osc.onended = () => {!isNaN(id) ? this.setState({noteOn: [id, 'note-off']}) : console.log(id)}
+        osc.onended = () => {!isNaN(id) ? this.setState({noteOn: [id, 'note-off']}) : ()=>{}}
       }
     }
 
@@ -56,23 +57,24 @@ class Engine extends Component {
 
     this.slideTempo = (v) => {
       let val = +v;
-      console.log('Engine Tempo change: ' + val);
       this.setState({tempo : val})
     }
     
-    this.slideGain = (e, o) => {
-      let val = e.target.value
-      this.gainNodeMaster.gain.exponentialRampToValueAtTime(+val, audioCtx.currentTime)
+    this.slideGain = (v) => {
+      let val = +v
+      this.gainNodeMaster.gain.exponentialRampToValueAtTime(val, audioCtx.currentTime)
       this.setState({gain : val})
     }
-    this.slideSustain = (e, o) => {
-      let val = e.target.value;
+    
+    this.slideSustain = (v) => {
+      let val = +v;
       this.setState({sustain : val})
     }
 
     this.requestElapsed = () => {
       console.log(this.state.elapsed);
     }
+    
     this.engineHeaderClick = () => {
       this.setState({panelVis: !this.state.panelVis})
     }
@@ -93,16 +95,33 @@ class Engine extends Component {
             </div>
             <div className='pane'>
               Tempo:
-              <Spinner type="number" min='0' max="400" value={this.state.tempo} onChange={this.slideTempo} step='1' />
+              <Spinner
+                type="number"
+                min='0' max="400"
+                value={this.state.tempo}
+                onChange={this.slideTempo}
+                step='1' />
               
             </div>
             <div className='pane'>
               Gain: {this.state.gain}
-              <Spinner type="range" min="0.01" max="1" value={this.state.gain} className="slider" onChange={this.slideGain}  step='0.01'/>
+              <Spinner
+                type="range"
+                min="0.01" max="1"
+                value={this.state.gain}
+                className="slider"
+                onChange={this.slideGain}
+                step='0.1'/>
             </div>
             <div className='pane'>
               Sustain: {this.state.sustain}
-              <Spinner type="range" min="0.01" max="3" value={this.state.sustain} className="slider" onChange={this.slideSustain}  step='0.01'/>
+              <Spinner
+                type="range"
+                min="0.01" max="3"
+                value={this.state.sustain}
+                className="slider"
+                onChange={this.slideSustain}
+                step='0.1'/>
             </div>
           </div>
         </div>

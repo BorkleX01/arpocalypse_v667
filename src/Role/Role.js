@@ -25,13 +25,11 @@ class Role extends Component {
     }
 
     this.doToClip = (e) => {
-      //play clip
-      
       let obj = e.target.value
       const itr = this.state.clips[obj].values()
       var notes = []
       var cue = []
-      for (const v of  itr){
+      for (const v of  itr) {
         notes.push(v[0])
         cue.push(v[1])
       }
@@ -64,6 +62,7 @@ class Role extends Component {
 
   componentDidUpdate(){
   }
+
   render() {
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
@@ -71,6 +70,7 @@ class Role extends Component {
           {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
         </div>
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
+
           <Transport
             ref={this.transportRef}
             tick={this.tick}
@@ -82,15 +82,17 @@ class Role extends Component {
             type={this.props.realTime ? 'realtime' : 'step'}/>
 
           <div className='panel'>
-            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
-
             <SaveSequence
+              module = {this.props.module}
               ref = {this.storageRef}
               clear={this.clear}
               seq={this.props.seq}
               cue={this.props.cue}
               recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
+
+            
+            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
 
             <div className='sequence-collection'>
               { this.state.clips.length > 0 ? 

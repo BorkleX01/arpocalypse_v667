@@ -34,9 +34,12 @@ export default class Spinner extends Component{
     this.formKeypress = (e) => {
       
       if(e.key !== 'Enter' && e.key !== 'Backspace' ) {
-        let val = this.state.value+''+e.key
-        if (!isNaN(+val) && +val !== 0){
-          this.setState({value : +val})
+        let val = valStr+''+e.key;
+        console.log(val);
+        if (!isNaN(+val) || +val ==='.'){
+          if(val => this.min && val <= this.max){
+            this.setState({value : +val})
+          }
           valStr = val;
         }
       }
@@ -63,6 +66,7 @@ export default class Spinner extends Component{
       }
     }
   }
+
   render(){
     return(<div className="control">
              <div className="spinner">

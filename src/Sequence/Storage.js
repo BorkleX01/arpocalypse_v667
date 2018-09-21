@@ -16,12 +16,47 @@ class SaveSequence extends Component{
         this.setState(state => {state.clips = [...state.clips, clip]
                                 this.props.clipListener()
                                 this.props.clear()
+                                console.log(state.clips);
+                                console.log(this.props.module);
                                 return state})
       }
+      
+      let req = new XMLHttpRequest();
+      let fData = new FormData();
+      fData.set('action', 'write')
+      fData.set('config', JSON.stringify({ "bogus" : 'XXXXX', "bogus2" : { "nestedX" : 'YYYY', "numberX" : 667 } }))
+      req.open('POST', 'http://www.lunatropolis.com/arp-save.php', true);
+      req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      req.onreadystatechange = function() {
+        if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+
+        }
+      }
+
+      req.send(fData)
+
     }
 
     this.loadSeq = (e) => {
-      console.log(this.state.clips);
+      let req = new XMLHttpRequest();
+      let fData = new FormData();
+      fData.set('action', 'read')
+      req.open('POST', 'http://www.lunatropolis.com/arp-save.php', true);
+      req.onreadystatechange = function() {
+        if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+          let res = this.response;
+          let obj = JSON.parse(res)
+
+          console.log(obj);
+          console.log(obj.bogus);
+          console.log(obj.bogus2);
+          console.log(obj.bogus2.nestedX);
+          console.log(obj.bogus2.numberX);
+
+        }
+      }
+      req.send(fData)
+
     }
   }
 

@@ -12,6 +12,8 @@ class Transport extends Component{
       elapsed: 0,
       seqType: props.type,
       tempoMultiplier: 1,
+      playFreq: 4,
+      repeats: 1,
       ingress: [''],
       egress: [''],
       scheduleRestart : false,
@@ -81,6 +83,15 @@ class Transport extends Component{
       this.setState({scheduleRestart: this.state.isPlaying, tempoMultiplier: val})
     }
 
+    this.changePlayFreq = (v) => {
+      let val = +v
+      this.setState({playFreq: val})
+    }
+
+    this.changePlayRepeats = (v) => {
+      let val = +v
+      this.setState({repeats: val})
+    }
   }
 
   componentDidUpdate(){
@@ -89,11 +100,9 @@ class Transport extends Component{
 
   componentWillReceiveProps(newProps){
     if(newProps.start !== this.props.start){
-      console.log('start seq');
-      console.log(this.state.isPlaying);
       this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
-      
     }
+
     if(newProps.tempo !== this.props.tempo){
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
@@ -101,20 +110,21 @@ class Transport extends Component{
   render(){
     return(<div className='panel'>
              <div className="transport">
-               <button onClick={this.startSequencer}>START SEQ</button>
-               <button onClick={this.stopSequencer}>STOP SEQ</button>
+               <button onClick={this.state.isPlaying ? this.stopSequencer : this.startSequencer}>
+                 {this.state.isPlaying ? 'PLAYING' : 'PLAY'} (SPC)
+               </button>
              </div>
              <div className="pane">
-               <div className="label">Tempo multiplier:</div>
+               <div className="label">Speed :</div>
                <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
              </div>
              <div className="pane">
                <div className="label">Frequency:</div>
-               <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+               <Spinner min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
              </div>
              <div className="pane">
                <div className="label">Repeats:</div>
-               <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+               <Spinner min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
              </div>
              <div className='read-outs'>
                <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
