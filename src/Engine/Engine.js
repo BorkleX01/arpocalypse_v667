@@ -87,7 +87,7 @@ class Engine extends Component {
     return (
       <EngineContext.Provider value={this.state}>
         <div className='engine'>
-          <div className='ins-header' onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8 </div>
+          <div className='ins-header' onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8  <div className="legals">© 2018 Eugene Phang</div> </div> 
           <div className="ins" style={{display: this.state.panelVis ? 'block':'none' }}>
             <div className='panel' >
               <div className='pane'>

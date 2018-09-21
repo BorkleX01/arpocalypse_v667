@@ -109,9 +109,8 @@ class Transport extends Component{
   }
   render(){
     return(<div className='panel'>
-
              <button onClick={this.state.isPlaying ? this.stopSequencer : this.startSequencer}>
-               {this.state.isPlaying ? 'PLAYING' : 'PLAY'} (SPC)
+               {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC)
              </button>
 
              <div className="pane">
@@ -123,11 +122,13 @@ class Transport extends Component{
              <div className="pane">
                <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
              </div>
+             <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
              <div className='read-outs'>
                <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
                <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
                <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
              </div>
+             
            </div>)
           
   }

@@ -20,8 +20,8 @@ class Keyboard extends Component {
       intervals: [],
       keyArr: [],
       keyObj: {},
-      bass: {notes:[], queue:[], range: [24, 59]},
-      treble: {notes:[], queue:[], range: [36, 71]},
+      bass: {notes:[], queue:[], range: [36, 96]},
+      treble: {notes:[], queue:[], range: [60, 96]},
       queue: [],
       nom: [],
       time: 0,
@@ -191,12 +191,14 @@ class Keyboard extends Component {
                 <button onClick={this.viewClick} name='squares'>Grid</button>
                 <button onClick={this.viewClick} name='squares octave'>Octave</button>
                 <button onClick={this.viewClick} name='logarithmic'>Logarithmic</button>
+                <div className="messages">Buttons are quite big for touch surfaces and reponsive modes.</div>
               </div>
 
 	      <div className='rhs-tabs '>
 	        <button className='bass' onClick={this.modeClick} id='bass'>Bass</button>
 	        <button className='treble' onClick={this.modeClick} id='treble'>Treble</button>
 	        <button className='addSeq' onClick={this.addSeqClick} id='addSeq'>+</button>
+                <div className="messages">Adding new instruments does not work yet</div>
               </div>
             </div>
             
@@ -219,10 +221,10 @@ class Keyboard extends Component {
 		        obj = {this.state.keyObj[o]}
                       />
 		     )))}
+                <div className="messages">'z' and 'x' keys page through keyboard operable octaves. Note yellow labels. Expand the range in the instrument panel itself using 'Offset' and 'Range'. Instrument panels open by double clicking on the coloured bars. Global options open by clicking on the header above the nav. An instrument is armed for recording key or mouse sequences if a thick white line is visible on the underside of the instruments header</div>
               </div>
               
               <div className='instruments'>
-                <div className="messages">Octave Page: {this.state.octavePage} press 'x' and 'z' keys to move octave page</div>
                 <Role
                   ref = {this.roleRef('bass')}
                   modeClick={this.modeClick}

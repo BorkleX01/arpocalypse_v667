@@ -58,9 +58,13 @@ html{
     font-size: x-small;
     background: none;
     color: white;
+    border: 0.5px solid darkslategrey;
 }
 
-
+.legals {
+    font-size: x-small;
+    color: darkslategrey;
+}
 
 .control {
     flex-basis: 25%;
@@ -71,6 +75,7 @@ html{
 }
 
 .slider {
+    width: 85px;
     padding: 0 0;
     margin: 1vh 0;
     

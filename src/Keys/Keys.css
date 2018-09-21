@@ -7,6 +7,7 @@
     width: 100%;
     user-select: none;
     overflow: hidden;
+    color: gray;
 }
 
 .black-key {
@@ -19,5 +20,7 @@
 
 .qwert {
     font-weight: bold;
+    font-size: 13pt;
+    color: yellow;
 }
 

@@ -89,6 +89,7 @@ class Role extends Component {
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
           {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
         </div>
+        {this.props.module === 'treble' ? 'There is no Record button as such. Intervals are captured between each noteOn event. Tunes in the sequence bank are circular buttons. Clicking them will load them but you must press play to hear them. They should play back with the same timing as when you performed them.' : 'The step sequencer will just repeat all notes played in order but timed to the tempo. Frequency and Repeat do not work yet but Speed multiplies the tempo.'}
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
           <Transport
             ref={this.transportRef}
@@ -131,7 +132,7 @@ class Role extends Component {
                        <button id={i} value={i} onClick={this.doToClip}>{i}</button>
                      </div>)
                 :
-                <div className='messages'>Patterns appear here</div>
+                <div className='messages'>Patterns appear here if you click Save Seq. Clicking them will load them. If the step sequencer is still playing the new pattern will start automatically. The realtime sequencer does not do this. </div>
               }
             </div>
             <div className='note-collection'>
@@ -144,7 +145,7 @@ class Role extends Component {
                       </button>
                     </div>)
                :
-               <div className='messages'>Notes appear here</div>
+               <div className='messages'>Notes appear here. Click them to delete</div>
               }
             </div>
           </div>

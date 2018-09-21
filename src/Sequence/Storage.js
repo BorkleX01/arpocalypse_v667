@@ -5,8 +5,11 @@ class SaveSequence extends Component{
     this.state = {
       clips: []
     }
-    
+    console.log(process.env.NODE_ENV);
+    var storageServer = process.env.NODE_ENV === "development" ? 'http://lunatropolis.com/arp-save.php' : '../arp-save.php';
+    console.log(storageServer);
     this.saveSeq = () => {
+      
       if(this.props.seq){
         let clip = [];
         let thisSeq = this.props.seq;
@@ -25,7 +28,7 @@ class SaveSequence extends Component{
       let fData = new FormData();
       fData.set('action', 'write')
       fData.set('config', JSON.stringify({ "bogus" : 'XXXXX', "bogus2" : { "nestedX" : 'YYYY', "numberX" : 667 } }))
-      req.open('POST', 'http://www.lunatropolis.com/arp-save.php', true);
+      req.open('POST', storageServer, true);
       req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       req.onreadystatechange = function() {
         if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
@@ -41,7 +44,7 @@ class SaveSequence extends Component{
       let req = new XMLHttpRequest();
       let fData = new FormData();
       fData.set('action', 'read')
-      req.open('POST', 'http://www.lunatropolis.com/arp-save.php', true);
+      req.open('POST', storageServer, true);
       req.onreadystatechange = function() {
         if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
           let res = this.response;
@@ -67,7 +70,8 @@ class SaveSequence extends Component{
     return(
       <React.Fragment>
         <button onClick={this.saveSeq}>SAVE SEQ</button>
-        <button onClick={this.loadSeq}>LOAD SEQ</button>
+        <button onClick={this.loadSeq}>LOAD SEQ<br/>(Doesn't do anything yet)</button>
+        
       </React.Fragment>
     )
   }

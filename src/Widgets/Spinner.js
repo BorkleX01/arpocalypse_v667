@@ -77,7 +77,7 @@ export default class Spinner extends Component{
     return(<div className="control">
              <div className="label">{this.state.label}</div>
              <div className="spinner" style={{}}>
-               <div className="arrows" id={'left'} onClick={this.arrowClick}>
+               <div className="arrows arrow-left" id={'left'} onClick={this.arrowClick}>
                  <div className="icon">&larr;</div>
                </div>
                <div className="form">
@@ -88,7 +88,7 @@ export default class Spinner extends Component{
                    onChange={this.onChange}
                  />
                </div>
-               <div className="arrows" id={'right'} onClick={this.arrowClick}>
+               <div className="arrows arrow-right" id={'right'} onClick={this.arrowClick}>
                  <div className="icon">&rarr;
                  </div>
                </div>
