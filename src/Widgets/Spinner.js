@@ -10,15 +10,21 @@ export default class Spinner extends Component{
       min: 1,
       max: 10,
       onChange: (e)=>{},
+      fit: 'default',
+      label: '',
+      slider: true
     }
 
     this.props = props;
     Object.assign(this.state, this.props)
     
     this.arrowClick = (e) => {
+      console.log(this.state.max);
       let inc = e.currentTarget.id === 'left' ? -1 * this.state.step : +1 * this.state.step;
-      this.setState({value: +this.state.value + inc})
-      this.onChange(+this.state.value + inc)
+      if((this.state.value + inc >= this.state.min) && (this.state.value + inc <= this.state.max)){
+        this.setState({value: +this.state.value + inc})
+        this.onChange(+this.state.value + inc)
+      }
     }
 
     this.slideDrag = (e) => {
@@ -69,7 +75,8 @@ export default class Spinner extends Component{
 
   render(){
     return(<div className="control">
-             <div className="spinner">
+             <div className="label">{this.state.label}</div>
+             <div className="spinner" style={{}}>
                <div className="arrows" id={'left'} onClick={this.arrowClick}>
                  <div className="icon">&larr;</div>
                </div>
@@ -86,13 +93,14 @@ export default class Spinner extends Component{
                  </div>
                </div>
              </div>
-             <input type="range"
+           {this.state.slider === true && 
+            (<input type="range"
                     min={this.state.min}
                     max={this.state.max}
                     value={this.state.value}
                     className="slider"
                     onChange={this.slideDrag}
-                    step={this.state.step} />
+                    step={this.state.step} />)}
            </div>
           )
   }

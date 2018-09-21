@@ -109,22 +109,19 @@ class Transport extends Component{
   }
   render(){
     return(<div className='panel'>
-             <div className="transport">
-               <button onClick={this.state.isPlaying ? this.stopSequencer : this.startSequencer}>
-                 {this.state.isPlaying ? 'PLAYING' : 'PLAY'} (SPC)
-               </button>
+
+             <button onClick={this.state.isPlaying ? this.stopSequencer : this.startSequencer}>
+               {this.state.isPlaying ? 'PLAYING' : 'PLAY'} (SPC)
+             </button>
+
+             <div className="pane">
+               <Spinner slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
              </div>
              <div className="pane">
-               <div className="label">Speed :</div>
-               <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+               <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
              </div>
              <div className="pane">
-               <div className="label">Frequency:</div>
-               <Spinner min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
-             </div>
-             <div className="pane">
-               <div className="label">Repeats:</div>
-               <Spinner min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
+               <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
              </div>
              <div className='read-outs'>
                <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>

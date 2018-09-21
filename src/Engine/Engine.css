@@ -1,26 +1,40 @@
 html{
     background: black;
-    color: white;
+    color: gray;
 }
-.App{
+
+.App {
 
 }
 
-.engine {
+.nav {
     width: 95%;
-    margin: 0 auto;
     padding: 1vw;
     margin: 0 auto;
 }
 
+.engine {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+}
+
 .engine > .ins-header {
-    background: black;
-    color: white
-                    
+    background: #111133;
+    color: white;
+    border-bottom: 5px solid teal;
+    width: 95%;
 }
-.engine-panel {
-    background: black;
+
+.engine > .ins-header:hover {
+    user-selectable: none;
+    border-bottom: 5px solid white;
 }
+
+.engine > .ins > .panel {
+    justify-content: center;
+}
+
 
 .panel {
     margin: 1vh auto;
@@ -29,30 +43,35 @@ html{
     border: 0.25px solid grey;
     display: flex;
     flex-flow: row wrap;
-    flex: 1 1;
+    flex: 0 0 180px;
+    align-items: center;
+    justify-content: start;
                    
 }
 
-button {
-    width: 12vw;
+.panel > button {
+    width: 170px;
     height: 4.6vh;
     min-width: 75px;
     min-height: 50px;
-    /*max-width: 100px;
-    max-height: 75px;*/
     margin: auto 0;
     font-size: x-small;
-    background: black;
+    background: none;
     color: white;
 }
+
+
+
 .control {
     flex-basis: 25%;
 }
+
 .input {
     width: 50%
 }
 
 .slider {
     padding: 0 0;
-    margin: 2vh 0;
+    margin: 1vh 0;
+    
 }

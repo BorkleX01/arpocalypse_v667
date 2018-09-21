@@ -5,6 +5,7 @@ import { EngineContext } from '../Engine/Engine'
 import { Keys } from '../Keys'
 import { Transport } from '../Sequence/StepSequencer'
 import { SaveSequence } from '../Sequence/Storage' 
+import Spinner from '../Widgets/Spinner' 
 
 
 class Role extends Component {
@@ -17,8 +18,11 @@ class Role extends Component {
       clips: [],
       currentTempo: this.props.tempo,
       active: false,
-      scheduleStart: false
+      scheduleStart: false,
+      span: 72
     }
+
+    this.state.span = props.range[1] - props.range[0];
     
     this.doToNote = (e) => {
       props.listener(e.target.value, e.target.id, props.module)
@@ -58,9 +62,25 @@ class Role extends Component {
     this.clipListener = () => {
       this.setState({clips : this.storageRef.current.state.clips})
     }
+
+    this.changeRange = (v) => {
+      let val = +v;
+      let end = +(val+this.state.span)
+      props.listener(val, end, props.module, 'range')
+    }
+
+    this.changeSpan = (v) => {
+      let val = +v;
+      this.setState(state=>{
+        state.span = val
+        this.changeRange(this.props.range[0])
+        return state})
+    }
+    
   }
 
   componentDidUpdate(){
+    
   }
 
   render() {
@@ -70,7 +90,6 @@ class Role extends Component {
           {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
         </div>
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
-
           <Transport
             ref={this.transportRef}
             tick={this.tick}
@@ -80,7 +99,6 @@ class Role extends Component {
             play={this.play}
             start={this.state.scheduleStart}
             type={this.props.realTime ? 'realtime' : 'step'}/>
-
           <div className='panel'>
             <SaveSequence
               module = {this.props.module}
@@ -90,10 +108,21 @@ class Role extends Component {
               cue={this.props.cue}
               recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
-
-            
             <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
-
+            <div className="pane">
+              <Spinner
+                label={this.props.module + ' offset'}
+                slider={true} value={this.props.range[0]}
+                onChange={this.changeRange}
+                min={0} max={96-12} step={12}/>
+            </div>
+            <div className="pane">
+              <Spinner
+                label={this.props.module + ' range'}
+                slider={true} value={this.state.span}
+                onChange={this.changeSpan}
+                min={1} max={96} step={1}/>
+            </div>
             <div className='sequence-collection'>
               { this.state.clips.length > 0 ? 
                 this.state.clips
@@ -102,7 +131,7 @@ class Role extends Component {
                        <button id={i} value={i} onClick={this.doToClip}>{i}</button>
                      </div>)
                 :
-                <div className='messages'>Pattern library</div>
+                <div className='messages'>Patterns appear here</div>
               }
             </div>
             <div className='note-collection'>
@@ -110,7 +139,9 @@ class Role extends Component {
                this.props.seq
                .map((o, i) =>
                     <div key={i} className={'role-edit'} id={this.props.module+i}>
-                      <button id={i} value={o} onClick={this.doToNote}>{o}</button>
+                      <button id={i} value={o} onClick={this.doToNote}>
+                        {this.props.obj[o].nom + '' + (this.props.obj[o].type === 'black-key' ? '#' : '')}
+                      </button>
                     </div>)
                :
                <div className='messages'>Notes appear here</div>

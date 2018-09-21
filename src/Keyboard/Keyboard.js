@@ -20,8 +20,8 @@ class Keyboard extends Component {
       intervals: [],
       keyArr: [],
       keyObj: {},
-      bass: {notes:[], queue:[]},
-      treble: {notes:[], queue:[]},
+      bass: {notes:[], queue:[], range: [24, 59]},
+      treble: {notes:[], queue:[], range: [36, 71]},
       queue: [],
       nom: [],
       time: 0,
@@ -35,6 +35,7 @@ class Keyboard extends Component {
     this.state.nom = data.nomenclature
     
     var pos = 0;
+
     const keyObj = this.state.notes.map((o, i, arr) => {
       return {int: o,
 	      pos: (o === 1 ? pos : pos++),
@@ -58,12 +59,14 @@ class Keyboard extends Component {
       let button = this.buttonMap.keys();
       for(let i in this.state.keyObj){
         if(this.keyRef[i] != undefined){ 
-          if((i >= this.state.octavePage*12 + props.range[0])){
+          if((i >= this.state.octavePage*12 + this.state[this.state.mode].range[0])){
+            this.keyRef[i].current !== null &&
             this.keyRef[i].current.setState({qwert: button.next().value})
           }
           else
           {
-            this.keyRef[i].current.setState({qwert: ''})
+            this.keyRef[i].current !== null &&
+              this.keyRef[i].current.setState({qwert: ''})
           }
         }
       }
@@ -95,7 +98,17 @@ class Keyboard extends Component {
     }
 
     this.roleListener = (v, i, mode, ...rest) => {
-      if(rest.includes('load'))
+      if(rest.includes('range')){
+        console.log('range change');
+        console.log(v + ' ' + 'to ' + i);
+        console.log(mode);
+        this.setState(state=>{
+          state[mode].range = [+v, +i]
+          return state
+        })
+        
+      }
+      else if(rest.includes('load'))
       {
         console.log('load a sequence');
         this.setState(state => {
@@ -104,7 +117,7 @@ class Keyboard extends Component {
           return state
         })
       }
-      else
+      else 
       {
         console.log('delete notes from a sequence');
         this.setState(state=>{
@@ -122,6 +135,7 @@ class Keyboard extends Component {
     
     this.modeClick = (e) => {
       this.setState({mode: e.target.id})
+      
       this.roleRef[this.state.mode].current.setState({active: false})
       if(this.state.mode === e.target.id){
         this.roleRef[e.target.id].current.setState({visible: !this.roleRef[e.target.id].current.state.visible, active: true})
@@ -142,12 +156,12 @@ class Keyboard extends Component {
       
       if(e.key === octavePager[0] || e.key === octavePager[1] ){
         let pageTurn = this.state.octavePage + (e.key === octavePager[0] ? -1 : +1)
-        let page = pageTurn*12 + this.props.range[0]
-        if(pageTurn>=0 && page+11 <= this.props.range[1]){
+        let page = pageTurn*12 + this.state[this.state.mode].range[0]
+        if(pageTurn>=0 && page+11 <= this.state[this.state.mode].range[1]){
           this.setState({octavePage : pageTurn})
         }
       }
-      if(this.buttonMap.get(e.key) != undefined && this.buttonMap.get(e.key) < this.props.range[1] ){
+      if(this.buttonMap.get(e.key) != undefined && this.buttonMap.get(e.key) < this.state[this.state.mode].range[1] ){
         this.keyListener(this.buttonMap.get(e.key), 'hardware')
       }
     }
@@ -159,49 +173,56 @@ class Keyboard extends Component {
 
   componentDidMount(){
     this.roleRef[this.state.mode].current.setState({active: true})
-    this.mapButtons(this.state.octavePage*12 + this.props.range[0])
+    this.mapButtons(this.state.octavePage*12 + this.state[this.state.mode].range[0])
   }
 
   componentDidUpdate(){
-    this.mapButtons(this.state.octavePage*12 + this.props.range[0])
+    this.mapButtons(this.state.octavePage*12 + this.state[this.state.mode].range[0])
   }
 
   render() {
     return Object.keys(this.state.keyObj).length > 0 && (
       <EngineContext.Consumer>
-	{engine =>(
-          <div className='keyboard-outer'>
-            <div className='lhs-tabs'>
-              <button onClick={this.viewClick} name='piano'>Piano</button>
-              <button onClick={this.viewClick} name='squares'>Grid</button>
-              <button onClick={this.viewClick} name='squares octave'>Octave</button>
-              <button onClick={this.viewClick} name='logarithmic'>Logarithmic</button>
+	{engine => (
+          <div className="nav">
+            <div className="panel nav-top">
+              <div className='lhs-tabs'>
+                <button onClick={this.viewClick} name='piano'>Piano</button>
+                <button onClick={this.viewClick} name='squares'>Grid</button>
+                <button onClick={this.viewClick} name='squares octave'>Octave</button>
+                <button onClick={this.viewClick} name='logarithmic'>Logarithmic</button>
+              </div>
+
+	      <div className='rhs-tabs '>
+	        <button className='bass' onClick={this.modeClick} id='bass'>Bass</button>
+	        <button className='treble' onClick={this.modeClick} id='treble'>Treble</button>
+	        <button className='addSeq' onClick={this.addSeqClick} id='addSeq'>+</button>
+              </div>
             </div>
-	    <div className='rhs-tabs'>
-	      <button className='bass' onClick={this.modeClick} id='bass'>Bass</button>
-	      <button className='treble' onClick={this.modeClick} id='treble'>Treble</button>
-	      <button className='addSeq' onClick={this.addSeqClick} id='addSeq'>+</button>
-	    </div>
-            <div className='keyboard'>
-	      {Object.keys(this.state.keyObj)
-	       .map((o,i,arr)=>(
-		 this.props.range[0] <= i
-		   &&
-		   i <= this.props.range[1]
-		   &&
-		   (<Keys
-                      ref={this.keyRef(i)}
-                      playNote={engine.playNote}
-		      key={i-this.props.range[0]}
-		      widget={i-this.props.range[0]}
-		      listener={this.keyListener}
-		      view={this.state.view}
-		      index={i}
-		      obj = {this.state.keyObj[o]}
-		    />
-		   )))}
+            
+            <div className='keyboard-outer'>
+              <div className='keyboard'>
+  	        {Object.keys(this.state.keyObj)
+	         .map((o,i,arr)=>(
+		   this.state[this.state.mode].range[0] <= i
+		     &&
+		     i <= this.state[this.state.mode].range[1]
+		     &&
+		     (<Keys
+                        ref={this.keyRef(i)}
+                        playNote={engine.playNote}
+		        key={i-this.state[this.state.mode].range[0]}
+		        widget={i-this.state[this.state.mode].range[0]}
+		        listener={this.keyListener}
+		        view={this.state.view}
+		        index={i}
+		        obj = {this.state.keyObj[o]}
+                      />
+		     )))}
+              </div>
               
               <div className='instruments'>
+                <div className="messages">Octave Page: {this.state.octavePage} press 'x' and 'z' keys to move octave page</div>
                 <Role
                   ref = {this.roleRef('bass')}
                   modeClick={this.modeClick}
@@ -211,9 +232,10 @@ class Keyboard extends Component {
 	          freq={this.state.freq}
 	          seq={this.state.bass.notes}
 	          cue={this.state.bass.queue}
+                  obj={this.state.keyObj}
 	          playNote={engine.playNote}
 	          tempo={engine.tempo}
-                />
+                  range={this.state['bass'].range}/>
                 
 	        <Role
                   ref = {this.roleRef('treble')}
@@ -224,14 +246,13 @@ class Keyboard extends Component {
 	          freq={this.state.freq}
 	          seq={Object.values(this.state.treble.notes)}
 	          cue={this.state.treble.queue}
+                  obj={this.state.keyObj}
 	          playNote={engine.playNote}
 	          tempo={engine.tempo}
-                  realTime={true}
-                />
-                
+                  range={this.state['treble'].range}
+                  realTime={true}/>
 	      </div>
             </div>
-            <br/>
           </div>)}
       </EngineContext.Consumer>
     )

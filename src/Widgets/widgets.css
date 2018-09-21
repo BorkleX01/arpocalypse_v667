@@ -1,9 +1,15 @@
+.control > .label {
+    padding: 10px;
+    font-size: x-small;
+    text-transform: capitalize;
+    padding-bottom: 5px;
+    text-align: center;
+    user-select: none;
+}
 .spinner {
     display: flex;
-    justify-content: space-between;
-    width: 50px;
+    justify-content: space-evenly;
     height: 40px;
-    border: 0.5px solid currentColor;
     align-items: center;
     user-select: none;
 }
@@ -29,9 +35,8 @@
 }
 
 .arrows {
-    width: 33%;
     height: 100%;
-    flex: 0 0 50px;
+    flex: 0 0 30px;
     border: 0.5px solid currentColor;
     user-select: none;
     display: flex;
@@ -44,7 +49,6 @@
     background: white;
     color: black;
 }
-
 
 
 

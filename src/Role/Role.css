@@ -1,7 +1,8 @@
 .role {
-    display: block;
-    width: 100%;
     margin: 1vh auto;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
 }
 
 .role > .key-inner {
@@ -43,17 +44,25 @@
     
 }
 
+.sequence-edit button {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
 
 
-.role-edit {
+.role-edit , .sequence-edit {
     text-align: center;
     font-size: 0.70em;
     margin: auto 0;
     min-width: 50px;
+    width: 75px;
+    height: 75px;
 }
 
 .role-edit button{
-    width: 10%
+    width: 100%;
+    height: 100%;
 }
 
 .role-edit.bass button {
@@ -70,11 +79,12 @@
 .pane {
     display: flex;
     flex-flow: column wrap;
-    flex: 1 1 150px;
-        
+    flex: 0 0 170px;
+    align-items: center;
 }
 
 .label {
+    color: white;
     display: block;
 
 }
@@ -84,14 +94,15 @@
 }
 
 .read-outs {
-    display: flex;
-    flex-flow: column wrap;
 }
 
 .read-outs > .figures {
+    color: white;
+    margin-right: 15px;
 }
 
 .read-outs > .label{
+    
  }
 
 

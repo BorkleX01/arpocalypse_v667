@@ -82,49 +82,50 @@ class Engine extends Component {
   componentDidMount(){
     this.startEngine()
   }
+
   render() {
     return (
       <EngineContext.Provider value={this.state}>
-        {this.props.children}
-        
         <div className='engine'>
-          <div className='key-inner ins-header' onClick={this.engineHeaderClick}>ENGINE</div>
-          <div className='panel' style={{display: this.state.panelVis ? 'flex':'none' }} >
-            <div className='pane'>
+          <div className='ins-header' onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8 </div>
+          <div className="ins" style={{display: this.state.panelVis ? 'block':'none' }}>
+            <div className='panel' >
+              <div className='pane'>
+                <Spinner
+                  label='Tempo'
+                  type="number"
+                  min='0' max="400"
+                  value={this.state.tempo}
+                  onChange={this.slideTempo}
+                  step='1' />
+              </div>
+
+              <div className='pane'>
+                <Spinner
+                  label='Gain'
+                  type="range"
+                  min="0.01" max="1"
+                  value={this.state.gain}
+                  className="slider"
+                  onChange={this.slideGain}
+                  step='0.1'/>
+              </div>
+
+              <div className='pane'>
+                <Spinner
+                  label='Sustain'
+                  type="range"
+                  min="0.01" max="3"
+                  value={this.state.sustain}
+                  className="slider"
+                  onChange={this.slideSustain}
+                  step='0.1'/>
+              </div>
               <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }</button>
-            </div>
-            <div className='pane'>
-              Tempo:
-              <Spinner
-                type="number"
-                min='0' max="400"
-                value={this.state.tempo}
-                onChange={this.slideTempo}
-                step='1' />
-              
-            </div>
-            <div className='pane'>
-              Gain: {this.state.gain}
-              <Spinner
-                type="range"
-                min="0.01" max="1"
-                value={this.state.gain}
-                className="slider"
-                onChange={this.slideGain}
-                step='0.1'/>
-            </div>
-            <div className='pane'>
-              Sustain: {this.state.sustain}
-              <Spinner
-                type="range"
-                min="0.01" max="3"
-                value={this.state.sustain}
-                className="slider"
-                onChange={this.slideSustain}
-                step='0.1'/>
             </div>
           </div>
         </div>
+        {this.props.children}
       </EngineContext.Provider>
     )
   }

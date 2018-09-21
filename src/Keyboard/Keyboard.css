@@ -4,17 +4,15 @@
 
 .keyboard {
     width: 95%;
-    padding-left: 10px;
-    padding-right: 10px;
     display: flex;
     flex-flow: row wrap;
-    margin: 0 auto;
+    margin: 1vh auto;
     justify-content: center;
+    
 }
 
 .keyboard-outer {
     width: 100%;
-    background: black;
 }
 .keyboard > * {
     padding: 0px 0px;
@@ -23,7 +21,7 @@
 }
 .messages {
     margin: auto 10px;
-    width: 65%;
+    width: 100%;
 }
 
 .key {
@@ -43,15 +41,34 @@
     background: black;
     color: white;
 }
+
 .instruments {
-    width: 100%;
+    margin: 0 auto;
+    width: 95%;
 }
-.rhs-tabs{
-    float: right;
+
+.nav-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.rhs-tabs > button, .lhs-tabs > button {
+    width: 120px;
+    height: 4.6vh;
+    min-width: 50px;
+    min-height: 50px;
+    margin: auto 0;
+    font-size: x-small;
+    background: none;
+    color: white;
 }
 
 .lhs-tabs{
-    float: left;
+
+}
+
+.rhs-tabs, .lhs-tabs {
+   
 }
 
 .white-key {
@@ -68,14 +85,16 @@
     transition: all 0.5s;
 }
 
+
 @media (min-width: 1024px) {
-    .white-key, .black-key {
+    /*.white-key, .black-key {
 	width: 2.3%
-  }
+    }
     .black-key {
 	margin:  0 -1.15%;
-  }
+    }*/
 }
+
 @media (max-width: 800px) {
     .white-key, .black-key {
 	width: 6.9%;
@@ -101,11 +120,39 @@
   }
 }
 
+@media (min-width: 1280px) {
+    .keyboard-outer {
+        display: flex;
+        align-items: flex-start;
+    }
+    .instruments {
+        flex: 1 1 50%
+    }
+    .engine {
+        flex: 1 1 50%
+    }
+    .engine > .ins-header {
+        background: black;
+        color: white;
+        border-bottom: 5px solid teal;
+    }
+    .keyboard {
+        flex: 1 1 50%
+    }
+    .white-key, .black-key {
+	width: 6.9%;
+    }
+    .black-key {
+	margin:  0 -3.45%;
+    }
+    
+}
+
 .squares {
     margin-left:  0;
     margin-right:  0;
-    width: 50px;
-    height: 50px;
+    width: 75px;
+    height: 75px;
 }
 
 .logarithmic{

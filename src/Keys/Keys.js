@@ -14,14 +14,14 @@ class Keys extends Component {
     this.props = props;
 
     this.press = () => {
-      this.props.playNote(props.index, props.obj.freq)
-      props.listener(props.index, 'add');
+      this.props.playNote(this.props.index, this.props.obj.freq)
+      props.listener(this.props.index, 'add');
       this.props.obj.noteOn = true;
     }
 
     this.pressRelease = () => {
       this.props.obj.active.map &&
-      props.listener(props.index);
+      this.props.listener(this.props.index);
       this.props.obj.noteOn = false;
     }
   }
@@ -56,7 +56,7 @@ class Keys extends Component {
                   {this.props.index} <br/>
                   {this.props.obj.nom} {this.props.obj.type === 'black-key' ? '#' : ''}  <br/>
                   {this.props.obj.type === 'white-key' ? this.props.obj.pos % 7 + 1 : ''} <br/>
-                  <h4>{this.state.qwert}</h4>
+                  <div className="qwert">{this.state.qwert}</div>
 		</div>
               </div>
             </div>
