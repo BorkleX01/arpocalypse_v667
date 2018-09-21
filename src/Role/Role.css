@@ -1,7 +1,25 @@
 .role {
     display: block;
     width: 100%;
-    margin: 1vh auto
+    margin: 1vh auto;
+}
+
+.role > .key-inner {
+    border: none;
+}
+.role.active > .ins-header {
+    border-bottom: 5px solid white;
+}
+
+.role.active:hover > .ins-header {
+    border-bottom: 5px solid white;
+}
+.role.inactive > .ins-header {
+    border-bottom: none;
+}
+
+.role:hover > .ins-header {
+    border-bottom: 5px solid darkslategray;
 }
 
 .note-collection, .sequence-collection {
@@ -16,6 +34,11 @@
     
 }
 
+.input[type=number]::-webkit-textfield-decoration-container {
+  border: 1px #ccc solid;
+  background: #efefef;
+  
+}
 
 .role-edit {
     text-align: center;
@@ -30,7 +53,7 @@
 
 .role-edit.bass button {
     background: blue;
-        color: white;
+    color: white;
 }
 
 .role-edit.treble button {
@@ -39,9 +62,32 @@
         color: white;
 }
 
-.read-outs {
-    display: block;
+.pane {
+    display: flex;
+    flex-flow: column wrap;
+    flex: 1 1 150px;
+        
 }
+
+.label {
+    display: block;
+
+}
+
+.transport {
+    padding-right: 10px;
+}
+
+.read-outs {
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.read-outs > .figures {
+}
+
+.read-outs > .label{
+ }
 
 .ins-header{
     padding: 5px;

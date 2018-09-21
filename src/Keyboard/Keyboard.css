@@ -185,3 +185,10 @@
     background: yellow;
     color: black
 }
+
+.rail {
+    margin-top: 5px;
+    width: 100%;
+    height: 2.5vh;
+    border: 0.5px solid currentColor;
+}

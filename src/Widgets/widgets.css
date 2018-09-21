@@ -1,0 +1,49 @@
+.spinner {
+    display: flex;
+    justify-content: space-between;
+    width: 50px;
+    height: 40px;
+    border: 0.5px solid currentColor;
+    align-items: center;
+    user-select: none;
+}
+
+.spinner .icon {
+}
+
+.spinner .form {
+    flex-basis: 33%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.form input {
+    width: 50px;
+    height: 40px;
+    text-align: center;
+    background: none;
+    color: currentColor;
+}
+
+.arrows {
+    width: 33%;
+    height: 100%;
+    flex: 0 0 50px;
+    border: 0.5px solid currentColor;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.arrows:hover {
+    background: white;
+    color: black;
+}
+
+
+
+
+

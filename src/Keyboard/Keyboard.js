@@ -5,6 +5,7 @@ import { Role }  from '../Role'
 import { EngineContext } from '../Engine/EngineContext'
 import { Keys } from '../Keys'
 import {qwertyClavier, octavePager}  from './LocalKeyboard'
+import Spinner from '../Widgets/Spinner'
 
 class Keyboard extends Component {
   constructor(props){
@@ -67,7 +68,7 @@ class Keyboard extends Component {
         }
       }
     }
-
+    
     this.keyListener = (key, ...rest) => {
       if(rest.includes('hardware')){
         this.keyRef[key].current.setState({button: true})
@@ -95,13 +96,16 @@ class Keyboard extends Component {
     }
 
     this.roleListener = (v, i, mode, ...rest) => {
-      if(rest.includes('load')){
+      if(rest.includes('load'))
+      {
         this.setState(state => {
           state[mode].notes = v
           state[mode].queue = i
           return state
         })
-      } else {
+      }
+      else
+      {
         this.setState(state=>{
           state[mode].notes.splice(i,1)
           state[mode].queue.splice(i,1)
@@ -116,14 +120,25 @@ class Keyboard extends Component {
     }
     
     this.modeClick = (e) => {
-
       this.setState({mode: e.target.id})
+      this.roleRef[this.state.mode].current.setState({active: false})
       if(this.state.mode === e.target.id){
-        this.roleRef[e.target.id].current.setState({visible: !this.roleRef[e.target.id].current.state.visible})
+        this.roleRef[e.target.id].current.setState({visible: !this.roleRef[e.target.id].current.state.visible, active: true})
+      }else{
+        this.roleRef[e.target.id].current.setState({active: true})
       }
     }
 
+    this.startSequencer = () => {
+      let role = this.roleRef[this.state.mode].current;
+      role.setState({scheduleStart: !role.state.scheduleStart})
+    }
+
     document.onkeypress = (e) => {
+      if(e.key === ' '){
+        this.startSequencer()
+      }
+      
       if(e.key === octavePager[0] || e.key === octavePager[1] ){
         let pageTurn = this.state.octavePage + (e.key === octavePager[0] ? -1 : +1)
         let page = pageTurn*12 + this.props.range[0]
@@ -140,12 +155,16 @@ class Keyboard extends Component {
       console.log('add new sequencer');
     }
   }
+
   componentDidMount(){
-    this.mapButtons(this.props.range[0])
+    this.roleRef[this.state.mode].current.setState({active: true})
+    this.mapButtons(this.state.octavePage*12 + this.props.range[0])
   }
+
   componentDidUpdate(){
     this.mapButtons(this.state.octavePage*12 + this.props.range[0])
   }
+
   render() {
     return Object.keys(this.state.keyObj).length > 0 && (
       <EngineContext.Consumer>
@@ -180,10 +199,8 @@ class Keyboard extends Component {
 		      obj = {this.state.keyObj[o]}
 		    />
 		   )))}
-
+              
               <div className='instruments'>
-                <div>{this.state.octavePage} octave z=down x=up </div>
-
                 <Role
                   ref = {this.roleRef('bass')}
                   modeClick={this.modeClick}

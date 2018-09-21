@@ -1,5 +1,5 @@
 import React,  { Component } from 'react'
-
+import Spinner from '../Widgets/Spinner'
 
 class Transport extends Component{
   constructor(props){
@@ -27,17 +27,18 @@ class Transport extends Component{
 
     
     this.startSequencer = () => {
-      startTime = 0;
+      let period = 60000/this.props.tempo/this.state.tempoMultiplier;
       this.setState({scheduleRestart: false})
       let seqTimer = setInterval(() => {
         if(seqTimerBuffer.indexOf(seqTimer) === -1) seqTimerBuffer.push(seqTimer);
-        this.state.seqType === 'realtime' ? !this.state.isPlaying ? playRT() : console.log('trigger') : procNotes();
+        this.state.seqType === 'realtime' ? !this.state.isPlaying ? playRT() : ()=>{} : procNotes();
         this.setState({timers : seqTimerBuffer.length, timer: startTime, isPlaying: true})
-      }, 60000/this.props.tempo/this.state.tempoMultiplier)
+      }, +period)
     }
     
     var playRT = () => {
       this.props.cue.map(( o, i) => {
+        let period = i > 0 ? o/this.state.tempoMultiplier : 0;
         let rtTimer = setTimeout(()=>{
           if(rtTimerBuffer.indexOf(rtTimer) === -1) rtTimerBuffer.push(rtTimer)
           procNotes();
@@ -47,7 +48,7 @@ class Transport extends Component{
             startTime = 0;
           }
           this.setState({timers : rtTimerBuffer.length + seqTimerBuffer.length, timer: startTime});
-        }, i > 0 ? o/this.state.tempoMultiplier : 0)
+        }, period)
       })
       this.setState({isPlaying: true});
       
@@ -74,30 +75,54 @@ class Transport extends Component{
       props.delete(o.value)
     }
 
-    this.tempoMultiplier = (e) => {
+    this.tempoMultiplier = (v) => {
       this.stopSequencer()
-      let val = +e.target.value
+      let val = +v
       this.setState({scheduleRestart: this.state.isPlaying, tempoMultiplier: val})
     }
 
   }
+
   componentDidUpdate(){
     if (this.state.scheduleRestart){this.startSequencer()}
   }
+
+  componentWillReceiveProps(newProps){
+    if(newProps.start !== this.props.start){
+      console.log('start seq');
+      console.log(this.state.isPlaying);
+      this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
+      
+    }
+    if(newProps.tempo !== this.props.tempo){
+      this.tempoMultiplier(this.state.tempoMultiplier)
+    }
+  }
   render(){
-    return(<div className='panel '>
-           <button onClick={this.startSequencer}>START SEQ</button>
-           <button onClick={this.stopSequencer}>STOP SEQ</button>
-           <div className='read-outs'>
-           Tempo: <input type="number" min='1' max="16" value={this.state.tempoMultiplier} className="slider" onChange={this.tempoMultiplier} step={1} /><br/>
-           Spawned: {this.state.timers}<br/>
-           StepNo.: {this.state.timer}<br/>
-           </div>
-           <div className='read-outs'>
-           Frequency:<input type="number" min='1' max="16" value={this.state.tempoMultiplier} className="slider" onChange={this.tempoMultiplier} step={1} /><br/>
-           Repeats:<input type="number" min='1' max="16" value={this.state.tempoMultiplier} className="slider" onChange={this.tempoMultiplier} step={1} /><br/>
-           </div>
+    return(<div className='panel'>
+             <div className="transport">
+               <button onClick={this.startSequencer}>START SEQ</button>
+               <button onClick={this.stopSequencer}>STOP SEQ</button>
+             </div>
+             <div className="pane">
+               <div className="label">Tempo multiplier:</div>
+               <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+             </div>
+             <div className="pane">
+               <div className="label">Frequency:</div>
+               <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+             </div>
+             <div className="pane">
+               <div className="label">Repeats:</div>
+               <Spinner min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+             </div>
+             <div className='read-outs'>
+               <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
+               <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
+               <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
+             </div>
            </div>)
+          
   }
 }
 

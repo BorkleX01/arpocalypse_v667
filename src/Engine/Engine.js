@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './Engine.css'
 import { EngineContext } from './EngineContext'
 import { Keyboard } from '../Keyboard';
+import Spinner from '../Widgets/Spinner'
 
 class Engine extends Component {
   constructor(props) {
@@ -9,7 +10,7 @@ class Engine extends Component {
     this.state = {
       gain : 0.10,
       part: 1000,
-      sustain: 3,
+      sustain: 1,
       tempo: 135,
       timer: 0,
       engineOn: false,
@@ -53,8 +54,9 @@ class Engine extends Component {
 
     this.state.playNote = this.createOsc
 
-    this.slideTempo = (e, o) => {
-      let val = e.target.value;
+    this.slideTempo = (v) => {
+      let val = +v;
+      console.log('Engine Tempo change: ' + val);
       this.setState({tempo : val})
     }
     
@@ -85,22 +87,22 @@ class Engine extends Component {
         
         <div className='engine'>
           <div className='key-inner ins-header' onClick={this.engineHeaderClick}>ENGINE</div>
-          <div className='panel' style={{display: this.state.panelVis ? 'block':'none' }} >
-            <div className='control'>
+          <div className='panel' style={{display: this.state.panelVis ? 'flex':'none' }} >
+            <div className='pane'>
               <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }</button>
             </div>
-            <div className='control'>
+            <div className='pane'>
               Tempo:
-              <input type="number" min='0' max="400" value={this.state.tempo} className="input" onChange={this.slideTempo} step='1' />
-              <input type="range" min='0' max="400" value={this.state.tempo} className="slider" onChange={this.slideTempo} step='1' />
+              <Spinner type="number" min='0' max="400" value={this.state.tempo} onChange={this.slideTempo} step='1' />
+              
             </div>
-            <div className='control'>
+            <div className='pane'>
               Gain: {this.state.gain}
-              <input type="range" min="0.01" max="1" value={this.state.gain} className="slider" onChange={this.slideGain}  step='0.01'/>
+              <Spinner type="range" min="0.01" max="1" value={this.state.gain} className="slider" onChange={this.slideGain}  step='0.01'/>
             </div>
-            <div className='control'>
+            <div className='pane'>
               Sustain: {this.state.sustain}
-              <input type="range" min="0.01" max="3" value={this.state.sustain} className="slider" onChange={this.slideSustain}  step='0.01'/>
+              <Spinner type="range" min="0.01" max="3" value={this.state.sustain} className="slider" onChange={this.slideSustain}  step='0.01'/>
             </div>
           </div>
         </div>

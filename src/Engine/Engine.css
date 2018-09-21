@@ -5,6 +5,7 @@ html{
 .App{
 
 }
+
 .engine {
     width: 95%;
     margin: 0 auto;
@@ -27,7 +28,9 @@ html{
     padding: 5px;
     border: 0.25px solid grey;
     display: flex;
-    flex-flow: row wrap
+    flex-flow: row wrap;
+    flex: 1 1;
+                   
 }
 
 button {
@@ -50,4 +53,6 @@ button {
 }
 
 .slider {
+    padding: 0 0;
+    margin: 2vh 0;
 }

@@ -11,7 +11,7 @@ class SaveSequence extends Component{
         let clip = [];
         let thisSeq = this.props.seq;
 
-        thisSeq.map((o,i)=>clip.push([this.props.seq[i], this.props.cue[i]]))
+        thisSeq.map((o,i)=>clip.push([this.props.seq[i], this.props.cue[i], this.props.recTempo]))
         
         this.setState(state => {state.clips = [...state.clips, clip]
                                 this.props.clipListener()

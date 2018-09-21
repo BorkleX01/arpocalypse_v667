@@ -14,7 +14,10 @@ class Role extends Component {
     this.state = {
       noteOn : -1,
       visible : false,
-      clips: []
+      clips: [],
+      currentTempo: this.props.tempo,
+      active: false,
+      scheduleStart: false
     }
     
     this.doToNote = (e) => {
@@ -59,10 +62,14 @@ class Role extends Component {
     }
   }
 
+  componentDidUpdate(){
+  }
   render() {
     return(
-      <div className={`role ${this.props.module} `}>
-        <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>{`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'}`}</div>
+      <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
+        <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
+          {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
+        </div>
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
           <Transport
             ref={this.transportRef}
@@ -71,6 +78,7 @@ class Role extends Component {
             seq={this.props.seq}
             cue={this.props.cue}
             play={this.play}
+            start={this.state.scheduleStart}
             type={this.props.realTime ? 'realtime' : 'step'}/>
 
           <div className='panel'>
@@ -81,32 +89,35 @@ class Role extends Component {
               clear={this.clear}
               seq={this.props.seq}
               cue={this.props.cue}
+              recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
 
             <div className='sequence-collection'>
               { this.state.clips.length > 0 ? 
-                this.state.clips.map((o, i)=>
-                                     <div key={i} className={'sequence-edit'} id={this.props.module+'Clip'+i}>
-                                         <button id={i} value={i} onClick={this.doToClip}>{i}</button>
-                                       </div>)
+                this.state.clips
+                .map((o, i)=>
+                     <div key={i} className={'sequence-edit'} id={this.props.module+'Clip'+i}>
+                       <button id={i} value={i} onClick={this.doToClip}>{i}</button>
+                     </div>)
                 :
                 <div className='messages'>Pattern library</div>
               }
-      </div>
-        <div className='note-collection'>
-        {this.props.seq.length > 0 ?
-         this.props.seq.map((o, i) =>
-                            <div key={i} className={'role-edit'} id={this.props.module+i}>
-                            <button id={i} value={o} onClick={this.doToNote}>{o}</button>
-                            </div>)
-         :
-         <div className='messages'>Notes appear here</div>
-        }
-      </div>
+            </div>
+            <div className='note-collection'>
+              {this.props.seq.length > 0 ?
+               this.props.seq
+               .map((o, i) =>
+                    <div key={i} className={'role-edit'} id={this.props.module+i}>
+                      <button id={i} value={o} onClick={this.doToNote}>{o}</button>
+                    </div>)
+               :
+               <div className='messages'>Notes appear here</div>
+              }
+            </div>
+          </div>
+          
         </div>
-        
       </div>
-        </div>
     )}
 }
 export default Role
