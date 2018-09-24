@@ -28,6 +28,10 @@ html{
     z-index: 10;
 }
 
+.engine > * {
+    opacity: 1;
+}
+
 .engine > .ins-header:hover {
     user-selectable: none;
     border-bottom: 5px solid white;
@@ -78,7 +82,7 @@ button {
 
 .legals {
     font-size: x-small;
-    color: darkslategrey;
+    color: teal;
 }
 
 .control {

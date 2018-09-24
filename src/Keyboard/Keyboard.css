@@ -20,9 +20,16 @@
 
 }
 .messages {
-    width: 100%;
+    font-size: small;
+    width: 75%;
     text-align: center;
     margin-top: 1vh;
+    color: darkslategray;
+    transition: all 0.5s;
+}
+
+.messages:hover {
+    color: white;
 }
 
 .key {
@@ -134,7 +141,14 @@ button {
 	margin:  0 -7.14%;
         height: 16vh;
         max-height: 95px;
-  }
+    }
+
+    .panel {
+        justify-content: center;
+    }
+    .messages {
+        display: none;
+    }
 }
 
 @media (min-width: 1280px) {
@@ -221,9 +235,6 @@ button {
     background: red;
 }
 
-.rhs-tabs > * {
-    color: white;
-}
 
 .bass.note-on > .key-inner {
     background: yellow;

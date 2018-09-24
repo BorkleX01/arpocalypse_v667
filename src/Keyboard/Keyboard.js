@@ -33,7 +33,7 @@ class Keyboard extends Component {
     this.state.freq = data.freq
     this.state.int = data.intervals
     this.state.nom = data.nomenclature
-    
+
     var pos = 0;
 
     const keyObj = this.state.notes.map((o, i, arr) => {
@@ -148,9 +148,11 @@ class Keyboard extends Component {
       let role = this.roleRef[this.state.mode].current;
       role.setState({scheduleStart: !role.state.scheduleStart})
     }
-
+    //Qwert 
     document.onkeypress = (e) => {
+      
       if(e.key === ' '){
+        e.preventDefault()
         this.startSequencer()
       }
       
@@ -177,6 +179,7 @@ class Keyboard extends Component {
   }
 
   componentDidUpdate(){
+    
     this.mapButtons(this.state.octavePage*12 + this.state[this.state.mode].range[0])
   }
 
@@ -232,6 +235,7 @@ class Keyboard extends Component {
 	          module='bass'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
+                  clips={engine.config.bass}
 	          seq={this.state.bass.notes}
 	          cue={this.state.bass.queue}
                   obj={this.state.keyObj}
@@ -247,6 +251,7 @@ class Keyboard extends Component {
 	          module='treble'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
+                  clips={engine.config.treble}
 	          seq={Object.values(this.state.treble.notes)}
 	          cue={this.state.treble.queue}
                   obj={this.state.keyObj}

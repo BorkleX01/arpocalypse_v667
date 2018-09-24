@@ -17,7 +17,7 @@
     border-bottom: 5px solid white;
 }
 .role.inactive > .ins-header {
-    border-bottom: none;
+    border-bottom: 5px solid black;
 }
 .ins {
 }
@@ -29,7 +29,7 @@
 
 
 .role:hover > .ins-header {
-    border-bottom: 5px solid darkslategray;
+    border-bottom: 5px solid grey;
 }
 
 .note-collection, .sequence-collection {
@@ -98,7 +98,8 @@
     padding-right: 10px;
 }
 
-.read-outs {
+.panel.read-outs {
+    flex-basis: 170px;
 }
 
 .read-outs > .figures {
@@ -107,8 +108,9 @@
 }
 
 .read-outs > .label{
-    
+    flex-basis: 50%;
  }
+
 
 .blinker {
     width: 10Q;

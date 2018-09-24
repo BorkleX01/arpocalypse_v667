@@ -13,7 +13,7 @@ class Role extends Component {
     super()
     this.props = props
     this.state = {
-      noteOn : -1,
+      noteOn : false,
       visible : false,
       clips: [],
       currentTempo: this.props.tempo,
@@ -41,6 +41,7 @@ class Role extends Component {
     }
 
     this.play = (id) => {
+      this.setState({noteOn: true});
       this.props.playNote(id, this.props.freq[id]);
     }
 
@@ -54,6 +55,7 @@ class Role extends Component {
         let x = t === 0 ? this.props.seq.length-1 : t-1
         document.getElementById(this.props.module+''+x).setAttribute('class', 'role-edit')
       }
+
     }
 
     this.storageRef = React.createRef();
@@ -78,20 +80,24 @@ class Role extends Component {
     }
     
   }
-
-  componentDidUpdate(){
-    //console.log(this.props.noteOn[1]) ;
+  
+  componentWillReceiveProps(newProps){
+    if(newProps.clips && newProps.clips.length > 0 ){
+      this.setState({clips : newProps.clips})
+    }
   }
-
-  render() {
+  render(){ 
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
           {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
-          
         </div>
-        {this.props.module === 'treble' ? 'There is no Record button as such. Intervals are captured between each noteOn event. Tunes in the sequence bank are circular buttons. Clicking them will load them but you must press play to hear them. They should play back with the same timing as when you performed them.' : 'The step sequencer will just repeat all notes played in order but timed to the tempo. Frequency and Repeat do not work yet but Speed multiplies the tempo.'}
+        <div className="messages">
+          {this.props.module === 'treble' ?
+           'There is no Record button as such. Intervals are captured between each noteOn event. Tunes in the sequence bank are circular buttons. Clicking them will load them but you must press play to hear them. They should play back with the same timing as when you performed them.' : 'The step sequencer will just repeat all notes played in order but timed to the tempo. Frequency and Repeat do not work yet but Speed multiplies the tempo.'}
+        </div>
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
+
           <Transport
             ref={this.transportRef}
             tick={this.tick}
@@ -101,24 +107,24 @@ class Role extends Component {
             play={this.play}
             start={this.state.scheduleStart}
             type={this.props.realTime ? 'realtime' : 'step'}/>
+          
           <div className='panel'>
+            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
             <SaveSequence
               module = {this.props.module}
               ref = {this.storageRef}
               clear={this.clear}
               seq={this.props.seq}
               cue={this.props.cue}
+              arp={[this.state.speed, this.state.playFreq, this.state.repeats]}
               recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
-            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
             <div className="pane">
               <Spinner
                 label={this.props.module + ' offset'}
                 slider={true} value={this.props.range[0]}
                 onChange={this.changeRange}
                 min={0} max={96-12} step={12}/>
-            </div>
-            <div className="pane">
               <Spinner
                 label={this.props.module + ' range'}
                 slider={true} value={this.state.span}

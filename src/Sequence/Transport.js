@@ -30,22 +30,28 @@ class Transport extends Component{
 
     
     this.startSequencer = () => {
-      let period = 60000/this.props.tempo/this.state.tempoMultiplier;
-      this.setState({scheduleRestart: false})
-      let seqTimer = setInterval(() => {
-        if(seqTimerBuffer.indexOf(seqTimer) === -1) seqTimerBuffer.push(seqTimer);
-        this.state.seqType === 'realtime' ? !this.state.isPlaying ? playRT() : ()=>{} : playStep();
-        this.setState({timers : seqTimerBuffer.length, timer: startTime, isPlaying: true})
-      }, +period)
+      console.log('start sequencer');
+      if(this.props.type === 'realtime'){
+        this.playRT()
+      }else{
+        let period = 60000/this.props.tempo/this.state.tempoMultiplier;
+        this.setState({scheduleRestart: false})
+        let seqTimer = setInterval(() => {
+          if(seqTimerBuffer.indexOf(seqTimer) === -1) seqTimerBuffer.push(seqTimer);
+          playStep();
+          this.setState({timers : seqTimerBuffer.length, timer: startTime, isPlaying: true})
+        }, +period)
+      }
     }
-    
-    var playRT = () => {
+    this.playRT = () => {
+      console.log('playRT');
       this.props.cue.map(( o, i) => {
         let period = i > 0 ? o/this.state.tempoMultiplier : 0;
         let rtTimer = setTimeout(()=>{
           if(rtTimerBuffer.indexOf(rtTimer) === -1) rtTimerBuffer.push(rtTimer)
           playStep();
           if(startTime ===  Object.keys(this.props.seq).length){
+            console.log('stop RT');
             this.setState({isPlaying: false});
             this.stopSequencer()
             startTime = 0;
@@ -102,6 +108,7 @@ class Transport extends Component{
   }
 
   componentWillReceiveProps(newProps){
+
     if(newProps.start !== this.props.start){
       this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
     }
@@ -112,7 +119,7 @@ class Transport extends Component{
   }
   render(){
     return(<div className='panel'>
-             <button onClick={this.state.isPlaying ? this.stopSequencer : this.startSequencer}>
+             <button onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
                {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC)
              </button>
 
@@ -125,12 +132,13 @@ class Transport extends Component{
              <div className="pane">
                <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
              </div>
-             <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
              <div className='panel read-outs'>
                <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
                <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
                <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
              </div>
+             <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
+             
              
            </div>)
           
