@@ -75,8 +75,10 @@ class Engine extends Component {
       console.log(this.state.elapsed);
     }
     
-    this.engineHeaderClick = () => {
-      this.setState({panelVis: !this.state.panelVis})
+    this.engineHeaderClick = (e) => {
+      if(e.target.id === 'headerOp'){
+        this.setState({panelVis: !this.state.panelVis})
+      }
     }
   }
   componentDidMount(){
@@ -87,8 +89,8 @@ class Engine extends Component {
     return (
       <EngineContext.Provider value={this.state}>
         <div className='engine'>
-          <div className='ins-header' onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8  <div className="legals">© 2018 Eugene Phang</div> </div> 
-          <div className="ins" style={{display: this.state.panelVis ? 'block':'none' }}>
+          <div id='headerOp' className='ins-header' onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8  <div style={{display: 'inline-block'}} className={`blinker ${this.state.noteOn[1]}`}>{ }</div> <div className="legals">© 2018 Eugene Phang</div>
+            <div className="ins" style={{display: this.state.panelVis ? 'block':'none' }}>
             <div className='panel' >
               <div className='pane'>
                 <Spinner
@@ -121,9 +123,11 @@ class Engine extends Component {
                   onChange={this.slideSustain}
                   step='0.1'/>
               </div>
-              <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }</button>
+              <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }  </button>
             </div>
           </div>
+          </div> 
+          
         </div>
         {this.props.children}
       </EngineContext.Provider>

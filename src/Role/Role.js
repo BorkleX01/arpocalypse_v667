@@ -3,7 +3,7 @@ import './Role.css'
 import '../Engine/Engine.css'
 import { EngineContext } from '../Engine/Engine'
 import { Keys } from '../Keys'
-import { Transport } from '../Sequence/StepSequencer'
+import { Transport } from '../Sequence/Transport'
 import { SaveSequence } from '../Sequence/Storage' 
 import Spinner from '../Widgets/Spinner' 
 
@@ -80,7 +80,7 @@ class Role extends Component {
   }
 
   componentDidUpdate(){
-    
+    //console.log(this.props.noteOn[1]) ;
   }
 
   render() {
@@ -88,6 +88,7 @@ class Role extends Component {
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
           {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
+          
         </div>
         {this.props.module === 'treble' ? 'There is no Record button as such. Intervals are captured between each noteOn event. Tunes in the sequence bank are circular buttons. Clicking them will load them but you must press play to hear them. They should play back with the same timing as when you performed them.' : 'The step sequencer will just repeat all notes played in order but timed to the tempo. Frequency and Repeat do not work yet but Speed multiplies the tempo.'}
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>

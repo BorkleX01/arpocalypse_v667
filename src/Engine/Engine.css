@@ -10,7 +10,7 @@ html{
 .nav {
     width: 95%;
     padding: 1vw;
-    margin: 0 auto;
+    margin: 5vh auto;
 }
 
 .engine {
@@ -20,10 +20,12 @@ html{
 }
 
 .engine > .ins-header {
-    background: #111133;
+    background: #111133AA;
     color: white;
     border-bottom: 5px solid teal;
     width: 95%;
+    position: fixed;
+    z-index: 10;
 }
 
 .engine > .ins-header:hover {
@@ -33,6 +35,8 @@ html{
 
 .engine > .ins > .panel {
     justify-content: center;
+    position: fixed;
+    z-index: 10;
 }
 
 
@@ -61,6 +65,17 @@ html{
     border: 0.5px solid darkslategrey;
 }
 
+button:hover {
+    background: yellow;
+    color: black;
+}
+
+button {
+    transition: all 0.5s;
+}
+
+
+
 .legals {
     font-size: x-small;
     color: darkslategrey;
@@ -79,4 +94,8 @@ html{
     padding: 0 0;
     margin: 1vh 0;
     
+}
+
+.blinker.note-on {
+    background: yellow;
 }

@@ -64,8 +64,24 @@
     color: white;
 }
 
-.lhs-tabs{
+button:hover {
+    background: yellow;
+    color: black;
+}
 
+button {
+    transition: all 0.5s;
+}
+
+
+.lhs-tabs {
+    
+}
+
+#addSeq {
+    font-size: xx-large;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .rhs-tabs, .lhs-tabs {
@@ -133,9 +149,6 @@
         flex: 1 1 50%
     }
     .engine > .ins-header {
-        background: black;
-        color: white;
-        border-bottom: 5px solid teal;
     }
     .keyboard {
         flex: 1 1 50%
@@ -152,8 +165,8 @@
 .squares {
     margin-left:  0;
     margin-right:  0;
-    width: 75px;
-    height: 75px;
+    width: 50px;
+    height: 50px;
 }
 
 .logarithmic{

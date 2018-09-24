@@ -95,6 +95,8 @@ function Sequencing(props){
     i < this.keyArr.length-1  ? i++ : i = 0;
     yield this.createOsc(hz, this.keyArr[id])
   }
+
+  
   this.slideArp = (e, o) =>  {
     this.stopSequencer();
     //this.props.setTempo(this.state.tempo)

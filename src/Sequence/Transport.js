@@ -26,6 +26,7 @@ class Transport extends Component{
     var seqTimerBuffer = [];
     var rtTimerBuffer = [];
     var startTime = 0;
+    var freqCount = 0;
 
     
     this.startSequencer = () => {
@@ -33,7 +34,7 @@ class Transport extends Component{
       this.setState({scheduleRestart: false})
       let seqTimer = setInterval(() => {
         if(seqTimerBuffer.indexOf(seqTimer) === -1) seqTimerBuffer.push(seqTimer);
-        this.state.seqType === 'realtime' ? !this.state.isPlaying ? playRT() : ()=>{} : procNotes();
+        this.state.seqType === 'realtime' ? !this.state.isPlaying ? playRT() : ()=>{} : playStep();
         this.setState({timers : seqTimerBuffer.length, timer: startTime, isPlaying: true})
       }, +period)
     }
@@ -43,7 +44,7 @@ class Transport extends Component{
         let period = i > 0 ? o/this.state.tempoMultiplier : 0;
         let rtTimer = setTimeout(()=>{
           if(rtTimerBuffer.indexOf(rtTimer) === -1) rtTimerBuffer.push(rtTimer)
-          procNotes();
+          playStep();
           if(startTime ===  Object.keys(this.props.seq).length){
             this.setState({isPlaying: false});
             this.stopSequencer()
@@ -53,18 +54,20 @@ class Transport extends Component{
         }, period)
       })
       this.setState({isPlaying: true});
-      
     }
     
-    var procNotes = () => {
+    var playStep = () => {
       if (startTime >= Object.keys(this.props.seq).length ){startTime = 0}
+      if (freqCount >= this.state.playFreq ){freqCount = 0}
       this.setState({timer: startTime})
       this.props.tick(this.state.timer)
       if(this.props.seq[startTime] != undefined){
         this.props.play(this.props.seq[startTime])
         startTime = startTime+1;
+        freqCount = freqCount + 1;
       }
     }
+
  
     this.stopSequencer = () => {
       while(seqTimerBuffer.length > 0){clearInterval(seqTimerBuffer.pop(seqTimerBuffer))}
@@ -123,7 +126,7 @@ class Transport extends Component{
                <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
              </div>
              <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
-             <div className='read-outs'>
+             <div className='panel read-outs'>
                <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
                <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
                <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>

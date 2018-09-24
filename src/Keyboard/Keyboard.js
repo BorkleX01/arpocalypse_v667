@@ -221,7 +221,7 @@ class Keyboard extends Component {
 		        obj = {this.state.keyObj[o]}
                       />
 		     )))}
-                <div className="messages">'z' and 'x' keys page through keyboard operable octaves. Note yellow labels. Expand the range in the instrument panel itself using 'Offset' and 'Range'. Instrument panels open by double clicking on the coloured bars. Global options open by clicking on the header above the nav. An instrument is armed for recording key or mouse sequences if a thick white line is visible on the underside of the instruments header</div>
+                <div className="messages">Select some notes and press SPACE to start playing. 'z' and 'x' keys page through keyboard operable octaves. Note yellow labels. Expand the range in the instrument panel itself using 'Offset' and 'Range'. Instrument panels open by double clicking on the coloured bars. Global options open by clicking on the header above the nav. An instrument is armed for recording key or mouse sequences if a thick white line is visible on the underside of the instruments header</div>
               </div>
               
               <div className='instruments'>
@@ -237,6 +237,7 @@ class Keyboard extends Component {
                   obj={this.state.keyObj}
 	          playNote={engine.playNote}
 	          tempo={engine.tempo}
+                  noteOn={engine.noteOn}
                   range={this.state['bass'].range}/>
                 
 	        <Role
@@ -251,6 +252,7 @@ class Keyboard extends Component {
                   obj={this.state.keyObj}
 	          playNote={engine.playNote}
 	          tempo={engine.tempo}
+                  noteOn={engine.noteOn}
                   range={this.state['treble'].range}
                   realTime={true}/>
 	      </div>

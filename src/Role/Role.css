@@ -48,7 +48,10 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
+    background: none;
+    color: red;
 }
+
 
 
 .role-edit , .sequence-edit {
@@ -60,7 +63,9 @@
     height: 75px;
 }
 
-.role-edit button{
+.role-edit button {
+    background: none;
+    color: white;
     width: 100%;
     height: 100%;
 }
@@ -97,13 +102,19 @@
 }
 
 .read-outs > .figures {
-    color: white;
+    color: yellow;
     margin-right: 15px;
 }
 
 .read-outs > .label{
     
  }
+
+.blinker {
+    width: 10Q;
+    height: 10Q;
+}
+
 
 
 
