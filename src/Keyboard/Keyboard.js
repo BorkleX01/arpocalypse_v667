@@ -99,9 +99,6 @@ class Keyboard extends Component {
 
     this.roleListener = (v, i, mode, ...rest) => {
       if(rest.includes('range')){
-        console.log('range change');
-        console.log(v + ' ' + 'to ' + i);
-        console.log(mode);
         this.setState(state=>{
           state[mode].range = [+v, +i]
           return state
@@ -110,7 +107,6 @@ class Keyboard extends Component {
       }
       else if(rest.includes('load'))
       {
-        console.log('load a sequence');
         this.setState(state => {
           state[mode].notes = v
           state[mode].queue = i

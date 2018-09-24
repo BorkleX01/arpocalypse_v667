@@ -18,7 +18,9 @@ class Transport extends Component{
       egress: [''],
       scheduleRestart : false,
       seq: [],
-      cue: []
+      cue: [],
+      realtime : false,
+      multiplierAdjust: 'function'
     }
 
     this.props = props
@@ -43,6 +45,7 @@ class Transport extends Component{
         }, +period)
       }
     }
+    
     this.playRT = () => {
       console.log('playRT');
       this.props.cue.map(( o, i) => {
@@ -87,11 +90,15 @@ class Transport extends Component{
     }
 
     this.tempoMultiplier = (v) => {
-      this.stopSequencer()
       let val = +v
       this.setState({scheduleRestart: this.state.isPlaying, tempoMultiplier: val})
-    }
+      this.stopSequencer()
+      this.props.clipListener(val, 'tempoX')
 
+    }
+    
+    this.state.multiplierAdjust = this.tempoMultiplier;
+    
     this.changePlayFreq = (v) => {
       let val = +v
       this.setState({playFreq: val})
@@ -101,10 +108,18 @@ class Transport extends Component{
       let val = +v
       this.setState({repeats: val})
     }
+
+    this.toggleRealTime = (e) => {
+      this.setState({realTime: !this.state.realTime})
+    }
   }
 
-  componentDidUpdate(){
+  componentDidUpdate(prevProps, prevState, snapShot){
     if (this.state.scheduleRestart){this.startSequencer()}
+    if(prevState.tempoMultiplier !== this.state.tempoMultiplier){
+      //let val = this.state.tempoMultiplier;
+      this.tempoMultiplier(this.state.tempoMultiplier)
+    }
   }
 
   componentWillReceiveProps(newProps){
@@ -116,21 +131,25 @@ class Transport extends Component{
     if(newProps.tempo !== this.props.tempo){
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
+    
   }
+  
   render(){
     return(<div className='panel'>
              <button onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
                {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC)
              </button>
-
-             <div className="pane">
-               <Spinner slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
-             </div>
-             <div className="pane">
-               <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
-             </div>
-             <div className="pane">
-               <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
+             <button onClick={this.toggleRealTime} >Toggle Realtime</button>
+             <div className="panel dial-group">
+               <div className="pane">
+                 <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+               </div>
+               <div className="pane">
+                 <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
+               </div>
+               <div className="pane">
+                 <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
+               </div>
              </div>
              <div className='panel read-outs'>
                <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
@@ -138,8 +157,6 @@ class Transport extends Component{
                <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
              </div>
              <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
-             
-             
            </div>)
           
   }

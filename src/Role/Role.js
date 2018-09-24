@@ -19,7 +19,9 @@ class Role extends Component {
       currentTempo: this.props.tempo,
       active: false,
       scheduleStart: false,
-      span: 72
+      span: 72,
+      arpSettings : {},
+      realTime: false
     }
 
     this.state.span = props.range[1] - props.range[0];
@@ -37,6 +39,7 @@ class Role extends Component {
         notes.push(v[0])
         cue.push(v[1])
       }
+      this.transportRef.current.setState({tempoMultiplier: this.storageRef.current.state.clipSettings[obj][1]})
       props.listener(notes, cue, props.module, 'load')
     }
 
@@ -58,10 +61,16 @@ class Role extends Component {
 
     }
 
-    this.storageRef = React.createRef();
     this.transportRef = React.createRef();
+    this.storageRef = React.createRef();
+    
 
-    this.clipListener = () => {
+    this.clipListener = (val, ...rest) => {
+
+      if(rest.includes('tempoX')){
+        this.storageRef.current.setState({arpSettings : {'tempoX' : val}})
+      }
+
       this.setState({clips : this.storageRef.current.state.clips})
     }
 
@@ -86,11 +95,12 @@ class Role extends Component {
       this.setState({clips : newProps.clips})
     }
   }
+  
   render(){ 
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
-          {`${this.props.module} ${this.props.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
+          {`${this.props.module} ${this.state.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} `}
         </div>
         <div className="messages">
           {this.props.module === 'treble' ?
@@ -106,30 +116,38 @@ class Role extends Component {
             cue={this.props.cue}
             play={this.play}
             start={this.state.scheduleStart}
-            type={this.props.realTime ? 'realtime' : 'step'}/>
+            clipListener={this.clipListener}
+            type={this.state.realTime ? 'realtime' : 'step'}/>
+          
           
           <div className='panel'>
             <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
+
             <SaveSequence
-              module = {this.props.module}
               ref = {this.storageRef}
+              module = {this.props.module}
               clear={this.clear}
               seq={this.props.seq}
               cue={this.props.cue}
-              arp={[this.state.speed, this.state.playFreq, this.state.repeats]}
+              arpSettings={this.state.arpSettings}
               recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
-            <div className="pane">
-              <Spinner
-                label={this.props.module + ' offset'}
-                slider={true} value={this.props.range[0]}
-                onChange={this.changeRange}
-                min={0} max={96-12} step={12}/>
-              <Spinner
-                label={this.props.module + ' range'}
-                slider={true} value={this.state.span}
-                onChange={this.changeSpan}
-                min={1} max={96} step={1}/>
+            
+            <div className="panel">
+              <div className="pane">
+                <Spinner
+                  label={this.props.module + ' offset'}
+                  slider={true} value={this.props.range[0]}
+                  onChange={this.changeRange}
+                  min={0} max={96-12} step={12}/>
+              </div>
+              <div className="pane">
+                <Spinner
+                  label={this.props.module + ' range'}
+                  slider={true} value={this.state.span}
+                  onChange={this.changeSpan}
+                  min={1} max={96} step={1}/>
+              </div>
             </div>
             <div className='sequence-collection'>
               { this.state.clips.length > 0 ? 

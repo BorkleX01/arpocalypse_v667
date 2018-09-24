@@ -51,14 +51,14 @@ html{
     border: 0.25px solid grey;
     display: flex;
     flex-flow: row wrap;
-    flex: 0 0 180px;
+    flex: 0 0 45%;
     align-items: center;
-    justify-content: start;
+    justify-content: center;
                    
 }
 
 .panel > button {
-    width: 170px;
+    width: 20%;
     height: 4.6vh;
     min-width: 75px;
     min-height: 50px;

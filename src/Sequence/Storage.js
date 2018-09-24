@@ -5,26 +5,30 @@ class SaveSequence extends Component{
     super();
     this.state = {
       instrument : '',
-      clips: []
+      clips: [],
+      clipSettings: [],
+      arpSettings: {}
     }
+
     this.state.instrument = props.module;
-    
 
     this.saveSeq = () => {
       if(this.props.seq){
         let clip = [];
         let thisSeq = this.props.seq;
-        thisSeq.map((o,i)=>clip.push([this.props.seq[i], this.props.cue[i], this.props.recTempo]))
+        thisSeq.map((o,i)=>clip.push([this.props.seq[i], this.props.cue[i]]))
         this.setState(state => {
           state.clips = [...state.clips, clip]
-          state.arp = this.props.arp
+          state.clipSettings = [...state.clipSettings , [this.props.recTempo , this.state.arpSettings.tempoX]]
           this.props.clipListener()
           this.props.clear();
           return state})}}
   }
+  
   componentDidUpdate(){
-    
+    //console.log(this.state);
   }
+  
   render(){
     return(
       <EngineContext.Consumer>

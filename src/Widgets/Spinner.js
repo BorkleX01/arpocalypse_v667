@@ -19,7 +19,6 @@ export default class Spinner extends Component{
     Object.assign(this.state, this.props)
     
     this.arrowClick = (e) => {
-      console.log(this.state.max);
       let inc = e.currentTarget.id === 'left' ? -1 * this.state.step : +1 * this.state.step;
       if((this.state.value + inc >= this.state.min) && (this.state.value + inc <= this.state.max)){
         this.setState({value: +this.state.value + inc})
@@ -72,8 +71,11 @@ export default class Spinner extends Component{
       }
     }
   }
-
-  render(){
+  componentDidUpdate(){
+    //if (this.props.id === 'speed-dial'){ console.log(this.props.value + ' ' + this.state.value)}
+    if (this.props.value !== this.state.value){this.setState({value: this.props.value})}
+  }
+  render(){ 
     return(<div className="control">
              <div className="label">{this.state.label}</div>
              <div className="spinner" style={{}}>

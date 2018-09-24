@@ -84,8 +84,12 @@
 .pane {
     display: flex;
     flex-flow: column wrap;
-    flex: 0 0 170px;
+    flex: 0 0 33%;
     align-items: center;
+}
+
+.dial-group{
+    
 }
 
 .label {
