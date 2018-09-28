@@ -11,6 +11,7 @@ class SaveSequence extends Component{
     }
 
     this.state.instrument = props.module;
+    this.state.arpSettings = props.arpSettings;
 
     this.saveSeq = () => {
       if(this.props.seq){
@@ -24,17 +25,14 @@ class SaveSequence extends Component{
           this.props.clear();
           return state})}}
   }
-  
-  componentDidUpdate(){
-    //console.log(this.state);
-  }
-  
+
+
   render(){
     return(
       <EngineContext.Consumer>
         {engine => 
          (<React.Fragment>
-            {engine.saveIns(this.state)}
+            { this.state.clips.length > 0 ? engine.saveIns(this.state) : null }
             <button onClick={this.saveSeq}>SAVE SEQ</button>
           </React.Fragment>)
         }

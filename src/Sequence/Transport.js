@@ -32,7 +32,6 @@ class Transport extends Component{
 
     
     this.startSequencer = () => {
-      console.log('start sequencer');
       if(this.props.type === 'realtime'){
         this.playRT()
       }else{
@@ -47,7 +46,6 @@ class Transport extends Component{
     }
     
     this.playRT = () => {
-      console.log('playRT');
       this.props.cue.map(( o, i) => {
         let period = i > 0 ? o/this.state.tempoMultiplier : 0;
         let rtTimer = setTimeout(()=>{
@@ -117,13 +115,11 @@ class Transport extends Component{
   componentDidUpdate(prevProps, prevState, snapShot){
     if (this.state.scheduleRestart){this.startSequencer()}
     if(prevState.tempoMultiplier !== this.state.tempoMultiplier){
-      //let val = this.state.tempoMultiplier;
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
   }
 
   componentWillReceiveProps(newProps){
-
     if(newProps.start !== this.props.start){
       this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
     }
@@ -131,9 +127,7 @@ class Transport extends Component{
     if(newProps.tempo !== this.props.tempo){
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
-    
   }
-  
   render(){
     return(<div className='panel'>
              <button onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>

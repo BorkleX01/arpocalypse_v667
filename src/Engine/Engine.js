@@ -58,33 +58,33 @@ class Engine extends Component {
 
     this.state.playNote = this.createOsc
 
+    var saveData = {};
     this.saveInstrument = (ins) => {
-      //console.log(ins.instrument +'  '+ ins.clips.length)
-      let inst = ins.instrument
-
-      if (this.state.config[inst] == undefined){
-        this.setState({config : {...this.state.config,  [inst] : ins.clips != undefined ? ins.clips : [] } } )
-      }
       if (ins.clips.length > 0)
-      {
-        if (ins.clips.length !== this.state.config[inst].length) { this.setState({config : {...this.state.config , [inst] :  ins.clips }})}  
+      { let inst = ins.instrument
+        saveData = {
+          ...saveData , instruments : { ...saveData.instruments, [inst] : { clips: ins.clips , clipSettings: ins.clipSettings }}
+        }
+        
       }
     }
+    
 
+    this.state.saveIns = this.saveInstrument
+    
     this.saveConfig = () => {
-      console.log('server storage');
       
-      var config = {}
-      config.instruments = this.state.config
-      config.tempo = this.state.tempo
-      config.sustain = this.state.sustain
-      config.gain = this.state.gain
+      saveData.tempo = this.state.tempo
+      saveData.sustain = this.state.sustain
+      saveData.gain = this.state.gain
 
+      console.log(saveData);
+      
       var storageServer = process.env.NODE_ENV === "development" ? 'http://lunatropolis.com/arp-save.php' : '../arp-save.php';
       let req = new XMLHttpRequest();
       let fData = new FormData();
       fData.set('action', 'write')
-      fData.set('config', JSON.stringify(config))
+      fData.set('config', JSON.stringify(saveData))
       req.open('POST', storageServer, true);
       //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       let callBack = () => {
@@ -96,9 +96,10 @@ class Engine extends Component {
         }
       }
       req.send(fData)
+
     }
 
-    this.state.saveIns = this.saveInstrument
+    
 
     this.loadConfig = () => {
       var storageServer = process.env.NODE_ENV === "development" ? 'http://lunatropolis.com/arp-save.php' : '../arp-save.php';
@@ -107,13 +108,18 @@ class Engine extends Component {
       fData.set('action', 'read')
       req.open('POST', storageServer, true);
       let callBack = (obj) => {
+        console.log(obj);
+
         this.setState(state=>{
+
           state.message = 'Loaded config'
           state.tempo = obj.tempo
           state.sustain = obj.sustain
           state.gain = obj.gain
           state.config = obj.instruments
+
           console.log(state)
+
           return state})
       }
       req.onreadystatechange = function(){
@@ -158,7 +164,6 @@ class Engine extends Component {
   
   render() {
     return (
-      
       <div className='engine'>
         <EngineContext.Provider value={this.state}>
           <div id='headerOp' className='ins-header'
@@ -201,23 +206,22 @@ class Engine extends Component {
                 <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }  </button>
                 <button onClick={this.saveConfig}>SAVE CONFIG</button>
                 <button onClick={this.loadConfig}>LOAD CONFIG</button>
-                <div className="label">{this.state.message}</div>
+                
                 <div className="panel read-outs">
                   <div className="label">Instruments: </div>
                   <div className="figures">{Object.keys(this.state.config).join(', ')}</div>
                   {Object.entries(this.state.config).map((o, i)=> <div key={i} className="label"> {o[0]} {o[1].length}</div> )}
                   <div className="label">Tempo:</div>
                   <div className="figures">{this.state.tempo}</div>
+                  <div className="label">{this.state.message}</div>
                 </div>
               </div>
               
             </div>
           </div> 
-      {this.props.children}
-      </EngineContext.Provider>
+          {this.props.children}
+        </EngineContext.Provider>
         </div>
-        
-      
     )
   }
 }

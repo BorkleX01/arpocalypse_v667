@@ -71,9 +71,13 @@ export default class Spinner extends Component{
       }
     }
   }
+
   componentDidUpdate(){
-    //if (this.props.id === 'speed-dial'){ console.log(this.props.value + ' ' + this.state.value)}
-    if (this.props.value !== this.state.value){this.setState({value: this.props.value})}
+    if (this.props.id === 'speed-dial'){
+      if (this.props.value !== this.state.value){this.setState({value: this.props.value})}
+    }
+
+    
   }
   render(){ 
     return(<div className="control">

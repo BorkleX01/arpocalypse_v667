@@ -231,7 +231,8 @@ class Keyboard extends Component {
 	          module='bass'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
-                  clips={engine.config.bass}
+                  //clips={engine.config.bass.clips}
+                  //clipSettings={engine.config.bass.clipSettings}
 	          seq={this.state.bass.notes}
 	          cue={this.state.bass.queue}
                   obj={this.state.keyObj}
@@ -247,7 +248,8 @@ class Keyboard extends Component {
 	          module='treble'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
-                  clips={engine.config.treble}
+                  //clips={engine.config.treble.clips}
+                  //clipSettings={engine.config.treble.clipSettings}
 	          seq={Object.values(this.state.treble.notes)}
 	          cue={this.state.treble.queue}
                   obj={this.state.keyObj}

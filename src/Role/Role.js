@@ -20,7 +20,7 @@ class Role extends Component {
       active: false,
       scheduleStart: false,
       span: 72,
-      arpSettings : {},
+      arpSettings : {tempoX : 1},
       realTime: false
     }
 
@@ -39,7 +39,7 @@ class Role extends Component {
         notes.push(v[0])
         cue.push(v[1])
       }
-      this.transportRef.current.setState({tempoMultiplier: this.storageRef.current.state.clipSettings[obj][1]})
+      this.transportRef.current.setState({tempoMultiplier: +this.storageRef.current.state.clipSettings[obj][1]})
       props.listener(notes, cue, props.module, 'load')
     }
 
@@ -66,9 +66,8 @@ class Role extends Component {
     
 
     this.clipListener = (val, ...rest) => {
-
       if(rest.includes('tempoX')){
-        this.storageRef.current.setState({arpSettings : {'tempoX' : val}})
+        this.storageRef.current.setState({arpSettings : {'tempoX' : +val}})
       }
 
       this.setState({clips : this.storageRef.current.state.clips})
@@ -87,7 +86,6 @@ class Role extends Component {
         this.changeRange(this.props.range[0])
         return state})
     }
-    
   }
   
   componentWillReceiveProps(newProps){
