@@ -7,7 +7,7 @@
     width: 100%;
     user-select: none;
     overflow: hidden;
-    color: gray;
+    color: currentColor;
 }
 
 .black-key {

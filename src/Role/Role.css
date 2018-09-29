@@ -42,7 +42,7 @@
 }
 
 .note-collection, .sequence-collection {
-    border: 0.5px solid white;
+    border: 0.5px solid currentColor;
     display: flex;
     flex-flow: row wrap;
     margin:  auto;

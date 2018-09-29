@@ -229,14 +229,14 @@ class Keyboard extends Component {
                 <button onClick={this.viewClick} name='squares'>Grid</button>
                 <button onClick={this.viewClick} name='squares octave'>Octave</button>
                 <button onClick={this.viewClick} name='logarithmic'>Logarithmic</button>
-                <div className="messages">Different views of the samne range of notes </div>
+                <div className="messages"></div>
               </div>
 
 	      <div className='rhs-tabs '>
 	        <button className='bass' onClick={this.modeClick} id='bass'>Bass</button>
 	        <button className='treble' onClick={this.modeClick} id='treble'>Treble</button>
 	        <button className='addSeq' onClick={this.addSeqClick} id='addSeq'>+</button>
-                <div className="messages">Adding new instruments does not work yet</div>
+                <div className="messages"></div>
               </div>
             </div>
 
