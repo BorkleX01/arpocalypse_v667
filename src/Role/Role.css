@@ -94,6 +94,7 @@
     flex-flow: column wrap;
     flex: 0 0 33%;
     align-items: center;
+    min-width: 90px;
 }
 
 .dial-group{

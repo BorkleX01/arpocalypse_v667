@@ -109,11 +109,11 @@ class Role extends Component {
         </div>
         
         <div className='sequence-collection'>
-              { this.state.clips.length > 0 ? 
+              { this.state.clips.length > 0 && this.storageRef.current.state.clipSettings != undefined ? 
                 this.state.clips
                 .map((o, i)=>
                      <div  key={i} className={'sequence-edit'} id={this.props.module+'Clip'+i}>
-                       <ClipEdit ref={this.clipRef(i)} id={i} value={(this.state.currentSeq === i ? this.storageRef.current.state.clipSettings[this.state.currentSeq][2] : i)} listener={this.doToClip} />
+                       <ClipEdit ref={this.clipRef(i)} id={i} listener={this.doToClip} value={i} name={(this.storageRef.current.state.clipSettings[i] != undefined ? this.storageRef.current.state.clipSettings[i][2] : i)}  />
                      </div>)
                 :
                 <div className='messages'>CLIP</div>
@@ -139,7 +139,7 @@ class Role extends Component {
             { this.state.currentSeq !== '' ? <div className="group-label">Rename clip:  <input id='rename-a-clip' value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}  onChange={this.renameClip}></input> </div>: null }
           </div>
           <div className='panel'>
-            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
+            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</ button>
             <ComposeClips
               ref = {this.storageRef}
               module = {this.props.module}
@@ -150,7 +150,6 @@ class Role extends Component {
               arpSettings={this.state.arpSettings}
               recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
-            
           </div>
           
           <Transport

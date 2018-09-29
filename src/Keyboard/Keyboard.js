@@ -192,7 +192,9 @@ class Keyboard extends Component {
         console.log('add new sequencer');
       }
 
-      this.changeRange = (v) => {
+      
+    }
+    this.changeRange = (v) => {
         let val = +v;
         let end = +(val+this.state.span)
         this.roleListener(val, end, this.state.mode, 'range')
@@ -205,7 +207,6 @@ class Keyboard extends Component {
           this.changeRange(this.state.range[0])
           return state})
       }
-    }
   }
 
   componentDidMount(){
@@ -238,28 +239,27 @@ class Keyboard extends Component {
                 <div className="messages">Adding new instruments does not work yet</div>
               </div>
             </div>
+
             <div className="panel">
-                <div className="pane">
-                  <Spinner
-                    label={'Octave offset'}
-                    slider={true} value={this.state[this.state.mode].range[0]}
-                    onChange={this.changeRange}
-                    min={0} max={96-12} step={12}/>
-                </div>
-                <div className="pane">
-                  <Spinner
-                    label='Note range'
-                    slider={true} value={this.state[this.state.mode].range[1] - this.state[this.state.mode].range[0]}
-                    onChange={this.changeSpan}
-                    min={1} max={96} step={1}/>
-                </div>
-                <div className="messages">Select some notes and press SPACE to start playing.
-                  'z' and 'x' keys page through keyboard operable octaves. Note yellow labels.
-                  Instrument are activated by clicking on the coloured bars.
-                  Instrument open by clicking on the coloured bars again.
-                  Global options open by clicking on the header above the nav.
-                  An instrument is armed for recording key or mouse sequences if a thick white line is visible on the underside of the instruments header</div>
+              <div className="pane">
+                <Spinner
+                  label={'Octave offset'}
+                  slider={true}
+                  value={this.state[this.state.mode].range[0]}
+                  onChange={this.changeRange}
+                  min={0} max={96-12} step={12}/>
               </div>
+
+              <div className="pane">
+                <Spinner
+                  label='Note range'
+                  slider={true} value={this.state[this.state.mode].range[1] - this.state[this.state.mode].range[0]}
+                  onChange={this.changeSpan}
+                  min={1} max={96} step={1}/>
+              </div>
+              <div className="messages"></div>
+            </div>
+
             <div className='keyboard-outer'>
               <div className='keyboard'>
   	        {Object.keys(this.state.keyObj)
@@ -290,8 +290,6 @@ class Keyboard extends Component {
 	          module='bass'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
-                  //clips={engine.config.bass.clips}
-                  //clipSettings={engine.config.bass.clipSettings}
 	          seq={this.state.bass.notes}
 	          cue={this.state.bass.queue}
                   obj={this.state.keyObj}
@@ -307,8 +305,6 @@ class Keyboard extends Component {
 	          module='treble'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
-                  //clips={engine.config.treble.clips}
-                  //clipSettings={engine.config.treble.clipSettings}
 	          seq={Object.values(this.state.treble.notes)}
 	          cue={this.state.treble.queue}
                   obj={this.state.keyObj}

@@ -109,12 +109,15 @@ class Engine extends Component {
     
 
     this.loadConfig = () => {
-      var storageServer = process.env.NODE_ENV === "development" ? 'http://lunatropolis.com/arp-save.php' : '../arp-save.php';
+      var storageServer = process.env.NODE_ENV !== "development" ? 'http://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
+      console.log('server: ' +  storageServer);
+
       let req = new XMLHttpRequest();
       let fData = new FormData();
       fData.set('action', 'read')
       req.open('POST', storageServer, true);
       let callBack = (obj) => {
+
         console.log(obj);
 
         this.setState(state=>{

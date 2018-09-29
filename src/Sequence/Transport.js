@@ -182,7 +182,7 @@ class Transport extends Component{
                              <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
                              <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
                            </div>
-                           <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
+                           <div className="messages"></div>
                          </div>)}
            </EngineContext.Consumer>)
     

@@ -10,7 +10,7 @@ export default class ClipEdit extends Component {
 
     this.props = props
 
-    this.state.name = this.props.value
+    this.state.name = this.props.name
     this.state.value = this.props.value
     this.state.id = this.props.id
     
@@ -18,11 +18,6 @@ export default class ClipEdit extends Component {
       this.props.listener(this.props.value)
     }
 
-    this.changeName = (e) => {
-      console.log('context');
-      e.preventDefault();
-      //this.setState({name: e.target.value})
-    }
   }
   
   render(){

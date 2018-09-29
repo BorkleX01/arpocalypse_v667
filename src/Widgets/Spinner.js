@@ -16,20 +16,14 @@ export default class Spinner extends Component{
     }
 
     this.props = props;
+
     Object.assign(this.state, this.props)
-    
     this.arrowClick = (e) => {
       let inc = e.currentTarget.id === 'left' ? -1 * this.state.step : +1 * this.state.step;
       if((this.state.value + inc >= this.state.min) && (this.state.value + inc <= this.state.max)){
         this.setState({value: +this.state.value + inc})
         this.onChange(+this.state.value + inc)
       }
-    }
-
-    this.slideDrag = (e) => {
-      let val = +e.currentTarget.value
-      this.setState({value: val})
-      this.onChange(val)
     }
 
     this.formClick = (e) => {
@@ -40,7 +34,6 @@ export default class Spinner extends Component{
       
       if(e.key !== 'Enter' && e.key !== 'Backspace' ) {
         let val = valStr+''+e.key;
-        console.log(val);
         if (!isNaN(+val) || +val ==='.'){
           if(val => this.min && val <= this.max){
             this.setState({value : +val})
@@ -65,15 +58,22 @@ export default class Spinner extends Component{
       }
     }
 
+    this.slideDrag = (e) => {
+      let val = +e.currentTarget.value
+      this.setState({value: val})
+      this.onChange(val)
+    }
+
     this.onChange = (v) => {
       if(!isNaN(+v)){
         this.props.onChange(+v)
       }
     }
+    
   }
 
   componentDidUpdate(){
-    if (this.props.value !== this.state.value){this.setState({value: this.props.value})}
+    if (this.props.value !== this.state.value ){ this.setState({value: this.props.value})}
   }
 
   render(){ 
