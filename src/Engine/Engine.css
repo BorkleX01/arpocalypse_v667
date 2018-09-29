@@ -18,7 +18,11 @@ html{
     flex-flow: column wrap;
     align-items: center;
 }
-
+.app-title {
+    font-size: xx-large;
+    font-style: italic;
+    font-weight: bold;
+}
 .engine > .ins-header {
     background: #111133AA;
     color: white;
@@ -27,7 +31,9 @@ html{
     position: fixed;
     z-index: 10;
 }
-
+.global-ins{
+    margin-top: 9vh;
+}
 .engine > * {
     opacity: 1;
 }

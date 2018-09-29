@@ -95,7 +95,9 @@
 .label {
     color: white;
     display: block;
-
+    font-size: xx-small;
+    font-weight: normal;
+    font-style: normal;
 }
 
 .transport {

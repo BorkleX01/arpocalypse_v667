@@ -25,7 +25,8 @@ class Keyboard extends Component {
       queue: [],
       nom: [],
       time: 0,
-      octavePage: 1
+      octavePage: 0,
+      span: 72
     }
 
     const data = keys(8)
@@ -78,12 +79,22 @@ class Keyboard extends Component {
         this.keyRef[key].current.press()
       }
       if(rest.includes('add')){
+        console.log('add');
+        console.log();
+        let isEdit = this.roleRef[this.state.mode].current.state.editSeq; 
         this.setState(state=> {
           state[state.mode].notes.push(key)
           state[state.mode].queue.push(state[state.mode].queue.length === 0 ?
                                        window.performance.now() :
                                        window.performance.now() - state[state.mode].queue[0])
           state.keyObj[key].active[state.mode] = true;
+          if(isEdit){
+            let clips = this.roleRef[state.mode].current.state.clips
+            let newClip = state[state.mode].notes.map((o,i) => [o, state[state.mode].queue[i]])
+            let seq = this.roleRef[state.mode].current.state.currentSeq
+            clips[seq] = newClip
+            this.roleRef[state.mode].current.setState({clips: clips})
+          }
           return state})
       }
     }
@@ -103,8 +114,8 @@ class Keyboard extends Component {
           state[mode].range = [+v, +i]
           return state
         })
-        
       }
+      
       else if(rest.includes('load'))
       {
         this.setState(state => {
@@ -115,11 +126,20 @@ class Keyboard extends Component {
       }
       else 
       {
-        console.log('delete notes from a sequence');
         this.setState(state=>{
           state[mode].notes.splice(i,1)
           state[mode].queue.splice(i,1)
           !state[mode].notes.includes(+v) && delete state.keyObj[+v].active[mode]
+          if(rest.includes('edit')){
+            console.log('is edit')
+            let newClip = state[mode].notes.map((o,i) => [o, state[mode].queue[i]])
+            let seq = this.roleRef[mode].current.state.currentSeq
+            let clips = this.roleRef[mode].current.state.clips
+            let settings = this.roleRef[mode].current.state.arpSettings
+            console.log(settings);
+            clips[seq] = newClip
+            this.roleRef[mode].current.setState({clips: clips })
+          }
           return state
         })
       }
@@ -167,6 +187,20 @@ class Keyboard extends Component {
     this.addSeqClick = () => {
       console.log('add new sequencer');
     }
+
+    this.changeRange = (v) => {
+      let val = +v;
+      let end = +(val+this.state.span)
+      this.roleListener(val, end, this.state.mode, 'range')
+    }
+
+    this.changeSpan = (v) => {
+      let val = +v;
+      this.setState(state=>{
+        state.span = val
+        this.changeRange(this.state.range[0])
+        return state})
+    }
   }
 
   componentDidMount(){
@@ -175,7 +209,6 @@ class Keyboard extends Component {
   }
 
   componentDidUpdate(){
-    
     this.mapButtons(this.state.octavePage*12 + this.state[this.state.mode].range[0])
   }
 
@@ -190,7 +223,7 @@ class Keyboard extends Component {
                 <button onClick={this.viewClick} name='squares'>Grid</button>
                 <button onClick={this.viewClick} name='squares octave'>Octave</button>
                 <button onClick={this.viewClick} name='logarithmic'>Logarithmic</button>
-                <div className="messages">Buttons are quite big for touch surfaces and reponsive modes.</div>
+                <div className="messages">Different views of the samne range of notes </div>
               </div>
 
 	      <div className='rhs-tabs '>
@@ -200,7 +233,28 @@ class Keyboard extends Component {
                 <div className="messages">Adding new instruments does not work yet</div>
               </div>
             </div>
-            
+            <div className="panel">
+                <div className="pane">
+                  <Spinner
+                    label={'Octave offset'}
+                    slider={true} value={this.state[this.state.mode].range[0]}
+                    onChange={this.changeRange}
+                    min={0} max={96-12} step={12}/>
+                </div>
+                <div className="pane">
+                  <Spinner
+                    label='Note range'
+                    slider={true} value={this.state[this.state.mode].range[1] - this.state[this.state.mode].range[0]}
+                    onChange={this.changeSpan}
+                    min={1} max={96} step={1}/>
+                </div>
+                <div className="messages">Select some notes and press SPACE to start playing.
+                  'z' and 'x' keys page through keyboard operable octaves. Note yellow labels.
+                  Instrument are activated by clicking on the coloured bars.
+                  Instrument open by clicking on the coloured bars again.
+                  Global options open by clicking on the header above the nav.
+                  An instrument is armed for recording key or mouse sequences if a thick white line is visible on the underside of the instruments header</div>
+              </div>
             <div className='keyboard-outer'>
               <div className='keyboard'>
   	        {Object.keys(this.state.keyObj)
@@ -220,7 +274,7 @@ class Keyboard extends Component {
 		        obj = {this.state.keyObj[o]}
                       />
 		     )))}
-                <div className="messages">Select some notes and press SPACE to start playing. 'z' and 'x' keys page through keyboard operable octaves. Note yellow labels. Expand the range in the instrument panel itself using 'Offset' and 'Range'. Instrument panels open by double clicking on the coloured bars. Global options open by clicking on the header above the nav. An instrument is armed for recording key or mouse sequences if a thick white line is visible on the underside of the instruments header</div>
+                
               </div>
               
               <div className='instruments'>

@@ -73,18 +73,15 @@ export default class Spinner extends Component{
   }
 
   componentDidUpdate(){
-    if (this.props.id === 'speed-dial'){
-      if (this.props.value !== this.state.value){this.setState({value: this.props.value})}
-    }
-
-    
+    if (this.props.value !== this.state.value){this.setState({value: this.props.value})}
   }
+
   render(){ 
     return(<div className="control">
              <div className="label">{this.state.label}</div>
              <div className="spinner" style={{}}>
                <div className="arrows arrow-left" id={'left'} onClick={this.arrowClick}>
-                 <div className="icon">&larr;</div>
+                 <div className="icon">-</div>
                </div>
                <div className="form">
                  <input
@@ -95,8 +92,7 @@ export default class Spinner extends Component{
                  />
                </div>
                <div className="arrows arrow-right" id={'right'} onClick={this.arrowClick}>
-                 <div className="icon">&rarr;
-                 </div>
+                 <div className="icon">+</div>
                </div>
              </div>
            {this.state.slider === true && 

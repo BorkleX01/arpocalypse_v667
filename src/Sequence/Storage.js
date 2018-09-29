@@ -21,8 +21,8 @@ class SaveSequence extends Component{
         this.setState(state => {
           state.clips = [...state.clips, clip]
           state.clipSettings = [...state.clipSettings , [this.props.recTempo , this.state.arpSettings.tempoX]]
-          this.props.clipListener()
-          this.props.clear();
+          this.props.clipListener(); //doToClip() in Role.js
+          this.props.clear(); 
           return state})}}
   }
 
@@ -32,8 +32,9 @@ class SaveSequence extends Component{
       <EngineContext.Consumer>
         {engine => 
          (<React.Fragment>
+            
             { this.state.clips.length > 0 ? engine.saveIns(this.state) : null }
-            <button onClick={this.saveSeq}>SAVE SEQ</button>
+          <button onClick={this.saveSeq}>{this.props.isEdit ? 'PROPGATE NEW ' : 'CREATE (FROM SEQ) A NEW '} CLIP</button>
           </React.Fragment>)
         }
       </EngineContext.Consumer>

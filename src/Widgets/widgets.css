@@ -17,6 +17,8 @@
     user-selectable: none
 }
 .spinner .icon {
+    font-size: x-large;
+    color: white;
 }
 
 .spinner .form {
@@ -61,6 +63,9 @@
     color: black;
 }
 
+.cell-input {
+    width: 100%; 
+}
 
 
 

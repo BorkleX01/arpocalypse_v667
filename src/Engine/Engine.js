@@ -19,9 +19,11 @@ class Engine extends Component {
       saveIns: 'No Function',
       noteOn: [],
       elapsed: 0,
-      panelVis: false,
+      panelVis: true,
       config: {},
-      message : ''
+      message : '',
+      playAll : true,
+      stopAll: false
     }
     
     var audioCtx = false
@@ -33,6 +35,11 @@ class Engine extends Component {
       this.gainNodeMaster.connect(audioCtx.destination, 0);
       this.gainNodeMaster.gain.exponentialRampToValueAtTime(+this.state.gain, audioCtx.currentTime);
       this.setState({engineOn: true})
+    }
+
+    this.stopEngine = () => {
+      audioCtx.close()
+      this.setState({engineOn: false})
     }
     
     this.createOsc = (id, hz) => {
@@ -68,8 +75,6 @@ class Engine extends Component {
         
       }
     }
-    
-
     this.state.saveIns = this.saveInstrument
     
     this.saveConfig = () => {
@@ -78,9 +83,11 @@ class Engine extends Component {
       saveData.sustain = this.state.sustain
       saveData.gain = this.state.gain
 
+      console.log('Save config');
       console.log(saveData);
       
-      var storageServer = process.env.NODE_ENV === "development" ? 'http://lunatropolis.com/arp-save.php' : '../arp-save.php';
+      var storageServer = process.env.NODE_ENV !== "development" ? 'http://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
+      console.log('server: ' +  storageServer);
       let req = new XMLHttpRequest();
       let fData = new FormData();
       fData.set('action', 'write')
@@ -131,6 +138,15 @@ class Engine extends Component {
       }
       req.send(fData)
     }
+
+
+    this.playAll = () => {
+      this.setState({playAll : true, stopAll: false})
+    }
+
+    this.stopAll = () => {
+      this.setState({playAll : false, stopAll: true})
+    }
     
     this.slideTempo = (v) => {
       let val = +v;
@@ -166,11 +182,12 @@ class Engine extends Component {
     return (
       <div className='engine'>
         <EngineContext.Provider value={this.state}>
-          <div id='headerOp' className='ins-header'
+          <div id='headerOp' className='app-title ins-header'
                onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8
             <div style={{display: 'inline-block'}} className={`blinker ${this.state.noteOn[1]}`}>{' '}</div>
             <div className="legals">© 2018 Eugene Phang</div>
-            <div className="ins" style={{display: this.state.panelVis ? 'block':'none' }}>
+          </div>
+          <div className="global-ins" style={{display: this.state.panelVis ? 'block':'none' }}>
               <div className='panel' >
                 <div className='pane'>
                   <Spinner
@@ -203,7 +220,9 @@ class Engine extends Component {
                     onChange={this.slideSustain}
                     step='0.1'/>
                 </div>
-                <button onClick={this.startEngine}>Engine {this.state.engineOn ? 'On' : 'Off' }  </button>
+                <button onClick={!this.state.engineOn ? this.startEngine : this.stopEngine}>{!this.state.engineOn ? 'START' : 'STOP'} ENGINE </button>
+                <button onClick={ !this.state.playAll ? this.playAll :  this.stopAll }> {!this.state.playAll ? 'PLAY' : 'STOP'} ALL </button>
+
                 <button onClick={this.saveConfig}>SAVE CONFIG</button>
                 <button onClick={this.loadConfig}>LOAD CONFIG</button>
                 
@@ -218,7 +237,6 @@ class Engine extends Component {
               </div>
               
             </div>
-          </div> 
           {this.props.children}
         </EngineContext.Provider>
         </div>

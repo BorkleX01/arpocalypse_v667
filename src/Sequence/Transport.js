@@ -1,5 +1,6 @@
 import React,  { Component } from 'react'
 import Spinner from '../Widgets/Spinner'
+import { EngineContext } from '../Engine/EngineContext'
 
 class Transport extends Component{
   constructor(props){
@@ -11,12 +12,14 @@ class Transport extends Component{
       autoStart: false,
       elapsed: 0,
       seqType: props.type,
-      tempoMultiplier: 1,
+      tempoMultiplier: 2,
       playFreq: 4,
       repeats: 1,
       ingress: [''],
       egress: [''],
       scheduleRestart : false,
+      scheduleStop: false,
+      scheduleStart: false,
       seq: [],
       cue: [],
       realtime : false,
@@ -82,7 +85,7 @@ class Transport extends Component{
       this.setState({isPlaying: false, timers : seqTimerBuffer.length + rtTimerBuffer.length})
     }
     
-
+    
     this.doToNote = (e ,o) => {
       props.delete(o.value)
     }
@@ -110,9 +113,28 @@ class Transport extends Component{
     this.toggleRealTime = (e) => {
       this.setState({realTime: !this.state.realTime})
     }
+
+    this.engSig = (sigStr) => {
+      if (sigStr === 'stopAll'){
+        if (!this.state.scheduleStop){
+          this.stopSequencer()
+          this.setState({scheduleStop : true })
+          this.setState({scheduleStart : false })
+        }
+      } 
+
+      if (sigStr === 'playAll'){
+        if (!this.state.scheduleStart){
+          if(!this.state.isPlaying) { this.startSequencer() } else {this.stopSequencer() ; this.setState({scheduleRestart : true})}
+          this.setState({scheduleStop : false })
+          this.setState({scheduleStart : true })
+        }
+      }
+    }
   }
 
   componentDidUpdate(prevProps, prevState, snapShot){
+    
     if (this.state.scheduleRestart){this.startSequencer()}
     if(prevState.tempoMultiplier !== this.state.tempoMultiplier){
       this.tempoMultiplier(this.state.tempoMultiplier)
@@ -128,31 +150,40 @@ class Transport extends Component{
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
   }
+  componentDidMount(){
+    this.tempoMultiplier(this.state.tempoMultiplier)
+  }
   render(){
-    return(<div className='panel'>
-             <button onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
-               {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC)
-             </button>
-             <button onClick={this.toggleRealTime} >Toggle Realtime</button>
-             <div className="panel dial-group">
-               <div className="pane">
-                 <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
-               </div>
-               <div className="pane">
-                 <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
-               </div>
-               <div className="pane">
-                 <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
-               </div>
-             </div>
-             <div className='panel read-outs'>
-               <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
-               <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
-               <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
-             </div>
-             <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
-           </div>)
-          
+    return(<EngineContext.Consumer>
+             {engine => (<div className='panel'>
+                           {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
+                           {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
+
+                           <button onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
+                             {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC) 
+                           </button>
+                           
+                           <button onClick={this.toggleRealTime} >Toggle Realtime</button>
+                           <div className="panel dial-group">
+                             <div className="pane">
+                               <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+                             </div>
+                             <div className="pane">
+                               <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
+                             </div>
+                             <div className="pane">
+                               <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
+                             </div>
+                           </div>
+                           <div className='panel read-outs'>
+                             <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
+                             <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
+                             <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
+                           </div>
+                           <div className="messages">You can begin playing anytime and a sequence will be recorded even if a sequence is currently playing. This can produce unxpected results in the realtime recorder though.</div>
+                         </div>)}
+           </EngineContext.Consumer>)
+    
   }
 }
 
