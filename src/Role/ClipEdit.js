@@ -9,6 +9,7 @@ export default class ClipEdit extends Component {
     }
 
     this.props = props
+
     this.state.name = this.props.value
     this.state.value = this.props.value
     this.state.id = this.props.id
@@ -26,7 +27,7 @@ export default class ClipEdit extends Component {
   
   render(){
     return(
-      <button value={this.state.value} onClick={this.clipClick} onContextMenu={this.changeName}>
+      <button value={this.state.value} onClick={this.clipClick} >
         <div className='cell-input'>{this.state.name}</div>
       </button>
     )

@@ -158,12 +158,14 @@ class Transport extends Component{
              {engine => (<div className='panel'>
                            {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
                            {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
-
-                           <button onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
+                           
+                           <button className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'} onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
                              {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC) 
                            </button>
-                           
-                           <button onClick={this.toggleRealTime} >Toggle Realtime</button>
+                           <button>DELETE</button>
+                           <button>START FROM</button>
+                           <button>MOVE</button>
+                           <button>REST</button>
                            <div className="panel dial-group">
                              <div className="pane">
                                <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>

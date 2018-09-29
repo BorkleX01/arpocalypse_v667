@@ -220,11 +220,13 @@ class Engine extends Component {
                     onChange={this.slideSustain}
                     step='0.1'/>
                 </div>
-                <button onClick={!this.state.engineOn ? this.startEngine : this.stopEngine}>{!this.state.engineOn ? 'START' : 'STOP'} ENGINE </button>
-                <button onClick={ !this.state.playAll ? this.playAll :  this.stopAll }> {!this.state.playAll ? 'PLAY' : 'STOP'} ALL </button>
+                
+                <button onClick={ this.playAll }> PLAY ALL </button>
+                <button onClick={ this.stopAll }> STOP ALL </button>
 
                 <button onClick={this.saveConfig}>SAVE CONFIG</button>
                 <button onClick={this.loadConfig}>LOAD CONFIG</button>
+                <button onClick={!this.state.engineOn ? this.startEngine : this.stopEngine}>{!this.state.engineOn ? 'START' : 'STOP'} ENGINE </button>
                 
                 <div className="panel read-outs">
                   <div className="label">Instruments: </div>

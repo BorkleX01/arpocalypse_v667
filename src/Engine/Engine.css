@@ -109,3 +109,7 @@ button {
 .blinker.note-on {
     background: yellow;
 }
+
+button.blink-note-on  {
+    background: yellow;
+}

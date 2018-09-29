@@ -4,7 +4,7 @@ import '../Engine/Engine.css'
 import { EngineContext } from '../Engine/Engine'
 import { Keys } from '../Keys'
 import { Transport } from '../Sequence/Transport'
-import { SaveSequence } from '../Sequence/Storage' 
+import { ComposeClips } from '../Sequence/Compose' 
 import Spinner from '../Widgets/Spinner'
 import ClipEdit from './ClipEdit'
 
@@ -78,6 +78,16 @@ class Role extends Component {
       }
       this.setState({clips : this.storageRef.current.state.clips})
     }
+
+    this.clipRef = (id) => this.clipRef[id] = React.createRef()
+
+    this.renameClip = (e) => {
+      let val = e.target.value
+      this.storageRef.current.setState(state => {
+        state.clipSettings[this.state.currentSeq][2] = val;
+        this.clipRef[this.state.currentSeq].current.setState({name: val});
+        return state})
+    }
   }
   
   componentWillReceiveProps(newProps){
@@ -93,22 +103,25 @@ class Role extends Component {
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
           {`${this.props.module} ${this.state.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} ${this.transportRef.current && this.transportRef.current.state.isPlaying ? 'Playing' : 'Stopped'} `}
-          {`${this.state.editSeq ? 'editing: ' + this.state.currentSeq : 'new sequence'}`}
+          {`${this.state.editSeq ? 'editing: ' + this.storageRef.current.state.clipSettings[this.state.currentSeq][2] : 'new sequence'}`} 
         </div>
         <div className="messages">
         </div>
+        
         <div className='sequence-collection'>
               { this.state.clips.length > 0 ? 
                 this.state.clips
                 .map((o, i)=>
-                     <div key={i} className={'sequence-edit'} id={this.props.module+'Clip'+i}>
-                       <ClipEdit id={i} value={i} listener={this.doToClip} />
+                     <div  key={i} className={'sequence-edit'} id={this.props.module+'Clip'+i}>
+                       <ClipEdit ref={this.clipRef(i)} id={i} value={(this.state.currentSeq === i ? this.storageRef.current.state.clipSettings[this.state.currentSeq][2] : i)} listener={this.doToClip} />
                      </div>)
                 :
                 <div className='messages'>CLIP</div>
               }
             </div>
-            <div className='note-collection'>
+            
+        <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
+          <div className='note-collection'>
               {this.props.seq.length > 0 ?
                this.props.seq
                .map((o, i) =>
@@ -120,11 +133,14 @@ class Role extends Component {
                :
                <div className='messages'>SEQ</div>
               }
-            </div>
-        <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
+          </div>
+          
+          <div> 
+            { this.state.currentSeq !== '' ? <div className="group-label">Rename clip:  <input id='rename-a-clip' value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}  onChange={this.renameClip}></input> </div>: null }
+          </div>
           <div className='panel'>
             <button name='clearAll' onClick={this.clear}>CLEAR SEQ</button>
-            <SaveSequence
+            <ComposeClips
               ref = {this.storageRef}
               module = {this.props.module}
               clear={this.clear}
@@ -134,7 +150,9 @@ class Role extends Component {
               arpSettings={this.state.arpSettings}
               recTempo={this.props.tempo}
               clipListener={this.clipListener}/>
+            
           </div>
+          
           <Transport
             ref={this.transportRef}
             tick={this.tick}

@@ -21,7 +21,7 @@ class Keyboard extends Component {
       keyArr: [],
       keyObj: {},
       bass: {notes:[], queue:[], range: [36, 96]},
-      treble: {notes:[], queue:[], range: [60, 96]},
+      treble: {notes:[], queue:[], range: [36, 96]},
       queue: [],
       nom: [],
       time: 0,
@@ -79,8 +79,6 @@ class Keyboard extends Component {
         this.keyRef[key].current.press()
       }
       if(rest.includes('add')){
-        console.log('add');
-        console.log();
         let isEdit = this.roleRef[this.state.mode].current.state.editSeq; 
         this.setState(state=> {
           state[state.mode].notes.push(key)
@@ -170,40 +168,43 @@ class Keyboard extends Component {
     }
     //Qwert 
     document.onkeypress = (e) => {
-      
-      if(e.key === ' '){
-        e.preventDefault()
-        this.startSequencer()
-      }
-      
-      if(e.key === octavePager[0] || e.key === octavePager[1] ){
-        let pageTurn = this.state.octavePage + (e.key === octavePager[0] ? -1 : +1)
-        let page = pageTurn*12 + this.state[this.state.mode].range[0]
-        if(pageTurn>=0 && page+11 <= this.state[this.state.mode].range[1]){
-          this.setState({octavePage : pageTurn})
+      if (e.target.id !== 'rename-a-clip') {
+        console.log('not form field');
+        
+        if(e.key === ' '){
+          e.preventDefault()
+          this.startSequencer()
+        }
+        
+        if(e.key === octavePager[0] || e.key === octavePager[1] ){
+          let pageTurn = this.state.octavePage + (e.key === octavePager[0] ? -1 : +1)
+          let page = pageTurn*12 + this.state[this.state.mode].range[0]
+          if(pageTurn>=0 && page+11 <= this.state[this.state.mode].range[1]){
+            this.setState({octavePage : pageTurn})
+          }
+        }
+        if(this.buttonMap.get(e.key) != undefined && this.buttonMap.get(e.key) < this.state[this.state.mode].range[1] ){
+          this.keyListener(this.buttonMap.get(e.key), 'hardware')
         }
       }
-      if(this.buttonMap.get(e.key) != undefined && this.buttonMap.get(e.key) < this.state[this.state.mode].range[1] ){
-        this.keyListener(this.buttonMap.get(e.key), 'hardware')
+
+      this.addSeqClick = () => {
+        console.log('add new sequencer');
       }
-    }
 
-    this.addSeqClick = () => {
-      console.log('add new sequencer');
-    }
+      this.changeRange = (v) => {
+        let val = +v;
+        let end = +(val+this.state.span)
+        this.roleListener(val, end, this.state.mode, 'range')
+      }
 
-    this.changeRange = (v) => {
-      let val = +v;
-      let end = +(val+this.state.span)
-      this.roleListener(val, end, this.state.mode, 'range')
-    }
-
-    this.changeSpan = (v) => {
-      let val = +v;
-      this.setState(state=>{
-        state.span = val
-        this.changeRange(this.state.range[0])
-        return state})
+      this.changeSpan = (v) => {
+        let val = +v;
+        this.setState(state=>{
+          state.span = val
+          this.changeRange(this.state.range[0])
+          return state})
+      }
     }
   }
 
