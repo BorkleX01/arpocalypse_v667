@@ -124,6 +124,12 @@ class Keyboard extends Component {
           return state
         })
       }
+      else if(rest.includes('settings'))
+      {
+        let settings = this.roleRef[mode].current.state.arpSettings
+        console.log('settings changed');
+        
+      }
       else 
       {
         this.setState(state=>{
@@ -131,12 +137,10 @@ class Keyboard extends Component {
           state[mode].queue.splice(i,1)
           !state[mode].notes.includes(+v) && delete state.keyObj[+v].active[mode]
           if(rest.includes('edit')){
-            console.log('is edit')
             let newClip = state[mode].notes.map((o,i) => [o, state[mode].queue[i]])
             let seq = this.roleRef[mode].current.state.currentSeq
             let clips = this.roleRef[mode].current.state.clips
-            let settings = this.roleRef[mode].current.state.arpSettings
-            console.log(settings);
+            
             clips[seq] = newClip
             this.roleRef[mode].current.setState({clips: clips })
           }

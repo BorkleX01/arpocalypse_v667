@@ -34,7 +34,7 @@ class SaveSequence extends Component{
          (<React.Fragment>
             
             { this.state.clips.length > 0 ? engine.saveIns(this.state) : null }
-          <button onClick={this.saveSeq}>{this.props.isEdit ? 'PROPGATE NEW ' : 'CREATE (FROM SEQ) A NEW '} CLIP</button>
+          <button onClick={this.saveSeq}>{this.props.isEdit ? 'PROPGATE TO NEW ' : 'CREATE (FROM SEQ) A NEW '} CLIP</button>
           </React.Fragment>)
         }
       </EngineContext.Consumer>

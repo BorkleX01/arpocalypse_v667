@@ -17,6 +17,7 @@ class Role extends Component {
       noteOn : false,
       visible : true,
       clips: [],
+      clipSettings: [],
       currentTempo: this.props.tempo,
       active: false,
       scheduleStart: false,
@@ -71,7 +72,9 @@ class Role extends Component {
 
     this.clipListener = (val, ...rest) => {
       if(rest.includes('tempoX')){
-        this.storageRef.current.setState({arpSettings : {'tempoX' : +val}})
+        this.setState({arpSettings: {tempoX : +val}})
+        this.storageRef.current.setState({arpSettings : {tempoX : +val}})
+        if(this.state.editSeq  === true) { this.storageRef.current.state.clipSettings[this.state.currentSeq][1] = +val }
       }
       this.setState({clips : this.storageRef.current.state.clips})
     }
@@ -102,7 +105,7 @@ class Role extends Component {
                        <ClipEdit id={i} value={i} listener={this.doToClip} />
                      </div>)
                 :
-                <div className='messages'></div>
+                <div className='messages'>CLIP</div>
               }
             </div>
             <div className='note-collection'>
@@ -115,7 +118,7 @@ class Role extends Component {
                       </button>
                     </div>)
                :
-               <div className='messages'></div>
+               <div className='messages'>SEQ</div>
               }
             </div>
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
