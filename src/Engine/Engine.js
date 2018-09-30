@@ -189,8 +189,7 @@ class Engine extends Component {
                onClick={this.engineHeaderClick}>ARPOCALYPSE v.0.6.6.8
             <div style={{display: 'inline-block'}} className={`blinker ${this.state.noteOn[1]}`}>{' '}</div>
             <div className="legals">© 2018 Eugene Phang</div>
-          </div>
-          <div className="global-ins" style={{display: this.state.panelVis ? 'block':'none' }}>
+            <div className={this.state.panelVis ? 'global-ins:hover':'global-ins' } style={{display: this.state.panelVis ? 'block':'none' }}>
               <div className='panel' >
                 <div className='pane'>
                   <Spinner
@@ -242,6 +241,8 @@ class Engine extends Component {
               </div>
               
             </div>
+          </div>
+          
           {this.props.children}
         </EngineContext.Provider>
         </div>

@@ -34,7 +34,8 @@
     text-align: center;
     background: none;
     color: currentColor;
-    border-radius: 30px
+    border-radius: 30px;
+    border-width: 7px;
 }
 
 .arrows {

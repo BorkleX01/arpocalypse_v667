@@ -55,7 +55,6 @@ class Transport extends Component{
           if(rtTimerBuffer.indexOf(rtTimer) === -1) rtTimerBuffer.push(rtTimer)
           playStep();
           if(startTime ===  Object.keys(this.props.seq).length){
-            console.log('stop RT');
             this.setState({isPlaying: false});
             this.stopSequencer()
             startTime = 0;
@@ -114,6 +113,11 @@ class Transport extends Component{
       this.setState({realTime: !this.state.realTime})
     }
 
+    this.startFrom = () => {
+      console.log('start from');
+      console.log(startTime);
+    }
+
     this.engSig = (sigStr) => {
       if (sigStr === 'stopAll'){
         if (!this.state.scheduleStop){
@@ -121,7 +125,8 @@ class Transport extends Component{
           this.setState({scheduleStop : true })
           this.setState({scheduleStart : false })
         }
-      } 
+      }
+
 
       if (sigStr === 'playAll'){
         if (!this.state.scheduleStart){
@@ -160,12 +165,17 @@ class Transport extends Component{
                            {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
                            
                            <button className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'} onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
-                             {this.state.isPlaying ? 'STOP' : 'PLAY'} (SPC) 
+                             {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
                            </button>
-                           <button>DELETE</button>
-                           <button>START FROM</button>
-                           <button>MOVE</button>
+                           <button>PLAY TRACK</button>
+                           <button>DELETE NOTES</button>
+                           <button onClick={this.startFrom} >START FROM</button>
+                           <button>MOVE NOTES</button>
                            <button>REST</button>
+                           <button>SPLIT</button>
+                           <button>TIE</button>
+                           <button>COPY</button>
+                           <button>INSERT</button>
                            <div className="panel dial-group">
                              <div className="pane">
                                <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>

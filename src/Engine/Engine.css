@@ -31,8 +31,13 @@ html{
     position: fixed;
     z-index: 10;
 }
-.global-ins{
-    margin-top: 9vh;
+.global-ins {
+    margin-top: -24vh;
+    transition: all 0.25s;
+}
+
+.global-ins:hover {
+   margin-top: 0vh
 }
 .engine > * {
     opacity: 1;

@@ -169,8 +169,6 @@ class Keyboard extends Component {
     //Qwert 
     document.onkeypress = (e) => {
       if (e.target.id !== 'rename-a-clip') {
-        console.log('not form field');
-        
         if(e.key === ' '){
           e.preventDefault()
           this.startSequencer()
