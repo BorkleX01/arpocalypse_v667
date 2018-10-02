@@ -1,0 +1,50 @@
+* Networking
+** As a web service
+** For multi-processing
+*** LAN capable
+*** Socket capable
+** For access to assets
+*** user based save/load
+** As a colloborative center
+*** Plugin architecture?
+*** MIDI here
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::import%20{qwertyClavier,%20octavePager}%20from%20'./LocalKeyboard']]
+*** Spend time on this to make it look nice
+Do a dial that can be used on the phone
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::import%20Spinner%20from%20'../Widgets/Spinner']]
+*** These should be abstracted to 'Tracks' named defaults to CSS standard colours
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::bass:%20{notes:%5B%5D,%20queue:%5B%5D,%20range:%20%5B36,%2096%5D},]]
+*** Upstream communications can only be achieved by passing handler functions down to child components.
+I don't know if this is a good thing or not, all communications should be directionless 
+when implemented. If this were truly modular then everything should be node based.
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.keyListener%20=%20(key,%20...rest)%20=>%20{]]
+*** Roles can communicate with one another through the parent 'Keyboard' widget.
+It seems arbitrary for now that the keyboard should be higher than the role
+Any Hierarchy is presently accidental
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.roleListener%20=%20(v,%20i,%20mode,%20...rest)%20=>%20{]]
+*** What seems like a disadvantage in hierarchical organisation of components is the replication of functions up and down the chain
+But this foreshadows all the subtle contexts for what that function has to do to all components involved so it seems inevitable to have compose functions for each type of component
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.startSequencer%20=%20()%20=>%20{]]
+*** Input interface should be abstracted, but the main keyboard listener seems so fundamnetal it seems it should be here...
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::document.onkeypress%20=%20(e)%20=>%20{]]
+*** The widget for keyboard range control seems to be arbitrariy put here
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.changeRange%20=%20(v)%20=>%20{]]
+*** It seems manifest that only one track shuold be active at a time
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.roleRef%5Bthis.state.mode%5D.current.setState({active:%20true})]]
+*** it seems processor intensive tp to run mapButtons so often
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.mapButtons(this.state.octavePage*12%20+%20this.state%5Bthis.state.mode%5D.range%5B0%5D)]]
+*** downstream communication done via Provider/Consumer 
+There needs to be a way of accessing Providers in the class definition too
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::<EngineContext.Consumer>]]
+*** there must be a way to determine the amount of props that get passed downwards
+
+[[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::ref%20=%20{this.roleRef('bass')}]]
