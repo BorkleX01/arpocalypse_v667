@@ -7,44 +7,104 @@
 *** user based save/load
 ** As a colloborative center
 *** Plugin architecture?
-*** MIDI here
+* Keyboard.js
+** MIDI here
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::import%20{qwertyClavier,%20octavePager}%20from%20'./LocalKeyboard']]
-*** Spend time on this to make it look nice
-Do a dial that can be used on the phone
+** Spend time on this to make it look nice
+Do a dial that can be used on the phone (and looks nice)
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::import%20Spinner%20from%20'../Widgets/Spinner']]
-*** These should be abstracted to 'Tracks' named defaults to CSS standard colours
+** These should be abstracted to 'Tracks' named defaults to CSS standard colours
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::bass:%20{notes:%5B%5D,%20queue:%5B%5D,%20range:%20%5B36,%2096%5D},]]
-*** Upstream communications can only be achieved by passing handler functions down to child components.
+** Upstream communications can only be achieved by passing handler functions down to child components.
 I don't know if this is a good thing or not, all communications should be directionless 
 when implemented. If this were truly modular then everything should be node based.
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.keyListener%20=%20(key,%20...rest)%20=>%20{]]
-*** Roles can communicate with one another through the parent 'Keyboard' widget.
+** Roles can communicate with one another through the parent 'Keyboard' widget.
 It seems arbitrary for now that the keyboard should be higher than the role
 Any Hierarchy is presently accidental
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.roleListener%20=%20(v,%20i,%20mode,%20...rest)%20=>%20{]]
-*** What seems like a disadvantage in hierarchical organisation of components is the replication of functions up and down the chain
+** What seems like a disadvantage in hierarchical organisation of components is the replication of functions up and down the chain
 But this foreshadows all the subtle contexts for what that function has to do to all components involved so it seems inevitable to have compose functions for each type of component
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.startSequencer%20=%20()%20=>%20{]]
-*** Input interface should be abstracted, but the main keyboard listener seems so fundamnetal it seems it should be here...
+** Input interface should be abstracted, but the main keyboard listener seems so fundamnetal it seems it should be here...
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::document.onkeypress%20=%20(e)%20=>%20{]]
-*** The widget for keyboard range control seems to be arbitrariy put here
+** The widget for keyboard range control seems to be arbitrariy put here
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.changeRange%20=%20(v)%20=>%20{]]
-*** It seems manifest that only one track shuold be active at a time
+** It seems manifest that only one track shuold be active at a time
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.roleRef%5Bthis.state.mode%5D.current.setState({active:%20true})]]
-*** it seems processor intensive tp to run mapButtons so often
+** it seems processor intensive tp to run mapButtons so often
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::this.mapButtons(this.state.octavePage*12%20+%20this.state%5Bthis.state.mode%5D.range%5B0%5D)]]
-*** downstream communication done via Provider/Consumer 
+** downstream communication done via Provider/Consumer 
 There needs to be a way of accessing Providers in the class definition too
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::<EngineContext.Consumer>]]
-*** there must be a way to determine the amount of props that get passed downwards
+** there must be a way to determine the amount of props that get passed downwards
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::ref%20=%20{this.roleRef('bass')}]]
+* Engine.js
+* master track manager is the only thing that belongs here
+The synth will branch off and be associated with tracks
+Well anything can be associated with anything ideally.
+A query language will have to be attached to every component define these connections.
+[[file:~/arpocalypse_v667/src/Engine/Engine.js::this.playAll%20=%20()%20=>%20{]]
+* It would be prudent to start thinking in terms of seprating logic from graphics
+
+[[file:~/arpocalypse_v667/src/Engine/Engine.js::<div%20className='engine'>]]
+* lots of data arrives here for the whole session, almost constantly because I havent figured out how to make a Provider argument communicate with the rest of the class definition
+
+[[file:~/arpocalypse_v667/src/Engine/Engine.js::this.saveConfig%20=%20()%20=>%20{]]
+* As a stop gap, I'll try getting PHP to accept a 'file' name to save stuff.
+I still can't decide if I should first instantiate the instruments first.
+The priority is to get this thing MUSICAL!!! which means I should really work on the SPAWNING
+
+[[file:~/arpocalypse_v667/src/Engine/Engine.js::var%20storageServer%20=%20process.env.NODE_ENV%20!==%20"development"%20?%20'http://lunatropolis.com/arp-save.php'%20:%20'http://localhost/arp-save.php';]]
+
+* Note activity SPAWNING
+* This should no longer be called a transport
+The basis of ARPOCALYPSE is to get away from the PLAY RECORD paradigm
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::class%20Transport%20extends%20Component{]]
+* this timer is perplexing me. It's a master timer. 
+The present quality of ARPOCALYPSE is the persistance of this timer's position regardless of abitrary pattern changes.
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::timer:%200,]]
+* each component seems to be confused as to weather it wants to work with clips or with an actual sequence
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::seq:%20%5B%5D,]]
+* spawning happens here
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::let%20seqTimer%20=%20setInterval(()%20=>%20{]]
+* the aim of the slider widget is to allow me to start halving a whole as the slider is decremented
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.tempoMultiplier%20=%20(v)%20=>%20{]]
+* playFreq should be the first role to role feature. ie a setting of 4 on blue can be associated with red such that blue track repeats after 4 cycles of red
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.changePlayFreq%20=%20(v)%20=>%20{]]
+* if I am to go ahead with realtime I might as well start working on quantisation
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.toggleRealTime%20=%20(e)%20=>%20{]]
+* this should be low hanging fruit. It seems related to sequence editing.
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.startFrom%20=%20()%20=>%20{]]
+* these double booleans are clever, I don't quite know how I thought of them
+
+[[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.setState({scheduleStop%20:%20true%20})]]
+* url parameters will call present banks.
+
+[[file:~/arpocalypse_v667/src/Storage/index.js::var%20search%20=%20window.location.search.substring(1);]]
+* Role.js 
+This fork is annoying
+** Compose.js
+** Transport.js
+
+[[file:~/arpocalypse_v667/src/Role/Role.js::<ComposeClips]]
+** chained clips is the beginning of a song save
+
+[[file:~/arpocalypse_v667/src/Role/Role.js::this.clipRef%20=%20(id)%20=>%20this.clipRef%5Bid%5D%20=%20React.createRef()]]
