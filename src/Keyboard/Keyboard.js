@@ -168,7 +168,7 @@ class Keyboard extends Component {
     }
     //Qwert 
     document.onkeypress = (e) => {
-      if (e.target.id !== 'rename-a-clip') {
+      if (e.target.className !== 'text-input') {
         if(e.key === ' '){
           e.preventDefault()
           this.startSequencer()
@@ -192,6 +192,8 @@ class Keyboard extends Component {
 
       
     }
+
+    
     this.changeRange = (v) => {
         let val = +v;
         let end = +(val+this.state.span)

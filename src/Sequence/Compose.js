@@ -30,19 +30,33 @@ class ComposeClips extends Component{
     }
     
     this.loadPresets = (bank) => {
+      console.log('load presets ' + this.state.instrument);
+      console.log(this.presetsLoaded);
       if( bank[this.state.instrument] != undefined) {
+        console.log(this.state.instrument);
         this.presetsLoaded = true
+        console.log(this.presetsLoaded);
         this.setState(state=>{
           state.clips = bank[this.state.instrument].clips
           state.clipSettings = bank[this.state.instrument].clipSettings
-          this.props.clipListener()
+          this.props.clipListener() //replicates the clips to Role now 
           return state
         })}
       
     }
+
+    
+    this.clipLength = this.state.clips.length
+    this.updateEngine = false
   }
   
   componentDidUpdate(){
+    if(this.state.clips.length !== this.clipLength){
+      this.updateEngine = true;
+      this.clipLength = this.state.clips.length
+    }else{
+      this.updateEngine = false;
+    }
   }
   
   render(){
@@ -50,8 +64,8 @@ class ComposeClips extends Component{
       <EngineContext.Consumer>
         {engine => 
          (<React.Fragment>
-            { this.state.clips.length > 0 ? engine.saveIns(this.state) : null }
-            { !this.presetsLoaded ? this.loadPresets(engine.config) : null}
+            { this.updateEngine ? engine.saveIns(this.state) : null }
+            { engine.message === 'Loaded config' && !this.presetsLoaded ? this.loadPresets(engine.config) : null}
             <button onClick={this.saveSeq}>{this.props.isEdit ? 'PROPGATE NEW ' : 'CREATE NEW '} CLIP</button>
             <button value = 'load' onClick={this.mode}> DELETE/LOAD CLIPS (LOAD)</button>
             <button value = 'join' onClick={this.mode}> JOIN CLIPS (OFF) </button>

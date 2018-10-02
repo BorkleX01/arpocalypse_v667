@@ -23,7 +23,8 @@ class Engine extends Component {
       config: {},
       message : '',
       playAll : true,
-      stopAll: false
+      stopAll: false,
+      storedConfig: 'default'
     }
     
     var audioCtx = false
@@ -66,22 +67,26 @@ class Engine extends Component {
     this.state.playNote = this.createOsc
 
     var saveData = {};
-    this.saveInstrument = (ins) => {
+
+    var instruments = {};
+    
+    this.snapShot = (ins) => {
+      saveData[this.state.storedConfig] = {}
       if (ins.clips.length > 0)
-      { let inst = ins.instrument
-        saveData = {
-          ...saveData , instruments : { ...saveData.instruments, [inst] : { clips: ins.clips , clipSettings: ins.clipSettings }}
-        }
-        
+      {
+        let inst = ins.instrument
+        instruments = { ...saveData[this.state.storedConfig].instruments, [inst] : { clips: ins.clips , clipSettings: ins.clipSettings }}
       }
+      saveData[this.state.storedConfig].instruments = instruments
     }
-    this.state.saveIns = this.saveInstrument
+
+    this.state.saveIns = this.snapShot
     
     this.saveConfig = () => {
-      
-      saveData.tempo = this.state.tempo
-      saveData.sustain = this.state.sustain
-      saveData.gain = this.state.gain
+      saveData[this.state.storedConfig] = {}
+      saveData[this.state.storedConfig].tempo = this.state.tempo
+      saveData[this.state.storedConfig].sustain = this.state.sustain
+      saveData[this.state.storedConfig].gain = this.state.gain
 
       console.log('Save config');
       console.log(saveData);
@@ -92,6 +97,7 @@ class Engine extends Component {
       let fData = new FormData();
       fData.set('action', 'write')
       fData.set('config', JSON.stringify(saveData))
+      console.log(JSON.stringify(saveData));
       req.open('POST', storageServer, true);
       //req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       let callBack = () => {
@@ -110,6 +116,7 @@ class Engine extends Component {
 
     this.loadConfig = () => {
       var storageServer = process.env.NODE_ENV !== "development" ? 'http://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
+      console.log('Load config');
       console.log('server: ' +  storageServer);
 
       let req = new XMLHttpRequest();
@@ -123,10 +130,10 @@ class Engine extends Component {
         this.setState(state=>{
 
           state.message = 'Loaded config'
-          state.tempo = obj.tempo
-          state.sustain = obj.sustain
-          state.gain = obj.gain
-          state.config = obj.instruments
+          state.tempo = obj[this.state.storedConfig].tempo
+          state.sustain = obj[this.state.storedConfig].sustain
+          state.gain = obj[this.state.storedConfig].gain
+          state.config = obj[this.state.storedConfig].instruments
 
           console.log(state)
 
@@ -174,13 +181,24 @@ class Engine extends Component {
       }
     }
 
+    this.storedConfig = (e) => {
+      let val = e.target.value
+      this.setState(state => {
+        state.storedConfig = val;
+        return state})
+    }
     
   }
   
   componentDidMount(){
     this.startEngine()
   }
-  
+
+  componentDidUpdate(){
+    if (this.state.message === 'Loaded config'){
+      this.setState({message: ''})
+    }
+  }
   render() {
     return (
       <div className='engine'>
@@ -228,6 +246,7 @@ class Engine extends Component {
 
                 <button onClick={this.saveConfig}>SAVE CONFIG</button>
                 <button onClick={this.loadConfig}>LOAD CONFIG</button>
+                <input className='text-input' id='stored-config' className='text-input' value={this.state.storedConfig} onChange={this.storedConfig}></input>
                 <button onClick={!this.state.engineOn ? this.startEngine : this.stopEngine}>{!this.state.engineOn ? 'START' : 'STOP'} ENGINE </button>
                 
                 <div className="panel read-outs">

@@ -1,3 +1,14 @@
+* Put together in an adhoc way as a proof of concept for the idea 
+The idea being that music can be understood as arpeggiation 
+** Some principles
+*** Everything that seems automated is really just a default that can be modified down to the finest detail
+eg. sequences can be generated but each note can be altered individually
+This process can be called 'baking'
+*** The same process that produces melody should be able to produce harmony
+*** The same process that prduces rhythm shuold be able to produce melody
+*** Highly collaborative ie realtime.
+*** The event subsystem has to be managed very well.
+
 * Networking
 ** As a web service
 ** For multi-processing
@@ -8,14 +19,15 @@
 ** As a colloborative center
 *** Plugin architecture?
 * Keyboard.js
-** MIDI here
+** MIDI should start here
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::import%20{qwertyClavier,%20octavePager}%20from%20'./LocalKeyboard']]
 ** Spend time on this to make it look nice
 Do a dial that can be used on the phone (and looks nice)
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::import%20Spinner%20from%20'../Widgets/Spinner']]
-** These should be abstracted to 'Tracks' named defaults to CSS standard colours
-
+** These should be abstracted to 'Tracks' or 'Instruments' (should they be different?) named defaults to CSS standard colours
+Potentially, instruments may be wildly different from each other
+Instruments could be the network of chains and triggers and associations?
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::bass:%20{notes:%5B%5D,%20queue:%5B%5D,%20range:%20%5B36,%2096%5D},]]
 ** Upstream communications can only be achieved by passing handler functions down to child components.
 I don't know if this is a good thing or not, all communications should be directionless 
@@ -50,61 +62,88 @@ There needs to be a way of accessing Providers in the class definition too
 
 [[file:~/arpocalypse_v667/src/Keyboard/Keyboard.js::ref%20=%20{this.roleRef('bass')}]]
 * Engine.js
-* master track manager is the only thing that belongs here
+** master track manager is the only thing that belongs here
 The synth will branch off and be associated with tracks
 Well anything can be associated with anything ideally.
 A query language will have to be attached to every component define these connections.
 [[file:~/arpocalypse_v667/src/Engine/Engine.js::this.playAll%20=%20()%20=>%20{]]
-* It would be prudent to start thinking in terms of seprating logic from graphics
+** It would be prudent to start thinking in terms of seprating logic from graphics
 
 [[file:~/arpocalypse_v667/src/Engine/Engine.js::<div%20className='engine'>]]
-* lots of data arrives here for the whole session, almost constantly because I havent figured out how to make a Provider argument communicate with the rest of the class definition
+** lots of data arrives here for the whole session, almost constantly because I havent figured out how to make a Provider argument communicate with the rest of the class definition
 
 [[file:~/arpocalypse_v667/src/Engine/Engine.js::this.saveConfig%20=%20()%20=>%20{]]
-* As a stop gap, I'll try getting PHP to accept a 'file' name to save stuff.
+** As a stop gap, I'll try getting PHP to accept a 'file' name to save stuff.
 I still can't decide if I should first instantiate the instruments first.
 The priority is to get this thing MUSICAL!!! which means I should really work on the SPAWNING
 
 [[file:~/arpocalypse_v667/src/Engine/Engine.js::var%20storageServer%20=%20process.env.NODE_ENV%20!==%20"development"%20?%20'http://lunatropolis.com/arp-save.php'%20:%20'http://localhost/arp-save.php';]]
 
 * Note activity SPAWNING
-* This should no longer be called a transport
+** This should no longer be called a transport
 The basis of ARPOCALYPSE is to get away from the PLAY RECORD paradigm
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::class%20Transport%20extends%20Component{]]
-* this timer is perplexing me. It's a master timer. 
-The present quality of ARPOCALYPSE is the persistance of this timer's position regardless of abitrary pattern changes.
-
+** this timer is perplexing me. It's a master timer. 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::timer:%200,]]
-* each component seems to be confused as to weather it wants to work with clips or with an actual sequence
+
+The present quality of ARPOCALYPSE is the persistance of this timer's position regardless of abitrary pattern changes.
+** each component seems to be confused as to weather it wants to work with clips or with an actual sequence array
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::seq:%20%5B%5D,]]
-* spawning happens here
+** spawning happens here
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::let%20seqTimer%20=%20setInterval(()%20=>%20{]]
-* the aim of the slider widget is to allow me to start halving a whole as the slider is decremented
+** the aim of the slider widget was to allow me to start halving a whole as the slider is decremented below 1
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.tempoMultiplier%20=%20(v)%20=>%20{]]
-* playFreq should be the first role to role feature. ie a setting of 4 on blue can be associated with red such that blue track repeats after 4 cycles of red
+** TODO playFreq should be the first role to role feature. ie a setting of 4 on blue can be associated with red such that blue track repeats after 4 cycles of red
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.changePlayFreq%20=%20(v)%20=>%20{]]
-* if I am to go ahead with realtime I might as well start working on quantisation
+** if I am to go ahead with realtime I might as well start working on quantisation
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.toggleRealTime%20=%20(e)%20=>%20{]]
-* this should be low hanging fruit. It seems related to sequence editing.
+** this should be low hanging fruit. It seems related to sequence editing.
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.startFrom%20=%20()%20=>%20{]]
-* these double booleans are clever, I don't quite know how I thought of them
+** these double booleans are clever, I don't  know how I thought of them
 
 [[file:~/arpocalypse_v667/src/Sequence/Transport.js::this.setState({scheduleStop%20:%20true%20})]]
-* url parameters will call present banks.
+** url parameters will call from present banks.
 
 [[file:~/arpocalypse_v667/src/Storage/index.js::var%20search%20=%20window.location.search.substring(1);]]
-* Role.js 
+** Role.js 
 This fork is annoying
-** Compose.js
-** Transport.js
+*** Compose.js
+*** Transport.js
 
 [[file:~/arpocalypse_v667/src/Role/Role.js::<ComposeClips]]
-** chained clips is the beginning of a song save
-
+** chained clips is the beginning of a song definition
+Chaining has to be *special*
 [[file:~/arpocalypse_v667/src/Role/Role.js::this.clipRef%20=%20(id)%20=>%20this.clipRef%5Bid%5D%20=%20React.createRef()]]
+** The original idea was to blaze out all the harmonic posibilities upon keypress
+
+[[file:~/arpocalypse_v667/src/Keys/Keys.js::class%20Keys%20extends%20Component%20{]]
+
+* Is there any advantage to this hierarchy? :
+      <div className="App">
+        <Engine>
+          <Keyboard range={[24,95]} />
+        </Engine>
+        
+      </div>
+Does the global clock even do anything important right now?
+The old redux version would send a clock signal to all listening components but this version just queues up intervals.
+There old version was an excercise in generator functions
+
+* Imperatives:
+** Me-lee
+MIDI and synth recipes
+** Ron
+Database and user authentication
+An increasing need to save things is a good sign that meaningful projects can be built.
+** It's hard to tell what downstream components are calling function
+
+[[file:~/arpocalypse_v667/src/Engine/Engine.js::this.state.saveIns%20=%20this.saveInstrument]]
+** this should not be called so often
+
+[[file:~/arpocalypse_v667/src/Sequence/Compose.js::console.log('load%20presets');]]

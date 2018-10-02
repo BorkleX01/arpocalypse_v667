@@ -71,6 +71,7 @@ class Role extends Component {
     
 
     this.clipListener = (val, ...rest) => {
+      console.log('clip listener');
       if(rest.includes('tempoX')){
         this.setState({arpSettings: {tempoX : +val}})
         this.storageRef.current.setState({arpSettings : {tempoX : +val}})
@@ -136,7 +137,7 @@ class Role extends Component {
           </div>
           
           <div> 
-            { this.state.currentSeq !== '' ? <div className="group-label">Rename clip:  <input id='rename-a-clip' value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}  onChange={this.renameClip}></input> </div>: null }
+            { this.state.currentSeq !== '' ? <div className="group-label">Rename clip:  <input id='rename-a-clip' className='text-input' value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}  onChange={this.renameClip}></input> </div>: null }
           </div>
           <div className='panel'>
             <button name='clearAll' onClick={this.clear}>CLEAR SEQ</ button>
