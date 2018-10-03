@@ -6,7 +6,7 @@ import { EngineContext } from '../Engine/EngineContext'
 import { Keys } from '../Keys'
 import {qwertyClavier, octavePager}  from './LocalKeyboard'
 import Spinner from '../Widgets/Spinner'
-
+//Render sequence(s)
 class Keyboard extends Component {
   constructor(props){
     super()
@@ -166,14 +166,19 @@ class Keyboard extends Component {
       let role = this.roleRef[this.state.mode].current;
       role.setState({scheduleStart: !role.state.scheduleStart})
     }
-    //Qwert 
+    //Qwert
+    //Shift z and x for modal transoposition (along whatever the octave page was set to, default C)
+    //Ctrl z and x for semitone transposition
+    
     document.onkeypress = (e) => {
       if (e.target.className !== 'text-input') {
+        
+
         if(e.key === ' '){
           e.preventDefault()
           this.startSequencer()
         }
-        
+
         if(e.key === octavePager[0] || e.key === octavePager[1] ){
           let pageTurn = this.state.octavePage + (e.key === octavePager[0] ? -1 : +1)
           let page = pageTurn*12 + this.state[this.state.mode].range[0]
@@ -181,9 +186,11 @@ class Keyboard extends Component {
             this.setState({octavePage : pageTurn})
           }
         }
+
         if(this.buttonMap.get(e.key) != undefined && this.buttonMap.get(e.key) < this.state[this.state.mode].range[1] ){
           this.keyListener(this.buttonMap.get(e.key), 'hardware')
         }
+
       }
 
       this.addSeqClick = () => {

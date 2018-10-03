@@ -7,6 +7,7 @@ import { Transport } from '../Sequence/Transport'
 import { ComposeClips } from '../Sequence/Compose' 
 import Spinner from '../Widgets/Spinner'
 import ClipEdit from './ClipEdit'
+import SeqEdit from './SeqEdit'
 
 
 class Role extends Component {
@@ -28,6 +29,8 @@ class Role extends Component {
     }
 
     this.state.span = props.range[1] - props.range[0];
+    this.clipRef = (id) => this.clipRef[id] = React.createRef()
+    this.noteRef = (id) => this.noteRef[id] = React.createRef()
     
     this.doToNote = (e) => {
       props.listener(e.target.value, e.target.id, props.module, 'edit' )
@@ -59,9 +62,12 @@ class Role extends Component {
 
     this.tick = (t) => {
       if(this.props.seq.length > 0 ){
-        document.getElementById(this.props.module+''+t).setAttribute('class', 'role-edit '+ this.props.module + ' note-on')
+        //console.log(t); //this is cool
+        this.noteRef[t].current.state.css = this.props.module +' note-on'
+        //document.getElementById(this.props.module+''+t).setAttribute('class', 'role-edit '+ this.props.module + ' note-on')
         let x = t === 0 ? this.props.seq.length-1 : t-1
-        document.getElementById(this.props.module+''+x).setAttribute('class', 'role-edit')
+        this.noteRef[x].current.state.css = ''
+        //document.getElementById(this.props.module+''+x).setAttribute('class', 'role-edit')
       }
 
     }
@@ -71,16 +77,17 @@ class Role extends Component {
     
 
     this.clipListener = (val, ...rest) => {
-      console.log('clip listener');
       if(rest.includes('tempoX')){
         this.setState({arpSettings: {tempoX : +val}})
         this.storageRef.current.setState({arpSettings : {tempoX : +val}})
-        if(this.state.editSeq  === true) { this.storageRef.current.state.clipSettings[this.state.currentSeq][1] = +val }
+        if(this.state.editSeq  === true) {
+          this.storageRef.current.state.clipSettings[this.state.currentSeq][1] = +val
+        }
       }
       this.setState({clips : this.storageRef.current.state.clips})
     }
 
-    this.clipRef = (id) => this.clipRef[id] = React.createRef()
+    
 
     this.renameClip = (e) => {
       let val = e.target.value
@@ -89,6 +96,30 @@ class Role extends Component {
         this.clipRef[this.state.currentSeq].current.setState({name: val});
         return state})
     }
+
+    this.clipOver = (e) => {
+      console.log('over');
+      e.preventDefault();
+      console.log(e.dataTransfer.getData('text/plain'));
+    }
+
+    this.clipDrop = (e) => {
+      
+      e.preventDefault();
+      console.log('clip drop: ' + e.dataTransfer.getData('text/plain'));
+    }
+
+    this.roleOver = (e) => {
+      console.log('role over');
+      e.preventDefault();
+      console.log(e.dataTransfer.getData('text/plain'));
+    }
+
+    this.roleDrop = (e) => {
+      console.log('role drop');
+      e.preventDefault();
+      console.log(e.dataTransfer.getData('text/plain'));
+    }
   }
   
   componentWillReceiveProps(newProps){
@@ -96,6 +127,7 @@ class Role extends Component {
       this.setState({clips : newProps.clips})
     }
   }
+
   componentDidUpdate(){
   }
   
@@ -109,31 +141,39 @@ class Role extends Component {
         <div className="messages">
         </div>
         
-        <div className='sequence-collection'>
+        <div className='sequence-collection' onDrop={this.clipDrop}>
               { this.state.clips.length > 0 && this.storageRef.current.state.clipSettings != undefined ? 
                 this.state.clips
                 .map((o, i)=>
-                     <div  key={i} className={'sequence-edit'} id={this.props.module+'Clip'+i}>
-                       <ClipEdit ref={this.clipRef(i)} id={i} listener={this.doToClip} value={i} name={(this.storageRef.current.state.clipSettings[i] != undefined ? this.storageRef.current.state.clipSettings[i][2] : i)}  />
-                     </div>)
+                       <ClipEdit ref={this.clipRef(i)}
+                                 key={i}
+                                 id={this.props.module+'Clip'+i}
+                                 rank={i}
+                                 listener={this.doToClip}
+                                 value={i}
+                                 name={(this.storageRef.current.state.clipSettings[i] != undefined ?
+                                        this.storageRef.current.state.clipSettings[i][2] : i)}  />)
                 :
-                <div className='messages'>CLIP</div>
+                <div style={{textAlign:'left'}} className='messages'>SEQ</div>
               }
             </div>
             
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
-          <div className='note-collection'>
-              {this.props.seq.length > 0 ?
-               this.props.seq
-               .map((o, i) =>
-                    <div key={i} className={'role-edit'} id={this.props.module+i}>
-                      <button id={i} value={o} onClick={this.doToNote}>
-                        {this.props.obj[o].nom + '' + (this.props.obj[o].type === 'black-key' ? '#' : '')}
-                      </button>
-                    </div>)
-               :
-               <div className='messages'>SEQ</div>
-              }
+          <div className='note-collection' onDrop={this.roleDrop}>
+            { this.props.seq.length > 0 ?
+              this.props.seq
+              .map((o, i) =>
+                   <SeqEdit
+                     ref={this.noteRef(i)}
+                     key={i}
+                     value={o}
+                     onClick={this.doToNote}
+                     id={this.props.module+i}
+                     rank={i}
+                     label={this.props.obj[o].nom + '' + (this.props.obj[o].type === 'black-key' ? '#' : '')}/>)
+              :
+              <div style={{textAlign:'left'}} className='messages'>SEQ</div>
+            }
           </div>
           
           <div> 

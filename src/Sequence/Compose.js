@@ -30,12 +30,8 @@ class ComposeClips extends Component{
     }
     
     this.loadPresets = (bank) => {
-      console.log('load presets ' + this.state.instrument);
-      console.log(this.presetsLoaded);
       if( bank[this.state.instrument] != undefined) {
-        console.log(this.state.instrument);
         this.presetsLoaded = true
-        console.log(this.presetsLoaded);
         this.setState(state=>{
           state.clips = bank[this.state.instrument].clips
           state.clipSettings = bank[this.state.instrument].clipSettings
@@ -44,8 +40,6 @@ class ComposeClips extends Component{
         })}
       
     }
-
-    
     this.clipLength = this.state.clips.length
     this.updateEngine = false
   }

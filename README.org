@@ -147,3 +147,6 @@ An increasing need to save things is a good sign that meaningful projects can be
 ** this should not be called so often
 
 [[file:~/arpocalypse_v667/src/Sequence/Compose.js::console.log('load%20presets');]]
+** First and foremost the Arpocalypse is a tool for ME
+
+[[file:~/org/org-heap.org]]

@@ -47,6 +47,7 @@
     flex-flow: row wrap;
     margin:  auto;
     width: 100%;
+
 }
 .sequence-collection {
     
@@ -58,10 +59,22 @@
     border-radius: 50%;
     background: none;
     color: red;
+    
 }
 
+.sequence-edit {
+    user-selectable: none;
+}
 
+.sequence-edit:hover > button {
+    background: ghostwhite;
+    color: black;
+}
 
+.role-edit:hover > button {
+    background: ghostwhite;
+    color: black;
+}
 .role-edit , .sequence-edit {
     text-align: center;
     font-size: 0.70em;
@@ -70,6 +83,8 @@
     width: 75px;
     height: 75px;
 }
+
+
 
 .role-edit button {
     background: none;

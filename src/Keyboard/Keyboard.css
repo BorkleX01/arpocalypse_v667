@@ -77,7 +77,7 @@ button:hover {
 }
 
 button {
-    transition: all 0.5s;
+    /*transition: all 0.5s;*/
 }
 
 
@@ -99,14 +99,14 @@ button {
     margin: 0%;
     width: 4.6%;
     height: 200px;
-    transition: all 0.5s;
+    /*transition: all 0.5s;*/
 }
 
 .black-key {
     margin: 0 -2.3%;
     width: 4.6%;
     height: 130px;
-    transition: all 0.5s;
+    /*transition: all 0.5s;*/
 }
 
 

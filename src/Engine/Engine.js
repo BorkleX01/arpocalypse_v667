@@ -19,7 +19,7 @@ class Engine extends Component {
       saveIns: 'No Function',
       noteOn: [],
       elapsed: 0,
-      panelVis: true,
+      panelVis: false,
       config: {},
       message : '',
       playAll : true,
@@ -67,11 +67,11 @@ class Engine extends Component {
     this.state.playNote = this.createOsc
 
     var saveData = {};
-
     var instruments = {};
-    
+    saveData[this.state.storedConfig] = {}
+
     this.snapShot = (ins) => {
-      saveData[this.state.storedConfig] = {}
+      if (saveData[this.state.storedConfig] == undefined){saveData[this.state.storedConfig] ={} }
       if (ins.clips.length > 0)
       {
         let inst = ins.instrument
@@ -83,7 +83,8 @@ class Engine extends Component {
     this.state.saveIns = this.snapShot
     
     this.saveConfig = () => {
-      saveData[this.state.storedConfig] = {}
+      //this.snapShot()
+      if (saveData[this.state.storedConfig] == undefined){saveData[this.state.storedConfig] ={} }
       saveData[this.state.storedConfig].tempo = this.state.tempo
       saveData[this.state.storedConfig].sustain = this.state.sustain
       saveData[this.state.storedConfig].gain = this.state.gain
@@ -91,7 +92,7 @@ class Engine extends Component {
       console.log('Save config');
       console.log(saveData);
       
-      var storageServer = process.env.NODE_ENV !== "development" ? 'http://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
+      var storageServer = process.env.NODE_ENV !== "development" ? 'https://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
       console.log('server: ' +  storageServer);
       let req = new XMLHttpRequest();
       let fData = new FormData();
@@ -115,7 +116,7 @@ class Engine extends Component {
     
 
     this.loadConfig = () => {
-      var storageServer = process.env.NODE_ENV !== "development" ? 'http://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
+      var storageServer = process.env.NODE_ENV !== "development" ? 'https://lunatropolis.com/arp-save.php' : 'http://localhost/arp-save.php';
       console.log('Load config');
       console.log('server: ' +  storageServer);
 
@@ -128,15 +129,12 @@ class Engine extends Component {
         console.log(obj);
 
         this.setState(state=>{
-
           state.message = 'Loaded config'
           state.tempo = obj[this.state.storedConfig].tempo
           state.sustain = obj[this.state.storedConfig].sustain
           state.gain = obj[this.state.storedConfig].gain
           state.config = obj[this.state.storedConfig].instruments
-
           console.log(state)
-
           return state})
       }
       req.onreadystatechange = function(){
@@ -192,6 +190,7 @@ class Engine extends Component {
   
   componentDidMount(){
     this.startEngine()
+    this.loadConfig();
   }
 
   componentDidUpdate(){
