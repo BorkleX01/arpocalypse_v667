@@ -8,7 +8,7 @@ export default class ClipEdit extends Component {
       id : '',
       isStart : false,
       isEnd: false,
-      noteCss: '',
+      noteCss: 'note-off',
       shiftCss: 'init',
       statusCss: 'init',
       rank: -1
@@ -22,63 +22,53 @@ export default class ClipEdit extends Component {
     this.state.rank = this.props.rank
 
     this.widgetRef = React.createRef();
-
     this.swapMaybe = -1;
-    
 
+    this.dragStart = (e) => {
+      e.dataTransfer.setData("text", this.state.rank);
+      e.dataTransfer.effectAllowed = "all";
+      this.props.listener('registerDrag', this.state.rank)
+      this.props.listener('reportDrag', this.state.rank)
+    }
+    
     this.dragEnter = (e) => {
       e.preventDefault();
       this.swapMaybe = e.target.id;
-      //console.log('enter ' + e.target.id);
-      this.props.listener('reportDrag', this.state.rank, this.state.name)
-      //console.log(e.target.getBoundingClientRect().left);
+      this.props.listener('reportDrag', this.state.rank, this.state.shiftCss)
     }
 
     this.dragLeave = (e) => {
       e.preventDefault();
       this.swapMaybe = e.target.id;
-      //console.log('leave ' + e.target.id);
-      //this.props.listener('reportDrag', this.state.rank, this.state.name)
-      //console.log(e.target.getBoundingClientRect());
     }
     
-    this.clipClick = (e) => {
-      e.preventDefault();
-      this.props.listener(this.props.value)
-    }
-
     this.clipOver = (e) => {
       e.preventDefault();
       if (this.swapMaybe !== e.target.id){
         this.swapMaybe = e.target.id;
       } 
-      
-      //console.log(e.target.getBoundingClientRect().left);
-    }
-
-    this.dragStart = (e) => {
-      e.dataTransfer.setData("text", this.state.rank);
-      e.dataTransfer.effectAllowed = "all";
-      this.props.listener('regDrag', this.state.rank)
-      this.props.listener('reportDrag', this.state.rank)
-      console.log('start ' + this.state.name)
     }
 
     this.dragDrop = (e) => {
       this.props.listener('clipDrop', this.state.rank)
     }
+
+    this.clipClick = (e) => {
+      e.preventDefault();
+      this.props.listener(this.props.value)
+    }
+    
   }
   
   render(){
     return(<div
              ref = {this.widgetRef}
-             onDragDrop={this.dragDrop}
-             onDragEnd={this.dragDrop}
              draggable={"true"}
              onDragStart={this.dragStart}
              onDragEnter={this.dragEnter}
              onDragLeave={this.dragLeave}
              onDragOver={this.clipOver}
+             onDragEnd={this.dragDrop}
              className={'frontdrop sequence-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
              onClick={this.clipClick}
              id={this.state.value} >

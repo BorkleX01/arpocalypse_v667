@@ -50,7 +50,7 @@
 
 }
 .sequence-collection {
-    
+
 }
 
 .sequence-edit button {
@@ -63,16 +63,14 @@
 }
 
 .sequence-edit {
-    user-selectable: none;
-    transition: all 0.25s
 }
 
-.sequence-edit.shift-right {
-    left: 75px;
+.shift-right {
+    transform: translate(75px)
 }
 
-.sequence-edit.shift-left {
-    right: 75px;
+.shift-left {
+    transform: translate(-75px)
 }
 
 .sequence-edit:hover > button {
@@ -92,6 +90,8 @@
     min-width: 50px;
     width: 75px;
     height: 75px;
+    transition: all 0.25s;
+    user-selectable: none;
 }
 
 .frontdrop.ghost {
