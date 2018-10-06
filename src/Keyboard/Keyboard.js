@@ -4,8 +4,9 @@ import { keys } from '../Scale/Diatonic'
 import { Role }  from '../Role'
 import { EngineContext } from '../Engine/EngineContext'
 import { Keys } from '../Keys'
-import {qwertyClavier, octavePager}  from './LocalKeyboard'
+import { qwertyClavier, octavePager }  from './LocalKeyboard'
 import Spinner from '../Widgets/Spinner'
+import { MIDI } from './MIDIKeyboard'
 //Render sequence(s)
 class Keyboard extends Component {
   constructor(props){

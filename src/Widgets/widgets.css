@@ -82,3 +82,7 @@
     bottom: 0;
     position: absolute;
 }
+
+.frontdrop .shift-left{
+    left: 75px
+}

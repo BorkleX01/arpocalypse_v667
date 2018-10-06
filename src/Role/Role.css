@@ -64,6 +64,15 @@
 
 .sequence-edit {
     user-selectable: none;
+    transition: all 0.25s
+}
+
+.sequence-edit.shift-right {
+    left: 75px;
+}
+
+.sequence-edit.shift-left {
+    right: 75px;
 }
 
 .sequence-edit:hover > button {
@@ -75,6 +84,7 @@
     background: ghostwhite;
     color: black;
 }
+
 .role-edit , .sequence-edit {
     text-align: center;
     font-size: 0.70em;
@@ -84,7 +94,14 @@
     height: 75px;
 }
 
+.frontdrop.ghost {
+    opacity: 0.1;
+    filter: blur(4px);
+}
 
+.frontdrop.shift {
+    opacity: 0.8;
+}
 
 .role-edit button {
     background: none;

@@ -3,7 +3,7 @@ import './Keys.css'
 import { KeyboardState } from '../Keyboard/KeyboardState'
 import { EngineContext } from '../Engine/EngineContext'
 
-
+//beat detector
 class Keys extends Component {
   constructor(props){
     super()

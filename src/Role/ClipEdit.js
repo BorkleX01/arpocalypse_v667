@@ -7,7 +7,11 @@ export default class ClipEdit extends Component {
       value : '',
       id : '',
       isStart : false,
-      isEnd: false
+      isEnd: false,
+      noteCss: '',
+      shiftCss: 'init',
+      statusCss: 'init',
+      rank: -1
     }
 
     this.props = props
@@ -15,41 +19,67 @@ export default class ClipEdit extends Component {
     this.state.name = this.props.name
     this.state.value = this.props.value
     this.state.id = this.props.id
-    this.state.key = this.props.key
     this.state.rank = this.props.rank
-    let prevRank = this.state.key
+
+    this.widgetRef = React.createRef();
+
+    this.swapMaybe = -1;
+    
+
+    this.dragEnter = (e) => {
+      e.preventDefault();
+      this.swapMaybe = e.target.id;
+      //console.log('enter ' + e.target.id);
+      this.props.listener('reportDrag', this.state.rank, this.state.name)
+      //console.log(e.target.getBoundingClientRect().left);
+    }
+
+    this.dragLeave = (e) => {
+      e.preventDefault();
+      this.swapMaybe = e.target.id;
+      //console.log('leave ' + e.target.id);
+      //this.props.listener('reportDrag', this.state.rank, this.state.name)
+      //console.log(e.target.getBoundingClientRect());
+    }
     
     this.clipClick = (e) => {
+      e.preventDefault();
       this.props.listener(this.props.value)
     }
 
     this.clipOver = (e) => {
       e.preventDefault();
-      console.log(this.state.rank);
-      if (this.state.rank < prevRank){
-        console.log('shift right')
-      }
-      else
-      {
-        console.log('shift left')
-      }
+      if (this.swapMaybe !== e.target.id){
+        this.swapMaybe = e.target.id;
+      } 
+      
+      //console.log(e.target.getBoundingClientRect().left);
     }
 
     this.dragStart = (e) => {
-      //console.log('dragging: ' + this.state.value + ', ' + this.state.id);
-      let thisObj = this.state.value
-      console.log(thisObj);
-      e.dataTransfer.setData("text", thisObj);
+      e.dataTransfer.setData("text", this.state.rank);
       e.dataTransfer.effectAllowed = "all";
+      this.props.listener('regDrag', this.state.rank)
+      this.props.listener('reportDrag', this.state.rank)
+      console.log('start ' + this.state.name)
+    }
+
+    this.dragDrop = (e) => {
+      this.props.listener('clipDrop', this.state.rank)
     }
   }
   
   render(){
     return(<div
-             onDragOver={this.clipOver}
+             ref = {this.widgetRef}
+             onDragDrop={this.dragDrop}
+             onDragEnd={this.dragDrop}
              draggable={"true"}
              onDragStart={this.dragStart}
-             className='frontdrop sequence-edit'
+             onDragEnter={this.dragEnter}
+             onDragLeave={this.dragLeave}
+             onDragOver={this.clipOver}
+             className={'frontdrop sequence-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
              onClick={this.clipClick}
              id={this.state.value} >
              <button >

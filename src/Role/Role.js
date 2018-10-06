@@ -25,7 +25,9 @@ class Role extends Component {
       arpSettings : {tempoX : 1},
       realTime: false,
       editSeq: false,
-      currentSeq: ''
+      currentSeq: '',
+      dragMember: {noIns : -1},
+      dragLoc: -1
     }
 
     this.state.span = props.range[1] - props.range[0];
@@ -36,7 +38,52 @@ class Role extends Component {
       props.listener(e.target.value, e.target.id, props.module, 'edit' )
     }
 
-    this.doToClip = (e) => {
+    this.spliceSeq = (seq, loc, ref) => {
+      //console.log('splice: at ' + loc + ' of ' + seq.length + ': ' + ref[loc].current);
+      let displacement = this.currentDragging - loc
+      let l = seq.length;
+      //console.log(this.currentDragging + ' ' + loc + ' ' + displacement);
+      //console.log(this.currentDragging - displacement);
+      for (let el in seq){
+        //console.log('el: ' + el + ' ' + (this.currentDragging - displacement));
+        if (displacement !== 0 ){
+          let disp = this.currentDragging - el;
+          console.log(displacement + ' ' + disp);
+          ref[el].current.setState({shiftCss : disp > 0 && displacement >= 0 && el >= (this.currentDragging - displacement) ? 'shift-right' :
+                                    disp < 0 && displacement <= 0 && el <= (this.currentDragging - displacement) ? 'shift-left' : null })
+
+          /*: disp < 0 && displacement < 0 && el <= (this.currentDragging + displacement) ?'shift-left' : null :null})*/
+                                    
+        }
+        else
+        {
+          ref[el].current.setState({shiftCss : 'init'})
+        }
+      } 
+    }
+
+    this.doToClip = (e, ...rest) => {
+      if(e === 'clipDrop'){
+        console.log('dropped ' + rest[0] );
+
+        for (let r in this.clipRef){
+          console.log(r);
+          this.clipRef[r].current.setState({shiftCss : 'init'})
+        }
+        this.clipRef[this.currentDragging].current.setState({statusCss : 'init'})
+        
+      } else
+      if(e === 'regDrag'){
+        console.log('regDrag');
+        this.currentDragging = rest[0]
+        this.clipRef[this.currentDragging].current.setState({statusCss : 'ghost'})
+      }
+      else if(e === 'reportDrag'){
+        console.log('reportDrag');
+        this.spliceSeq(this.state.clips, rest[0], this.clipRef)
+      }
+      else
+      {
       let obj = e
       this.setState({editSeq : true , currentSeq: String(obj), arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier}})
       const itr = this.state.clips[obj].values()
@@ -48,6 +95,7 @@ class Role extends Component {
       }
       this.transportRef.current.setState({tempoMultiplier: + this.storageRef.current.state.clipSettings[obj][1]})
       props.listener(notes, cue, props.module, 'load')
+      }
     }
 
     this.play = (id) => {
@@ -84,11 +132,8 @@ class Role extends Component {
           this.storageRef.current.state.clipSettings[this.state.currentSeq][1] = +val
         }
       }
-      this.setState({clips : this.storageRef.current.state.clips})
+      this.setState({clips : this.storageRef.current.state.clips, clipSettings : this.storageRef.current.state.clipSettings})
     }
-
-    
-
     this.renameClip = (e) => {
       let val = e.target.value
       this.storageRef.current.setState(state => {
@@ -104,21 +149,22 @@ class Role extends Component {
     }
 
     this.clipDrop = (e) => {
-      
       e.preventDefault();
       console.log('clip drop: ' + e.dataTransfer.getData('text/plain'));
+      this.clipRef[this.currentDragging].current.setState({statusCss : 'init'})
     }
 
-    this.roleOver = (e) => {
+    /*this.roleOver = (e) => {
       console.log('role over');
       e.preventDefault();
       console.log(e.dataTransfer.getData('text/plain'));
     }
-
+    */
     this.roleDrop = (e) => {
       console.log('role drop');
       e.preventDefault();
       console.log(e.dataTransfer.getData('text/plain'));
+      
     }
   }
   
