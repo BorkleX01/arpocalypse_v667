@@ -199,7 +199,7 @@ class Role extends Component {
         this.spliceSeq(this.state.targetBank, rest[0], this.noteRef)
       }
       else if(e === 'delete'){
-        props.listener(rest[0], rest[1], props.module, 'delete' )
+        props.listener(rest[0], rest[1], props.module, 'delete' , this.state.editSeq ? 'edit' : null)
       }
     }
     
