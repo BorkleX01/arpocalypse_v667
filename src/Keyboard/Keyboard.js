@@ -108,9 +108,6 @@ class Keyboard extends Component {
       })
     }
 
-
-
-
     this.roleListener = (v, i, mode, ...rest) => {
       if(rest.includes('exports')){
         console.log('inter inst:');

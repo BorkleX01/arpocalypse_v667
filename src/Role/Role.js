@@ -61,8 +61,8 @@ class Role extends Component {
 
       
       let displacement = this.currentDragging - loc
-      for (let el in data){
-        if(ref[el] != undefined && ref[el] !== null){
+      for (let el in data) {
+        if(ref[el] != undefined && ref[el] !== null) {
           if (Math.abs(displacement) > 0){
             let disp = this.currentDragging - el;
             ref[el].current
@@ -105,33 +105,51 @@ class Role extends Component {
       }
     }
     
-    this.transferFunction = (sourceObj) => {
-      //console.log('transfer: ' + sourceObj.instrument);
-      //console.log(sourceObj);
+    this.transferFunction = (srcObj, targObj) => {
+      console.log('transfer: ');
+      console.log(srcObj);
+      console.log(targObj);
     }
     
-    this.patternBarEnter = (e) => {
-      console.log('patternBarEnter: '  + e.dataTransfer.getData("text/plain"));
+    this.patternBar = (e) => {
+      //console.log('patternBar: '  + e.dataTransfer.getData("text/plain"));
+      if(e.type === 'dragenter')
+      {
+        console.log('targets');
+        this.setState({
+          targetBank: 'patterns',
+          targetBankInst: this.props.module,
+          targetBankName: 'instrument'
+        })
+      }
 
-      this.setState({
-        targetBank: 'patterns',
-        targetBankInst: this.props.module,
-        targetBankName: 'instrument'
-      })
+      if(e.type === 'dragleave')
+      {
+        console.log('sources');
+      }
     }
 
-    this.sequenceBarEnter = (e) => {
-      console.log('sequenceBarEnter: ' + e.dataTransfer.getData("text/plain"));
-      
-      //console.log('instrument: ' + this.props.module);
-      //console.log('patch: ' + this.state.clipSettings[this.state.currentSeq]);
-      //console.log('cellValue (note): ' + e.dataTransfer.getData("text/plain"));
-      //console.log('cellValue (note): ' + 42);
-      //console.log('bank: ' + this.state.clips[this.state.currentSeq]);
-
-      if(this.state.visible && this.state.currentSeq != ''){
-        this.setState({targetBank: 'notes', targetBankInst: this.props.module, targetBankName: this.state.clipSettings[this.state.currentSeq][2]})
+    this.sequenceBar = (e) => {
+      //console.log('sequenceBar: ' + e.dataTransfer.getData("text/plain"));
+      if(e.type === 'dragenter')
+      {
+        console.log('targets');
+        if(this.state.visible && this.state.currentSeq != ''){
+          this.setState({
+            targetBank: 'notes',
+            targetBankInst: this.props.module,
+            targetBankName: this.state.clipSettings[this.state.currentSeq][2]
+          })
+        }
       }
+
+      if(e.type === 'dragleave')
+      {
+        console.log('sources');
+      }
+
+      //this.transferFunction()
+      
     }
     
     this.clipDrop = (e) => {
@@ -248,7 +266,10 @@ class Role extends Component {
         <div className="messages">
         </div>
         
-        <div className='sequence-collection' onDrop={this.clipDrop} onDragEnter={this.patternBarEnter}>
+        <div className='sequence-collection'
+             onDrop={this.clipDrop}
+             onDragEnter={this.patternBar}
+             onDragLeave={this.patternBar}>
               { this.state.clips.length > 0 && this.storageRef.current.state.clipSettings != undefined ? 
                 this.state.clips
                 .map((o, i)=>
@@ -270,7 +291,10 @@ class Role extends Component {
             </div>
             
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
-          <div className='note-collection' onDrop={this.noteDrop} onDragEnter={this.sequenceBarEnter}>
+          <div className='note-collection'
+               onDrop={this.noteDrop}
+               onDragEnter={this.sequenceBar}
+               onDragLeave={this.sequenceBar}>
             { this.props.seq.length > 0 ?
               this.props.seq
               .map((o, i) =>
@@ -341,3 +365,12 @@ export default Role
       //console.log(this.state.targetBankInst);
       //console.log(this.state.targetBankName);
       //this.props.listener(this.state.sourceObj, this.state.targetObj, this.props.module, 'exports' )
+
+
+//dataTransfer structure
+//console.log('instrument: ' + this.props.module);
+//console.log('patch: ' + this.state.clipSettings[this.state.currentSeq]);
+//console.log('cellValue (note): ' + e.dataTransfer.getData("text/plain"));
+//console.log('cellValue (note): ' + 42);
+//console.log('bank: ' + this.state.clips[this.state.currentSeq]);
+
