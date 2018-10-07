@@ -83,32 +83,11 @@ class Role extends Component {
       if(ref[loc].current.state.shiftCss !== 'init'){ ref[loc].current.setState({shiftCss : 'init'}) }
     }
 
-
-    this.patternBarEnter = (e) => {
-      console.log('patternBarEnter: '  + e.dataTransfer.getData("text/plain"));
-
-      this.setState({
-        targetBank: 'patterns',
-        targetBankInst: this.props.module,
-        targetBankName: 'instrument'
-      })
-    }
-
-    this.sequenceBarEnter = (e) => {
-      console.log('sequenceBarEnter: ' + e.dataTransfer.getData("text/plain"));
-
-      if(this.state.visible && this.state.currentSeq != '') {
-        this.setState({
-          targetBank: 'notes',
-          targetBankInst: this.props.module,
-          targetBankName: this.state.clipSettings[this.state.currentSeq][2]})
-      }
-    }
     
-    this.transferFunction = (srcObj, targObj) => {
-      console.log('transfer: ');
-      console.log(srcObj);
-      console.log(targObj);
+    this.transferFunction = (typeStr, obj) => {
+      console.log('transfer type: ' + typeStr);
+      console.log('=========================');
+      console.log(obj);
     }
     
     this.patternBar = (e) => {
@@ -122,11 +101,12 @@ class Role extends Component {
           targetBankName: 'instrument'
         })
       }
-
       if(e.type === 'dragleave')
       {
         console.log('sources');
       }
+      //this.transferFunction()
+      this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
     }
 
     this.sequenceBar = (e) => {
@@ -148,35 +128,30 @@ class Role extends Component {
         console.log('sources');
       }
 
-      //this.transferFunction()
-      
-    }
-    
-    this.clipDrop = (e) => {
-      console.log('Role Clip Drop handler');
-      //console.log(e);
+      this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
     }
 
-    this.noteDrop = (e) => {
-      console.log('Role note Drop handler');
-      //console.log(e);
+    this.renameClip = (e) => {
+      let val = e.target.value
+      this.storageRef.current.setState(state => {
+        state.clipSettings[this.state.currentSeq][2] = val;
+        this.clipRef[this.state.currentSeq].current.setState({name: val});
+        return state})
     }
+    
 
     this.doToClip = (e, ...rest) => {
       if(e === 'clipDrop'){
-        console.log('dropped via clipEdit: ' + rest[0] + ' ' + this.state.clips.length);
-        //if (this.state.clips.length-1 === +rest[0]){console.log('bogus')}
         for (let r in this.clipRef){
           this.clipRef[r].current.setState({shiftCss : 'init'})
         }
         this.clipRef[+this.currentDragging].current.setState({statusCss : 'init'})
       } 
-      else if(e === 'registerDrag'){
+      else if(e === 'declareDrag'){
         this.currentDragging = rest[0]
         this.clipRef[this.currentDragging].current.setState({statusCss : 'ghost'})
-        //this.setState({sourceBankModule: this.props.module , targetBank: this.state.clips})
       }
-      else if(e === 'reportDrag'){
+      else if(e === 'reOrder'){
         this.spliceSeq(this.state.targetBank, rest[0], this.clipRef, rest[1])
       }
       else{
@@ -216,18 +191,18 @@ class Role extends Component {
           }
         }
       } 
-      else if(e === 'registerDrag'){
+      else if(e === 'declareDrag'){
         this.currentDragging = rest[0]
         this.noteRef[this.currentDragging].current.setState({statusCss : 'ghost'})
       }
-      else if(e === 'reportDrag'){
+      else if(e === 'reOrder'){
         this.spliceSeq(this.state.targetBank, rest[0], this.noteRef)
       }
-      else {
-        props.listener(e, rest[1], props.module, 'edit' )
+      else if(e === 'delete'){
+        props.listener(rest[0], rest[1], props.module, 'delete' )
       }
     }
-
+    
     this.play = (id) => {
       this.setState({noteOn: true});
       this.props.playNote(id, this.props.freq[id])
@@ -315,7 +290,13 @@ class Role extends Component {
           </div>
           
           <div> 
-            { this.state.currentSeq !== '' ? <div className="group-label">Rename clip:  <input id='rename-a-clip' className='text-input' value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}  onChange={this.renameClip}></input> </div>: null }
+            { this.state.currentSeq !== '' ?
+              <div className="group-label">
+                Rename clip:  <input id='rename-a-clip'
+                                     className='text-input'
+                                     value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}
+                                     onChange={this.renameClip} />
+              </div>: null }
           </div>
           <div className='panel'>
             <button name='clearAll' onClick={this.clear}>CLEAR SEQ</ button>
@@ -349,22 +330,22 @@ export default Role
 
 
 //console.log('instrument: ' + this.props.module);
-      //console.log('patch: ' + this.state.clipSettings[this.state.currentSeq]);
-      //console.log('cellValue (note): ' + e.dataTransfer.getData("text/plain"));
-      //console.log('cellValue (note): ' + 42);
+//console.log('patch: ' + this.state.clipSettings[this.state.currentSeq]);
+//console.log('cellValue (note): ' + e.dataTransfer.getData("text/plain"));
+//console.log('cellValue (note): ' + 42);
 //console.log('bank: ' + this.state.clips[this.state.currentSeq]);
 
 
-      
-      /*this.setState({
-        sourceBankModule: obj.instrument,
-        sourceBankPatch: obj.patch,
-        sourceBankRank: obj.rank,
-        sourceBankNote: obj.cellValue,
-        })*/
-      //console.log(this.state.targetBankInst);
-      //console.log(this.state.targetBankName);
-      //this.props.listener(this.state.sourceObj, this.state.targetObj, this.props.module, 'exports' )
+
+/*this.setState({
+  sourceBankModule: obj.instrument,
+  sourceBankPatch: obj.patch,
+  sourceBankRank: obj.rank,
+  sourceBankNote: obj.cellValue,
+  })*/
+//console.log(this.state.targetBankInst);
+//console.log(this.state.targetBankName);
+//this.props.listener(this.state.sourceObj, this.state.targetObj, this.props.module, 'exports' )
 
 
 //dataTransfer structure
