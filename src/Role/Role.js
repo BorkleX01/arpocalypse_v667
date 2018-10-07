@@ -143,7 +143,7 @@ class Role extends Component {
       console.log('Role note Drop handler');
       //console.log(e);
     }
-/**Clips**/
+
     this.doToClip = (e, ...rest) => {
       if(e === 'clipDrop'){
         console.log('dropped via clipEdit: ' + rest[0] + ' ' + this.state.clips.length);
@@ -188,7 +188,7 @@ class Role extends Component {
     }
         
     
-/**Notes**/
+
     this.doToNote = (e, ...rest) => {
       if(e === 'noteDrop'){
         console.log('dropped via noteEdit: ' + rest[0] + ' ' + this.state.targetBankName);
@@ -210,8 +210,15 @@ class Role extends Component {
       }
     }
 
-
-
+    this.play = (id) => {
+      this.setState({noteOn: true});
+      this.props.playNote(id, this.props.freq[id])
+    }
+      
+    this.clear = () => {
+      this.setState({editSeq : false })
+      this.props.clear(this.props.module)
+    }
 
     this.tick = (t) => {
       if(this.props.seq.length > 0 ){
