@@ -67,10 +67,12 @@
 
 .shift-right {
     transform: translate(75px)
+    /*padding-left: 75px*/
 }
 
 .shift-left {
     transform: translate(-75px)
+    /*margin-left: -75px*/
 }
 
 .sequence-edit:hover > button {
@@ -95,13 +97,10 @@
 }
 
 .frontdrop.ghost {
-    opacity: 0.1;
-    filter: blur(4px);
+    opacity: 0.1
+    /*position: absolute*/
 }
 
-.frontdrop.shift {
-    opacity: 0.8;
-}
 
 .role-edit button {
     background: none;

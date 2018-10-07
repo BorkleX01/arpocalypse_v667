@@ -25,16 +25,18 @@ export default class ClipEdit extends Component {
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
-      e.dataTransfer.setData("text", this.state.rank);
+      e.dataTransfer.setData("text/plain", [this.props.instrument,this.props.patch,this.state.value]);
       e.dataTransfer.effectAllowed = "all";
       this.props.listener('registerDrag', this.state.rank)
-      this.props.listener('reportDrag', this.state.rank)
+      //this.props.listener('reportDrag', this.state.rank)
+      
     }
     
     this.dragEnter = (e) => {
       e.preventDefault();
       this.swapMaybe = e.target.id;
       this.props.listener('reportDrag', this.state.rank, this.state.shiftCss)
+      //this.props.transfer({instrument: this.props.instrument, patch: this.props.patch, cellValue:this.state.value, rank:this.state.rank})
     }
 
     this.dragLeave = (e) => {
@@ -43,17 +45,17 @@ export default class ClipEdit extends Component {
     }
     
     this.clipOver = (e) => {
-      e.preventDefault();
       if (this.swapMaybe !== e.target.id){
         this.swapMaybe = e.target.id;
       } 
     }
 
     this.dragDrop = (e) => {
+      e.preventDefault();
       this.props.listener('clipDrop', this.state.rank)
     }
 
-    this.clipClick = (e) => {
+    this.click = (e) => {
       e.preventDefault();
       this.props.listener(this.props.value)
     }
@@ -70,7 +72,7 @@ export default class ClipEdit extends Component {
              onDragOver={this.clipOver}
              onDragEnd={this.dragDrop}
              className={'frontdrop sequence-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
-             onClick={this.clipClick}
+             onClick={this.click}
              id={this.state.value} >
              <button >
                <div className='cell-input'>{this.state.name}</div>

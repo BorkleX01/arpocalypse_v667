@@ -4,6 +4,7 @@ export default class SeqEdit extends Component {
     super()
     this.state = {
       value : 'rest',
+      patch : '',
       id : '',
       isStart : false,
       isEnd: false,
@@ -14,6 +15,7 @@ export default class SeqEdit extends Component {
     }
     this.props = props;
     this.state.value = this.props.value
+    this.state.patch = this.props.patch
     this.state.id = this.props.id
     this.state.rank = this.props.rank
 
@@ -21,16 +23,18 @@ export default class SeqEdit extends Component {
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
-      e.dataTransfer.setData("text", this.state.rank);
+      e.dataTransfer.setData("text/plain", [this.props.instrument,this.props.patch,this.state.value]);
       e.dataTransfer.effectAllowed = "all";
       this.props.listener('registerDrag', this.state.rank)
-      this.props.listener('reportDrag', this.state.rank)
+      //this.props.listener('reportDrag', this.state.rank )
+      
     }
 
     this.dragEnter = (e) => {
       e.preventDefault();
       this.swapMaybe = e.target.id;
       this.props.listener('reportDrag', this.state.rank, this.state.shiftCss)
+      //this.props.transfer({instrument: this.props.instrument, patch: this.props.patch, cellValue:this.state.value, rank:this.state.rank})
     }
 
     this.dragLeave = (e) => {
@@ -39,18 +43,19 @@ export default class SeqEdit extends Component {
     }
     
     this.clipOver = (e) => {
-      e.preventDefault();
       if (this.swapMaybe !== e.target.id){
         this.swapMaybe = e.target.id;
-      } 
+      }
     }
 
     this.dragDrop = (e) => {
+      e.preventDefault();
       this.props.listener('noteDrop', this.state.rank)
     }
     
-    this.clipClick = (e) => {
-      this.props.listener(this.props.value)
+    this.click = (e) => {
+      this.props.listener(this.props.value, this.props.id)
+      
     }
     
   }
@@ -63,7 +68,7 @@ export default class SeqEdit extends Component {
              onDragLeave={this.dragLeave}
              onDragOver={this.clipOver}
              onDragEnd={this.dragDrop}
-             onClick={this.clipClick}
+             onClick={this.click}
              className={'frontdrop role-edit ' + this.state.noteCss+ ' ' + this.state.shiftCss + ' ' + this.state.statusCss}>
              <button>
                {this.props.label}

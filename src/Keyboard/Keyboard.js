@@ -83,9 +83,10 @@ class Keyboard extends Component {
         let isEdit = this.roleRef[this.state.mode].current.state.editSeq; 
         this.setState(state=> {
           state[state.mode].notes.push(key)
-          state[state.mode].queue.push(state[state.mode].queue.length === 0 ?
+          /*state[state.mode].queue.push(state[state.mode].queue.length === 0 ?
                                        window.performance.now() :
-                                       window.performance.now() - state[state.mode].queue[0])
+                                       window.performance.now() - state[state.mode].queue[0]) */
+          state[state.mode].queue.push(1)
           state.keyObj[key].active[state.mode] = true;
           if(isEdit){
             let clips = this.roleRef[state.mode].current.state.clips
@@ -107,8 +108,16 @@ class Keyboard extends Component {
       })
     }
 
+
+
+
     this.roleListener = (v, i, mode, ...rest) => {
-      if(rest.includes('range')){
+      if(rest.includes('exports')){
+        console.log('inter inst:');
+        console.log(v);
+        console.log(i);
+      }
+      else if(rest.includes('range')){
         this.setState(state=>{
           state[mode].range = [+v, +i]
           return state
