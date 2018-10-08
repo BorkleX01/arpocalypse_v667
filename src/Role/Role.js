@@ -8,7 +8,8 @@ import { ComposeClips } from '../Sequence/Compose'
 import Spinner from '../Widgets/Spinner'
 import ClipEdit from './ClipEdit'
 import SeqEdit from './SeqEdit'
-
+import {Detector} from '../EntityRelations'
+import {Triggers} from '../EntityRelations'
 
 class Role extends Component {
   constructor(props){
@@ -28,20 +29,6 @@ class Role extends Component {
       realTime: false,
       editSeq: false,
       currentSeq: '',
-
-      
-      targetBankInst: '',
-      targetBankName: '',
-      targetBankNote: '',
-      targetBank: '',
-      
-      
-      sourceBankModule: '',
-      sourceBankPatch: '',
-      sourceBankRank: '',
-      sourceBankNote: '',
-      sourceBank: '',
-      
     }
 
     this.state.span = props.range[1] - props.range[0];
@@ -51,7 +38,7 @@ class Role extends Component {
     this.storageRef = React.createRef();
 
     this.spliceSeq = (seq, loc, ref, init) => {
-      console.log('SPLICE '+ seq  +' : name: ' + this.state.targetBankName + ', pattern#: ' + loc + ' from instrument: ' + this.props.module);
+      //console.log('SPLICE '+ seq  +' : name: ' + this.state.targetBankName + ', pattern#: ' + loc + ' from instrument: ' + this.props.module);
       var data;
       if (seq === 'notes'){
         data = this.state.clips[this.state.currentSeq]
@@ -83,18 +70,16 @@ class Role extends Component {
       if(ref[loc].current.state.shiftCss !== 'init'){ ref[loc].current.setState({shiftCss : 'init'}) }
     }
 
-    
+    var d = new Detector(this.props, this.state)
     this.transferFunction = (typeStr, obj) => {
-      console.log('transfer type: ' + typeStr);
-      console.log('=========================');
-      console.log(obj);
+      d.query(typeStr, obj)
     }
     
     this.patternBar = (e) => {
       //console.log('patternBar: '  + e.dataTransfer.getData("text/plain"));
       if(e.type === 'dragenter')
       {
-        console.log('targets');
+        console.log('enter pattern bar');
         this.setState({
           targetBank: 'patterns',
           targetBankInst: this.props.module,
@@ -103,9 +88,8 @@ class Role extends Component {
       }
       if(e.type === 'dragleave')
       {
-        console.log('sources');
+        console.log('leave pattern bar');
       }
-      //this.transferFunction()
       this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
     }
 
@@ -113,7 +97,7 @@ class Role extends Component {
       //console.log('sequenceBar: ' + e.dataTransfer.getData("text/plain"));
       if(e.type === 'dragenter')
       {
-        console.log('targets');
+        console.log('enter sequence bar');
         if(this.state.visible && this.state.currentSeq != ''){
           this.setState({
             targetBank: 'notes',
@@ -123,9 +107,9 @@ class Role extends Component {
         }
       }
 
-      if(e.type === 'dragleave')
+      if(e.type === 'dragleave sequence bar')
       {
-        console.log('sources');
+        console.log('leave sequence bar');
       }
 
       this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
@@ -147,24 +131,33 @@ class Role extends Component {
         }
         this.clipRef[+this.currentDragging].current.setState({statusCss : 'init'})
       } 
-      else if(e === 'declareDrag'){
+      else if(rest.includes('declareDrag')){
         this.currentDragging = rest[0]
         this.clipRef[this.currentDragging].current.setState({statusCss : 'ghost'})
+        this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
       }
       else if(e === 'reOrder'){
         this.spliceSeq(this.state.targetBank, rest[0], this.clipRef, rest[1])
       }
-      else{
+      else {
         let obj = e
-        this.setState({editSeq : true , currentSeq: String(obj), arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier}})
+        this.setState({editSeq : true ,
+                       currentSeq: String(obj),
+                       arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier}})
+        
         const itr = this.state.clips[obj].values()
         var notes = []
         var cue = []
+
         for (const v of  itr) {
           notes.push(v[0])
           cue.push(v[1])
         }
-        this.transportRef.current.setState({tempoMultiplier: + this.storageRef.current.state.clipSettings[obj][1]})
+
+        this.transportRef.current.setState({
+          tempoMultiplier: + this.storageRef.current.state.clipSettings[obj][1]
+        })
+
         props.listener(notes, cue, props.module, 'load')
       }
     }
@@ -177,7 +170,9 @@ class Role extends Component {
           this.storageRef.current.state.clipSettings[this.state.currentSeq][1] = +val
         }
       }
-      this.setState({clips : this.storageRef.current.state.clips, clipSettings : this.storageRef.current.state.clipSettings})
+      this.setState({
+        clips : this.storageRef.current.state.clips,
+        clipSettings : this.storageRef.current.state.clipSettings})
     }
         
     
@@ -202,6 +197,8 @@ class Role extends Component {
         props.listener(rest[0], rest[1], props.module, 'delete' , this.state.editSeq ? 'edit' : null)
       }
     }
+
+
     
     this.play = (id) => {
       this.setState({noteOn: true});

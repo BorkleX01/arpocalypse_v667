@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Form, Container, Grid, Segment, Image, Divider, Loader, Label, Button, Icon, Dimmer, Header, Visibility, Ref} from 'semantic-ui-react'
 class Diagnostics extends Component {
   constructor(props){
     super()
@@ -19,7 +18,7 @@ class Diagnostics extends Component {
     var audioCtx = props.ctx
     var gainNode = props.gain
     var oscillator
-    console.log(audioCtx.state == 'running');
+
     this.state.engineOn = (audioCtx.state == 'running' ?  true : false);
 
     this.startTestEngine = () => {
@@ -92,39 +91,39 @@ class Diagnostics extends Component {
   }
   render(){
     return(
-      <Segment>
-        <Segment>
-          <Header>Audio Context</Header>
-          <Button onClick={this.props.startEngine}>START</Button>
-          <Button onClick={this.closeEngine}>CLOSE</Button>
-          <Button onClick={this.pauseEngine}>SUSPEND</Button>
-          <Button onClick={this.resumeEngine}>RESUME</Button>
-        </Segment>
-        <Divider/>
+      <div>
+        <div>
+          <div>Audio Context</div>
+          <button onClick={this.props.startEngine}>START</button>
+          <button onClick={this.closeEngine}>CLOSE</button>
+          <button onClick={this.pauseEngine}>SUSPEND</button>
+          <button onClick={this.resumeEngine}>RESUME</button>
+        </div>
+        <div/>
         {this.state.engineOn ? 
-          (<Segment>
-            <Header>Oscillator Node</Header>
-            <Button onClick={this.createOsc}>CREATE</Button>
-            <Button onClick={this.connectOsc}>CONNECT</Button>
-            <Button onClick={this.startOsc}>START</Button>
-            <Button onClick={this.stopOsc}>STOP</Button>
-            <Segment>{this.state.osc}</Segment>
-          </Segment>)
+          (<div>
+            <div>Oscillator Node</div>
+            <button onClick={this.createOsc}>CREATE</button>
+            <button onClick={this.connectOsc}>CONNECT</button>
+            <button onClick={this.startOsc}>START</button>
+            <button onClick={this.stopOsc}>STOP</button>
+            <div>{this.state.osc}</div>
+          </div>)
           : 
-         <Segment>Diagnostic Audio Context Off</Segment>}
-        <Label> Freq range </Label>
-        <Label>{this.state.toneInterval}</Label>
-        <Label>{this.state.floor}</Label> Floor
-        <Form.Input type="range" min="0" value={this.state.floor} max={this.state.part}  className="slider" onChange={this.slideFloor} />
+         <div>Diagnostic Audio Context Off</div>}
+        <div className='label'> Freq range </div>
+        <div className='label'>{this.state.toneInterval}</div>
+        <div className='label'>{this.state.floor}</div> Floor
+        <input type="range" min="0" value={this.state.floor} max={this.state.part}  className="slider" onChange={this.slideFloor} />
 
-        <Label>{this.state.part}</Label> Partition
-        <Form.Input type="range" min='30' max="3999" value={this.state.part} className="slider" onChange={this.slidePart}  />
+        <div className='label'>{this.state.part}</div> Partition
+        <input type="range" min='30' max="3999" value={this.state.part} className="slider" onChange={this.slidePart}  />
 
         
-        <Label>{this.state.ceil}</Label> Ceiling
-        <Form.Input type="range" min={this.state.part} value={this.state.ceil} max='4000'  className="slider" onChange={this.slideCeiling} />
+        <div className='label'>{this.state.ceil}</div> Ceiling
+        <input type="range" min={this.state.part} value={this.state.ceil} max='4000'  className="slider" onChange={this.slideCeiling} />
         
-      </Segment>
+      </div>
 
     )
   }

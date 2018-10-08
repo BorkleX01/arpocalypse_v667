@@ -25,9 +25,13 @@ export default class ClipEdit extends Component {
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
-      e.dataTransfer.setData("text/plain", [this.props.instrument,this.props.patch, this.state.rank, this.state.value]);
+      e.dataTransfer.setData("text/plain", ['clip',
+                                            this.props.instrument,
+                                            this.props.id ,
+                                            this.state.rank,
+                                            this.state.value]);
       e.dataTransfer.effectAllowed = "all";
-      this.props.listener('declareDrag', this.state.rank)
+      this.props.listener(e, this.state.rank, 'declareDrag')
     }
     
     this.dragEnter = (e) => {

@@ -23,7 +23,11 @@ export default class SeqEdit extends Component {
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
-      e.dataTransfer.setData("text/plain", [this.props.instrument,this.props.patch, this.state.rank, this.state.value]);
+      e.dataTransfer.setData("text/plain", ['note',
+                                            this.props.instrument,
+                                            this.props.id,
+                                            this.state.rank,
+                                            this.state.value]);
       e.dataTransfer.effectAllowed = "all";
       this.props.listener('declareDrag', this.state.rank)
     }

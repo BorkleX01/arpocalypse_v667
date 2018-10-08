@@ -3,6 +3,8 @@ import './Engine.css'
 import { EngineContext } from './EngineContext'
 import { Keyboard } from '../Keyboard';
 import Spinner from '../Widgets/Spinner'
+import Diagnostics  from './Diagnostics'
+
 
 class Engine extends Component {
   constructor(props) {
@@ -29,7 +31,7 @@ class Engine extends Component {
     
     var audioCtx = false
     var gainNode = false
-
+    this.ctx = audioCtx
     this.startEngine = () => {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       this.gainNodeMaster = audioCtx.createGain();
@@ -245,9 +247,14 @@ class Engine extends Component {
 
                 <button onClick={this.saveConfig}>SAVE CONFIG</button>
                 <button onClick={this.loadConfig}>LOAD CONFIG</button>
-                <input className='text-input' id='stored-config' className='text-input' value={this.state.storedConfig} onChange={this.storedConfig}></input>
                 <button onClick={!this.state.engineOn ? this.startEngine : this.stopEngine}>{!this.state.engineOn ? 'START' : 'STOP'} ENGINE </button>
-                
+                <div className="label">PRESET: </div><br/>
+                <input className='text-input'
+                       id='stored-config'
+                       className='text-input'
+                       value={this.state.storedConfig}
+                       onChange={this.storedConfig} />
+
                 <div className="panel read-outs">
                   <div className="label">Instruments: </div>
                   <div className="figures">{Object.keys(this.state.config).join(', ')}</div>
@@ -256,11 +263,13 @@ class Engine extends Component {
                   <div className="figures">{this.state.tempo}</div>
                   <div className="label">{this.state.message}</div>
                 </div>
+                <div className="panel">
+                  <Diagnostics ctx = {this.ctx} gain={this.state.gain}/>
+                </div>
               </div>
               
             </div>
           </div>
-          
           {this.props.children}
         </EngineContext.Provider>
         </div>

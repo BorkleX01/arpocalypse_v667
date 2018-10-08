@@ -160,40 +160,41 @@ class Transport extends Component{
   }
   render(){
     return(<EngineContext.Consumer>
-             {engine => (<div className='panel'>
-                           {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
-                           {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
-                           
-                           <button className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'} onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
-                             {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
-                           </button>
-                           <button>PLAY TRACK</button>
-                           <button>DELETE NOTES</button>
-                           <button onClick={this.startFrom} >START FROM</button>
-                           <button>MOVE NOTES</button>
-                           <button>REST</button>
-                           <button>SPLIT</button>
-                           <button>TIE</button>
-                           <button>COPY</button>
-                           <button>INSERT</button>
-                           <div className="panel dial-group">
-                             <div className="pane">
-                               <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
-                             </div>
-                             <div className="pane">
-                               <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
-                             </div>
-                             <div className="pane">
-                               <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
-                             </div>
-                           </div>
-                           <div className='panel read-outs'>
-                             <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
-                             <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
-                             <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
-                           </div>
-                           <div className="messages"></div>
-                         </div>)}
+             {engine =>
+              (<div className='panel'>
+                 {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
+                 {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
+                 
+                 <button className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'} onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
+                   {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
+                 </button>
+                 <button>PLAY TRACK</button>
+                 <button>DELETE NOTES</button>
+                 <button onClick={this.startFrom} >START FROM</button>
+                 <button>MOVE NOTES</button>
+                 <button>REST</button>
+                 <button>SPLIT</button>
+                 <button>TIE</button>
+                 <button>COPY</button>
+                 <button>INSERT</button>
+                 <div className="panel dial-group">
+                   <div className="pane">
+                     <Spinner id='speed-dial' slider={false} label='Speed' min='1' max="16" value={this.state.tempoMultiplier} onChange={this.tempoMultiplier} step={1} /><br/>
+                   </div>
+                   <div className="pane">
+                     <Spinner slider={false} label='Frequency' min='1' max="16" value={this.state.playFreq} onChange={this.changePlayFreq} step={1} /><br/>
+                   </div>
+                   <div className="pane">
+                     <Spinner slider={false} label='Repeats' min='1' max="16" value={this.state.repeats} onChange={this.changePlayRepeats} step={1} /><br/>
+                   </div>
+                 </div>
+                 <div className='panel read-outs'>
+                   <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
+                   <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
+                   <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
+                 </div>
+                 <div className="messages"></div>
+               </div>)}
            </EngineContext.Consumer>)
     
   }
