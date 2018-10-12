@@ -1,3 +1,4 @@
+/* merge this with SeqEdit. ElementEdit class. */
 import React,  { Component } from 'react'
 export default class ClipEdit extends Component {
   constructor(props){
@@ -25,11 +26,13 @@ export default class ClipEdit extends Component {
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
-      e.dataTransfer.setData("text/plain", ['clip',
-                                            this.props.instrument,
-                                            this.props.id ,
-                                            this.state.rank,
-                                            this.state.value]);
+      e.dataTransfer.setData(
+        "text/plain",
+        ['clip',
+         this.props.instrument,
+         this.props.id,
+         this.state.rank,
+         this.state.value]);
       e.dataTransfer.effectAllowed = "all";
       this.props.listener(e, this.state.rank, 'declareDrag')
     }
@@ -44,7 +47,8 @@ export default class ClipEdit extends Component {
       e.preventDefault();
       this.swapMaybe = e.target.id;
     }
-    
+          
+
     this.clipOver = (e) => {
       if (this.swapMaybe !== e.target.id){
         this.swapMaybe = e.target.id;
@@ -53,7 +57,8 @@ export default class ClipEdit extends Component {
 
     this.dragDrop = (e) => {
       e.preventDefault();
-      this.props.listener('clipDrop', this.state.rank)
+
+      this.props.listener('drop', this.state.rank)
     }
 
     this.click = (e) => {
@@ -72,9 +77,9 @@ export default class ClipEdit extends Component {
              onDragLeave={this.dragLeave}
              onDragOver={this.clipOver}
              onDragEnd={this.dragDrop}
-             className={'frontdrop sequence-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
              onClick={this.click}
-             id={this.state.value} >
+             className={'frontdrop sequence-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
+             id = {this.state.id}>
              <button >
                <div className='cell-input'>{this.state.name}</div>
              </button>

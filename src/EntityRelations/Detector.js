@@ -1,3 +1,91 @@
+import React,  { Component } from 'react'
+import { Maps } from './'
+
+class Detector extends Component {
+  constructor(props, state){
+    super()
+    this.props = props
+    this.state = {
+      messages : '',
+      source: '',
+      target: '',
+      id:''
+    }
+    
+    this.diag = (arg) => {
+      console.log('Detector Up: ' + arg)
+      console.log('Detector has access to: ');
+      console.log(props, state);
+    }
+
+    let lookup = new WeakMap()
+    let pair = {}
+    let maps = new Maps()
+    var currentObj = {}
+    var currentOp = ''
+    
+    this.execute = () => {
+      console.log('execute ' + currentOp.op);
+      console.log(lookup.get(currentObj));
+    }
+
+    this.register = (e) => {
+      currentObj = e
+    }
+
+    this.query = (typeStr, obj, rest) => {
+      let data = obj.split(',')
+      
+      var module = data[1]
+      var type = data[0]
+      var id = data[2]
+      var rank = data[3]
+      var value = data[4]
+
+      var origin = {module, type, id, rank, value}
+      var target = undefined
+
+      type = data[0]
+
+      if(typeStr === 'declareDrag'){
+        module = data[1]
+      }
+
+      if(typeStr === 'dragenter'){
+        target = rest
+      }
+
+      if(typeStr === 'dragleave'){
+        target = undefined
+      }
+
+      pair = {origin, target}
+      lookup.set(currentObj , pair)
+
+      return(
+        () => {
+          let result = 'no op'
+          if (target != undefined){
+            result = maps.search(origin, target)
+          }
+          currentOp = result
+          return(result)
+        }
+      )
+    }
+
+    
+    
+  }
+  
+  render(){
+    return(<div className='panel'>
+             <div>Connections</div>
+             <div className='messages'>{this.state.messages}</div>
+           </div>)
+  }
+}
+export default Detector
 /*
   patternbank to patternbank
   defaults to move
@@ -39,59 +127,3 @@
   Guitar strum mode
   ie dragfrom key to key
 */
-import React,  { Component } from 'react'
-class Detector extends Component {
-  constructor(props, state){
-    super()
-    this.props = props
-    this.state = {
-      messages : '',
-      source: '',
-      target: '',
-      id:''
-    }
-    console.log('Detector has access to:  ');
-    console.log(props, state);
-    
-    this.diag = (arg) => console.log('Detector Up: ' + arg);
-
-    let assoc = new WeakMap();
-    
-    this.query = (typeStr, obj) => {
-      let data = obj.split(',')
-      console.log(typeStr +' '+ data);
-      var origin = data[1]
-      var type = data[0]
-      var id = data[2]
-      var target
-
-      type = data[0]
-
-      if(typeStr === 'declareDrag'){
-        origin = data[1]
-      }
-
-      if(typeStr === 'dragEnter'){
-        target = data[1]
-      }
-
-      if(typeStr === 'dragleave'){
-        target = undefined
-      }
-
-      if(typeStr === 'onDrop'){
-        target = data[1]
-      }
-      console.log(origin, type, id, target);
-    }
-    
-  }
-  
-  render(){
-    return(<div className='panel'>
-             <div>Connections</div>
-             <div className='messages'>{this.state.messages}</div>
-           </div>)
-  }
-}
-export default Detector

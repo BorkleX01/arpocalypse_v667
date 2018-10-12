@@ -1,6 +1,8 @@
+/* merge this with ClipEdit. ElementEdit class. */
 import React,  { Component } from 'react'
 export default class SeqEdit extends Component {
   constructor(props){
+
     super()
     this.state = {
       value : 'rest',
@@ -23,13 +25,15 @@ export default class SeqEdit extends Component {
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
-      e.dataTransfer.setData("text/plain", ['note',
-                                            this.props.instrument,
-                                            this.props.id,
-                                            this.state.rank,
-                                            this.state.value]);
+      e.dataTransfer.setData(
+        "text/plain",
+        ['note',
+         this.props.instrument,
+         this.props.id,
+         this.state.rank,
+         this.state.value]);
       e.dataTransfer.effectAllowed = "all";
-      this.props.listener('declareDrag', this.state.rank)
+      this.props.listener(e, this.state.rank, 'declareDrag')
     }
 
     this.dragEnter = (e) => {
@@ -51,7 +55,7 @@ export default class SeqEdit extends Component {
 
     this.dragDrop = (e) => {
       e.preventDefault();
-      this.props.listener('noteDrop', this.state.rank)
+      this.props.listener('drop', this.state.rank)
     }
     
     this.click = (e) => {
@@ -70,7 +74,8 @@ export default class SeqEdit extends Component {
              onDragOver={this.clipOver}
              onDragEnd={this.dragDrop}
              onClick={this.click}
-             className={'frontdrop role-edit ' + this.state.noteCss+ ' ' + this.state.shiftCss + ' ' + this.state.statusCss}>
+             className={'frontdrop role-edit ' + this.state.noteCss+ ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
+             id = {this.state.id}>
              <button>
                {this.props.label}
              </button>

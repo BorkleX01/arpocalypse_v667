@@ -29,6 +29,9 @@ class Role extends Component {
       realTime: false,
       editSeq: false,
       currentSeq: '',
+      spliceLoc: '',
+      newArr: []
+
     }
 
     this.state.span = props.range[1] - props.range[0];
@@ -38,28 +41,50 @@ class Role extends Component {
     this.storageRef = React.createRef();
 
     this.spliceSeq = (seq, loc, ref, init) => {
-      //console.log('SPLICE '+ seq  +' : name: ' + this.state.targetBankName + ', pattern#: ' + loc + ' from instrument: ' + this.props.module);
+      //console.log('SPLICE '+ seq  +' : name: ' + this.state.targetBankName + ', insert at: ' + loc + ' from instrument: ' + this.props.module);
       var data;
+
       if (seq === 'notes'){
         data = this.state.clips[this.state.currentSeq]
       } else if (seq === 'patterns'){
-        data = this.state.clips
+        data = this.state.clipSettings
       } 
 
-      
       let displacement = this.currentDragging - loc
+      var currentShift
+      var prevShift
+      var newArr = [];
+      console.log(this.currentDragging);
       for (let el in data) {
         if(ref[el] != undefined && ref[el] !== null) {
           if (Math.abs(displacement) > 0){
             let disp = this.currentDragging - el;
-            ref[el].current
-              .setState
-            ({shiftCss :
-              disp > 0 && displacement >= 0 && el >= (this.currentDragging - displacement) ?
-              (ref[loc].current.state === 'shift-right' ? 'init' : 'shift-right') :
-              disp < 0 && displacement <= 0 && el <= (this.currentDragging - displacement ) ?
-              (ref[loc].current.state === 'shift-left' ? 'init' : 'shift-left') : 'init'
-             })
+            var dirL = disp >= 0 && displacement >= 0
+            var dirR = disp <= 0 && displacement <= 0
+            let rightOf = el >= loc
+            let leftOf = el <= loc
+            let shift = dirL && rightOf ? 'shift-right' : dirR && leftOf ? 'shift-left' : 'init'
+
+            let rankAdjust = shift === 'shift-right' ? 1 : shift === 'shift-left' ? -1 : 0
+            var cell = +el + rankAdjust
+            /*
+            if (+cell < 0){
+              cell = 0
+            } 
+            if (+cell >= data.length){
+              cell = data.length-1
+            }
+
+            if(+el !== this.currentDragging ){
+              newArr[el] = data[cell]
+            } else {
+            }
+            */
+            ref[el].current.setState({shiftCss : shift})
+            if(+el === +loc+rankAdjust ){
+              currentShift = shift
+            }
+            
           }
           else
           {
@@ -67,37 +92,91 @@ class Role extends Component {
           }
         }
       }
-      if(ref[loc].current.state.shiftCss !== 'init'){ ref[loc].current.setState({shiftCss : 'init'}) }
+
+      if(ref[loc].current.state.shiftCss !== 'init'){
+        currentShift = 'init' ; ref[loc].current.setState({shiftCss : 'init'})
+      }
+
+      let dirStr = init + ' > ' + currentShift
+
+      var insertion = loc
+      if(dirStr === 'init > shift-left' || dirStr === 'shift-right > init'){
+
+        if(+loc < +this.currentDragging ){
+          insertion = loc+1
+        }
+      }
+
+      if(dirStr === 'init > shift-right' || dirStr === 'shift-left > init'){
+
+        if(+loc > +this.currentDragging){
+          insertion = loc-1
+          
+        }else
+        if (loc === 1 && this.currentDragging === 0){
+          insertion = 0
+        }
+      }
+      
+      console.log('========move '+ this.currentDragging +' to ' + insertion);
+      for (let i = 0; i< data.length; i++)
+      {
+        if (this.currentDragging !== i){
+          newArr.push(data[i])
+        }
+        
+        if (insertion === i){
+          newArr[i] = (data[this.currentDragging])
+        }
+      }
+      this.setState({newArr: newArr})
     }
 
     var d = new Detector(this.props, this.state)
-    this.transferFunction = (typeStr, obj) => {
-      d.query(typeStr, obj)
+
+    this.transferFunction = (typeStr, obj, rest) => {
+      var res = d.query(typeStr, obj, rest)
+
+      if (res().op === 'reOrder'){
+        this.setState({insert : res().arg})
+      }else{
+        this.setState({insert : ''})
+      }
     }
     
+
+    /*Merge patternBar and sequenceBar to class called ZoneListeners*/
     this.patternBar = (e) => {
-      //console.log('patternBar: '  + e.dataTransfer.getData("text/plain"));
       if(e.type === 'dragenter')
       {
-        console.log('enter pattern bar');
         this.setState({
           targetBank: 'patterns',
           targetBankInst: this.props.module,
           targetBankName: 'instrument'
         })
+
+        var el;
+        if(e.target.id !== e.currentTarget.id){
+          el = e.target.id
+        }
+
+        d.register(e)
+        this.transferFunction(
+          e.type, e.dataTransfer.getData("text/plain"),
+          { module:this.props.module, zone: e.currentTarget.className, id: el != undefined && +el })
       }
+      
       if(e.type === 'dragleave')
       {
-        console.log('leave pattern bar');
+        /*this.transferFunction(
+          e.type, e.dataTransfer.getData("text/plain"))*/
       }
-      this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
+      
     }
 
     this.sequenceBar = (e) => {
-      //console.log('sequenceBar: ' + e.dataTransfer.getData("text/plain"));
       if(e.type === 'dragenter')
       {
-        console.log('enter sequence bar');
         if(this.state.visible && this.state.currentSeq != ''){
           this.setState({
             targetBank: 'notes',
@@ -105,14 +184,25 @@ class Role extends Component {
             targetBankName: this.state.clipSettings[this.state.currentSeq][2]
           })
         }
+
+        var el;
+        if(e.target.id !== e.currentTarget.id){
+          el = e.target.id
+        }
+
+        d.register(e)
+        this.transferFunction(
+          e.type, e.dataTransfer.getData("text/plain"),
+          { module:this.props.module, zone: e.currentTarget.className, id: el != undefined && +el})
       }
 
-      if(e.type === 'dragleave sequence bar')
+      if(e.type === 'dragleave')
       {
-        console.log('leave sequence bar');
-      }
+        /*this.transferFunction(
+          e.type, e.dataTransfer.getData("text/plain"))*/
+      }      
 
-      this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
+      
     }
 
     this.renameClip = (e) => {
@@ -123,9 +213,11 @@ class Role extends Component {
         return state})
     }
     
-
+    
     this.doToClip = (e, ...rest) => {
-      if(e === 'clipDrop'){
+      if(e === 'drop'){
+        console.log('dropped via dotoClip: ' + rest);
+        d.execute()
         for (let r in this.clipRef){
           this.clipRef[r].current.setState({shiftCss : 'init'})
         }
@@ -137,13 +229,17 @@ class Role extends Component {
         this.transferFunction(e.type, e.dataTransfer.getData("text/plain"))
       }
       else if(e === 'reOrder'){
-        this.spliceSeq(this.state.targetBank, rest[0], this.clipRef, rest[1])
+        if (this.state.insert === 'clip'){
+          this.spliceSeq(this.state.targetBank, rest[0], this.clipRef, rest[1])
+        }
       }
-      else {
+      else
+      {
         let obj = e
-        this.setState({editSeq : true ,
-                       currentSeq: String(obj),
-                       arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier}})
+        this.setState({
+          editSeq : true ,
+          currentSeq: String(obj),
+          arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier}})
         
         const itr = this.state.clips[obj].values()
         var notes = []
@@ -178,20 +274,23 @@ class Role extends Component {
     
 
     this.doToNote = (e, ...rest) => {
-      if(e === 'noteDrop'){
-        console.log('dropped via noteEdit: ' + rest[0] + ' ' + this.state.targetBankName);
+      if(e === 'drop'){
+        console.log('dropped via noteEdit: ' + rest);
+        d.execute()
         for (let r in this.noteRef){
           if (this.noteRef[r].current !== null) {
             this.noteRef[r].current.setState({shiftCss : 'init', statusCss : 'init'})
           }
         }
       } 
-      else if(e === 'declareDrag'){
+      else if(rest.includes('declareDrag')){
         this.currentDragging = rest[0]
         this.noteRef[this.currentDragging].current.setState({statusCss : 'ghost'})
       }
       else if(e === 'reOrder'){
-        this.spliceSeq(this.state.targetBank, rest[0], this.noteRef)
+        if (this.state.insert === 'note'){
+          this.spliceSeq(this.state.targetBank, rest[0], this.noteRef, rest[1] )
+        }
       }
       else if(e === 'delete'){
         props.listener(rest[0], rest[1], props.module, 'delete' , this.state.editSeq ? 'edit' : null)
@@ -227,7 +326,11 @@ class Role extends Component {
   }
 
   
-  render(){ 
+  render(){
+    console.log('===================');
+    for (let el in this.state.newArr){
+      console.log(this.state.newArr[el][2]);
+    }
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
@@ -238,7 +341,7 @@ class Role extends Component {
         <div className="messages">
         </div>
         
-        <div className='sequence-collection'
+        <div id={this.props.module+'-clips'} className='sequence-collection'
              onDrop={this.clipDrop}
              onDragEnter={this.patternBar}
              onDragLeave={this.patternBar}>
@@ -248,7 +351,7 @@ class Role extends Component {
                      <ClipEdit
                        ref={this.clipRef(i)}
                        key={i}
-                       id={this.props.module+'Clip'+i}
+                       id={i}
                        rank={i}
                        listener={this.doToClip}
                        transfer={this.transferFunction}
@@ -263,7 +366,7 @@ class Role extends Component {
             </div>
             
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
-          <div className='note-collection'
+          <div id={this.props.module+ '-notes'} className='note-collection'
                onDrop={this.noteDrop}
                onDragEnter={this.sequenceBar}
                onDragLeave={this.sequenceBar}>
@@ -273,7 +376,7 @@ class Role extends Component {
                    <SeqEdit
                      ref={this.noteRef(i)}
                      key={i}
-                     id={this.props.module+i}
+                     id={i}
                      rank={i}
                      listener={this.doToNote}
                      transfer={this.transferFunction}

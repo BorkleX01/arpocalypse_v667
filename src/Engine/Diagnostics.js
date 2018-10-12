@@ -91,7 +91,7 @@ class Diagnostics extends Component {
   }
   render(){
     return(
-      <div>
+      <div >
         <div>
           <div>Audio Context</div>
           <button onClick={this.props.startEngine}>START</button>
