@@ -30,31 +30,34 @@ class Role extends Component {
       editSeq: false,
       currentSeq: '',
       spliceLoc: '',
-      newArr: []
-
+      newArr: [],
+      newArrClips: [],
+      newArrSettings : []
     }
 
     this.state.span = props.range[1] - props.range[0];
     this.clipRef = (id) => this.clipRef[id] = React.createRef()
     this.noteRef = (id) => this.noteRef[id] = React.createRef()
     this.transportRef = React.createRef();
-    this.storageRef = React.createRef();
+    this.composer = React.createRef();
 
     this.spliceSeq = (seq, loc, ref, init) => {
       //console.log('SPLICE '+ seq  +' : name: ' + this.state.targetBankName + ', insert at: ' + loc + ' from instrument: ' + this.props.module);
       var data;
-
       if (seq === 'notes'){
         data = this.state.clips[this.state.currentSeq]
       } else if (seq === 'patterns'){
         data = this.state.clipSettings
-      } 
+      } else if (seq == 'patterns-data'){
+        data = this.state.clips
+      }
 
       let displacement = this.currentDragging - loc
       var currentShift
       var prevShift
-      var newArr = [];
-      console.log(this.currentDragging);
+      let newArr = [];
+      var newArrSettings = [];
+      //console.log(this.currentDragging);
       for (let el in data) {
         if(ref[el] != undefined && ref[el] !== null) {
           if (Math.abs(displacement) > 0){
@@ -67,19 +70,6 @@ class Role extends Component {
 
             let rankAdjust = shift === 'shift-right' ? 1 : shift === 'shift-left' ? -1 : 0
             var cell = +el + rankAdjust
-            /*
-            if (+cell < 0){
-              cell = 0
-            } 
-            if (+cell >= data.length){
-              cell = data.length-1
-            }
-
-            if(+el !== this.currentDragging ){
-              newArr[el] = data[cell]
-            } else {
-            }
-            */
             ref[el].current.setState({shiftCss : shift})
             if(+el === +loc+rankAdjust ){
               currentShift = shift
@@ -117,22 +107,14 @@ class Role extends Component {
           insertion = 0
         }
       }
-      
-      console.log('========move '+ this.currentDragging +' to ' + insertion);
+      //console.log('========move '+ this.currentDragging +' to ' + insertion);
       for (let i = 0; i< data.length; i++)
       {
         if (this.currentDragging !== i){
           newArr.push(data[i])
         } else {
-          //newArr[i] = [1,2,'--hole-- at ' + i]
-          //newArr[insertion] = data[+insertion]
           let vec = (+this.currentDragging - i)
-          console.log('vec: ' + vec + ' insertion ' + insertion + ' i ' + i);
-          console.log(data[+insertion]);
-          //newArr[i+1] = (data[+insertion])
         }
-
-
         let dirDrag = (this.currentDragging - insertion) 
         if (insertion === i){
           if (dirDrag > 0){
@@ -144,10 +126,17 @@ class Role extends Component {
           if(dirDrag === 0 ){
             newArr[i] = (data[+insertion])
           }
-          //newArr.push(data[+insertion])
         }
       }
-      this.setState({newArr: newArr})
+      if (seq == 'patterns')
+      {
+        this.setState({newArrClips: newArr})
+      }
+      else if (seq === 'patterns-data' )
+      {
+        this.setState({newArrSettings: newArr})
+      }
+      
     }
 
     var d = new Detector(this.props, this.state)
@@ -169,6 +158,7 @@ class Role extends Component {
       {
         this.setState({
           targetBank: 'patterns',
+          targetBankData: 'patterns-data',
           targetBankInst: this.props.module,
           targetBankName: 'instrument'
         })
@@ -225,7 +215,7 @@ class Role extends Component {
 
     this.renameClip = (e) => {
       let val = e.target.value
-      this.storageRef.current.setState(state => {
+      this.composer.current.setState(state => {
         state.clipSettings[this.state.currentSeq][2] = val;
         this.clipRef[this.state.currentSeq].current.setState({name: val});
         return state})
@@ -235,7 +225,8 @@ class Role extends Component {
     this.doToClip = (e, ...rest) => {
       if(e === 'drop'){
         console.log('dropped via dotoClip: ' + rest);
-        d.execute()
+        d.execute(this.state.newArrClips, this.state.newArrSettings, this.doToClip)
+        
         for (let r in this.clipRef){
           this.clipRef[r].current.setState({shiftCss : 'init'})
         }
@@ -249,7 +240,15 @@ class Role extends Component {
       else if(e === 'reOrder'){
         if (this.state.insert === 'clip'){
           this.spliceSeq(this.state.targetBank, rest[0], this.clipRef, rest[1])
+          this.spliceSeq(this.state.targetBankData, rest[0], this.clipRef, rest[1])
         }
+      }else if (e === 'reOrdered'){
+        if(rest[1].clipSettings.length > 0){
+          this.composer.current.loadSimple(rest[1].clips, rest[1].clipSettings)
+        }
+        this.setState({
+        clips : [],
+        clipSettings : []})
       }
       else
       {
@@ -269,7 +268,7 @@ class Role extends Component {
         }
 
         this.transportRef.current.setState({
-          tempoMultiplier: + this.storageRef.current.state.clipSettings[obj][1]
+          tempoMultiplier: + this.composer.current.state.clipSettings[obj][1]
         })
 
         props.listener(notes, cue, props.module, 'load')
@@ -279,14 +278,15 @@ class Role extends Component {
     this.clipListener = (val, ...rest) => {
       if(rest.includes('tempoX')){
         this.setState({arpSettings: {tempoX : +val}})
-        this.storageRef.current.setState({arpSettings : {tempoX : +val}})
+        this.composer.current.setState({arpSettings : {tempoX : +val}})
         if(this.state.editSeq  === true) {
-          this.storageRef.current.state.clipSettings[this.state.currentSeq][1] = +val
+          this.composer.current.state.clipSettings[this.state.currentSeq][1] = +val
         }
       }
+      
       this.setState({
-        clips : this.storageRef.current.state.clips,
-        clipSettings : this.storageRef.current.state.clipSettings})
+        clips : this.composer.current.state.clips,
+        clipSettings : this.composer.current.state.clipSettings})
     }
         
     
@@ -315,7 +315,7 @@ class Role extends Component {
       }
     }
 
-
+    
     
     this.play = (id) => {
       this.setState({noteOn: true});
@@ -345,25 +345,25 @@ class Role extends Component {
 
   
   render(){
-    console.log('===================');
-    for (let el in this.state.newArr){
-      console.log(el + ' ' + this.state.newArr[el][2]);
-    }
+    console.log(this.state.clipSettings);
+    //var clMap = this.state.clipSettings.entries()
+    //var nwMap = this.state.newArr.entries()
+    
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
           {`${this.props.module} ${this.state.realTime ? '(Realtime)' : '(Step)'} ${this.props.tempo} ${this.transportRef.current && this.transportRef.current.state.isPlaying ? 'Playing' : 'Stopped'} `}
-          {`${this.state.editSeq ? 'editing: ' + this.storageRef.current.state.clipSettings[this.state.currentSeq][2] : 'new sequence'}, Source: ${this.state.sourceBankModule}, Target: ${this.state.targetBankInst}`} 
+          {`${this.state.editSeq ? 'editing: ' + this.composer.current.state.clipSettings[this.state.currentSeq][2] : 'new sequence'}, Source: ${this.state.sourceBankModule}, Target: ${this.state.targetBankInst}`} 
         </div>
 
         <div className="messages">
         </div>
         
         <div id={this.props.module+'-clips'} className='sequence-collection'
-             onDrop={this.clipDrop}
+             //onDrop={this.clipDrop}
              onDragEnter={this.patternBar}
              onDragLeave={this.patternBar}>
-              { this.state.clips.length > 0 && this.storageRef.current.state.clipSettings != undefined ? 
+              { this.state.clips.length > 0 && this.composer.current.state.clipSettings != undefined ? 
                 this.state.clips
                 .map((o, i)=>
                      <ClipEdit
@@ -376,8 +376,8 @@ class Role extends Component {
                        value={i}
                        patch={this.state.clipSettings != undefined ? this.state.clipSettings : 'default'}
                        instrument={this.props.module}
-                       name={(this.storageRef.current.state.clipSettings[i] != undefined ?
-                              this.storageRef.current.state.clipSettings[i][2] : i)}  />)
+                       name={(this.composer.current.state.clipSettings[i] != undefined ?
+                              this.composer.current.state.clipSettings[i][2] : i)}  />)
                 :
                 <div style={{textAlign:'left'}} className='messages'>SEQ</div>
               }
@@ -412,14 +412,14 @@ class Role extends Component {
               <div className="group-label">
                 Rename clip:  <input id='rename-a-clip'
                                      className='text-input'
-                                     value={this.storageRef.current.state.clipSettings[this.state.currentSeq][2]}
+                                     value={this.composer.current.state.clipSettings[this.state.currentSeq][2]}
                                      onChange={this.renameClip} />
               </div>: null }
           </div>
           <div className='panel'>
             <button name='clearAll' onClick={this.clear}>CLEAR SEQ</ button>
             <ComposeClips
-              ref = {this.storageRef}
+              ref = {this.composer}
               module = {this.props.module}
               clear={this.clear}
               seq={this.props.seq}

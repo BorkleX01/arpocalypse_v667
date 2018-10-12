@@ -6,6 +6,7 @@ class Detector extends Component {
     super()
     this.props = props
     this.state = {
+      ...state,
       messages : '',
       source: '',
       target: '',
@@ -18,15 +19,24 @@ class Detector extends Component {
       console.log(props, state);
     }
 
+    
     let lookup = new WeakMap()
     let pair = {}
     let maps = new Maps()
     var currentObj = {}
     var currentOp = ''
     
-    this.execute = () => {
+    this.execute = (settings, clips, doToClip) => {
       console.log('execute ' + currentOp.op);
       console.log(lookup.get(currentObj));
+     // console.log(state );
+      
+      if (settings.length > 0) {
+        for ( let el in clips ){
+          console.log(settings[el][2] + ' ' + clips[el].length);
+        }
+      }
+      doToClip('reOrdered', 'clips' , {clips: clips, clipSettings: settings})
     }
 
     this.register = (e) => {

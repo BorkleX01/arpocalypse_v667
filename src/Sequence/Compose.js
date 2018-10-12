@@ -14,6 +14,7 @@ class ComposeClips extends Component{
     this.state.instrument = props.module;
     this.state.arpSettings = props.arpSettings;
     this.presetsLoaded = false;
+    
     this.saveSeq = () => {
       if(this.props.seq){
         let clip = [];
@@ -40,11 +41,22 @@ class ComposeClips extends Component{
         })}
       
     }
+
+    this.loadSimple = (clips, clipSettings) => {
+      this.setState(state=>{
+          state.clips = clips
+          state.clipSettings = clipSettings
+          this.props.clipListener() //replicates the clips to Role now 
+          return state
+        })
+    }
+    
     this.clipLength = this.state.clips.length
     this.updateEngine = false
   }
   
   componentDidUpdate(){
+    
     if(this.state.clips.length !== this.clipLength){
       this.updateEngine = true;
       this.clipLength = this.state.clips.length

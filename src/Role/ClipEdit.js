@@ -57,6 +57,7 @@ export default class ClipEdit extends Component {
 
     this.dragDrop = (e) => {
       e.preventDefault();
+      console.log('dragDrop');
 
       this.props.listener('drop', this.state.rank)
     }
