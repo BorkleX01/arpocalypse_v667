@@ -123,10 +123,28 @@ class Role extends Component {
       {
         if (this.currentDragging !== i){
           newArr.push(data[i])
+        } else {
+          //newArr[i] = [1,2,'--hole-- at ' + i]
+          //newArr[insertion] = data[+insertion]
+          let vec = (+this.currentDragging - i)
+          console.log('vec: ' + vec + ' insertion ' + insertion + ' i ' + i);
+          console.log(data[+insertion]);
+          //newArr[i+1] = (data[+insertion])
         }
-        
+
+
+        let dirDrag = (this.currentDragging - insertion) 
         if (insertion === i){
-          newArr[i] = (data[this.currentDragging])
+          if (dirDrag > 0){
+            newArr[i] = (data[this.currentDragging])
+            newArr.push(data[insertion])
+          } else if (dirDrag < 0){
+            newArr[i] = (data[this.currentDragging])
+          } else 
+          if(dirDrag === 0 ){
+            newArr[i] = (data[+insertion])
+          }
+          //newArr.push(data[+insertion])
         }
       }
       this.setState({newArr: newArr})
@@ -329,7 +347,7 @@ class Role extends Component {
   render(){
     console.log('===================');
     for (let el in this.state.newArr){
-      console.log(this.state.newArr[el][2]);
+      console.log(el + ' ' + this.state.newArr[el][2]);
     }
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
