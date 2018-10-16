@@ -27,15 +27,6 @@ class Detector extends Component {
     var currentOp = ''
     
     this.execute = (settings, clips, doToClip) => {
-      console.log('execute ' + currentOp.op);
-      console.log(lookup.get(currentObj));
-     // console.log(state );
-      
-      if (settings.length > 0) {
-        for ( let el in clips ){
-          console.log(settings[el][2] + ' ' + clips[el].length);
-        }
-      }
       doToClip('reOrdered', 'clips' , {clips: clips, clipSettings: settings})
     }
 

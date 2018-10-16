@@ -9,7 +9,7 @@ export default class ClipEdit extends Component {
       id : '',
       isStart : false,
       isEnd: false,
-      noteCss: 'note-off',
+      playingCss: 'not-playing',
       shiftCss: 'init',
       statusCss: 'init',
       rank: -1
@@ -64,7 +64,7 @@ export default class ClipEdit extends Component {
 
     this.click = (e) => {
       e.preventDefault();
-      this.props.listener(this.props.value)
+      this.props.listener(this.props.value, 'playClip') //any abstracted widget should call parent function as a default
     }
     
   }
@@ -79,7 +79,7 @@ export default class ClipEdit extends Component {
              onDragOver={this.clipOver}
              onDragEnd={this.dragDrop}
              onClick={this.click}
-             className={'frontdrop sequence-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
+             className={'frontdrop sequence-edit ' + this.state.playingCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
              id = {this.state.id}>
              <button >
                <div className='cell-input'>{this.state.name}</div>

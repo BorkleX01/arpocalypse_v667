@@ -112,9 +112,6 @@ class Keyboard extends Component {
     
     this.roleListener = (v, i, mode, ...rest) => {
       if(rest.includes('exports')){
-        console.log('inter inst:');
-        console.log(v);
-        console.log(i);
       }
       else if(rest.includes('range')){
         this.setState(state=>{
@@ -175,6 +172,8 @@ class Keyboard extends Component {
       let role = this.roleRef[this.state.mode].current;
       role.setState({scheduleStart: !role.state.scheduleStart})
     }
+
+
     //Qwert
     //Shift z and x for modal transoposition (along whatever the octave page was set to, default C)
     //Ctrl z and x for semitone transposition

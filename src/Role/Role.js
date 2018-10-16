@@ -250,7 +250,7 @@ class Role extends Component {
         clips : [],
         clipSettings : []})
       }
-      else
+      else if (rest.includes('playClip'))
       {
         let obj = e
         this.setState({
@@ -271,7 +271,15 @@ class Role extends Component {
           tempoMultiplier: + this.composer.current.state.clipSettings[obj][1]
         })
 
+        this.state.clips.map((o, i)=>{
+         this.clipRef[i].current.setState({playingCss : 'not-playing'})
+        })
+
+        this.clipRef[e].current.setState({playingCss : 'playing'})
         props.listener(notes, cue, props.module, 'load')
+      }
+      else {
+        console.log('clip action no name');
       }
     }
 
@@ -294,7 +302,7 @@ class Role extends Component {
     this.doToNote = (e, ...rest) => {
       if(e === 'drop'){
         console.log('dropped via noteEdit: ' + rest);
-        d.execute()
+        //d.execute()
         for (let r in this.noteRef){
           if (this.noteRef[r].current !== null) {
             this.noteRef[r].current.setState({shiftCss : 'init', statusCss : 'init'})
@@ -330,10 +338,23 @@ class Role extends Component {
     this.tick = (t) => {
       if(this.props.seq.length > 0 ){
         //console.log(t); //this is cool
-        this.noteRef[t].current.state.css = this.props.module +' note-on'
+        this.noteRef[t].current.state.noteCss = this.props.module +' note-on'
         let x = t === 0 ? this.props.seq.length-1 : t-1
-        this.noteRef[x].current.state.css = ''
+        this.noteRef[x].current.state.noteCss = ''
       }
+    }
+    
+    this.playNextClip = () => {
+      let nextClip = +this.state.currentSeq+1
+      if (nextClip >= this.state.clips.length){
+        nextClip = 0
+      }
+      if (nextClip < 0){
+        nextClip = 0
+      }
+
+      //this.clipRef[this.state.currentSeq].current.setState({playingCss : 'not-playing'})
+      this.doToClip(nextClip, 'playClip')
     }
   }
   
@@ -345,10 +366,6 @@ class Role extends Component {
 
   
   render(){
-    console.log(this.state.clipSettings);
-    //var clMap = this.state.clipSettings.entries()
-    //var nwMap = this.state.newArr.entries()
-    
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
         <div id={this.props.module} onClick={this.props.modeClick} className='key-inner ins-header'>
@@ -439,6 +456,7 @@ class Role extends Component {
             play={this.play}
             start={this.state.scheduleStart}
             clipListener={this.clipListener}
+            playNextClip={this.playNextClip}
             type={this.state.realTime ? 'realtime' : 'step'}/>
         </div>
       </div>

@@ -37,7 +37,9 @@ class Transport extends Component{
     this.startSequencer = () => {
       if(this.props.type === 'realtime'){
         this.playRT()
-      }else{
+      }
+      else
+      {
         let period = 60000/this.props.tempo/this.state.tempoMultiplier;
         this.setState({scheduleRestart: false})
         let seqTimer = setInterval(() => {
@@ -118,6 +120,14 @@ class Transport extends Component{
       console.log(startTime);
     }
 
+    this.transportFunctions = () => {
+      
+    }
+
+    this.playNextClip = () => {
+      this.props.playNextClip()
+    }
+
     this.engSig = (sigStr) => {
       if (sigStr === 'stopAll'){
         if (!this.state.scheduleStop){
@@ -127,10 +137,15 @@ class Transport extends Component{
         }
       }
 
-
+      
       if (sigStr === 'playAll'){
         if (!this.state.scheduleStart){
-          if(!this.state.isPlaying) { this.startSequencer() } else {this.stopSequencer() ; this.setState({scheduleRestart : true})}
+          if(!this.state.isPlaying) {
+            this.startSequencer() }
+          else {
+            this.stopSequencer() ;
+            this.setState({scheduleRestart : true})
+          }
           this.setState({scheduleStop : false })
           this.setState({scheduleStart : true })
         }
@@ -139,11 +154,20 @@ class Transport extends Component{
   }
 
   componentDidUpdate(prevProps, prevState, snapShot){
+    if (this.state.scheduleRestart){
+      this.startSequencer()
+    }
     
-    if (this.state.scheduleRestart){this.startSequencer()}
     if(prevState.tempoMultiplier !== this.state.tempoMultiplier){
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
+
+    if ((this.state.timer === this.props.seq.length) && this.state.isPlaying && this.state.timer > 0) {
+      this.stopSequencer()
+      this.setState({scheduleRestart: true})
+      this.playNextClip()
+    }
+    
   }
 
   componentWillReceiveProps(newProps){
@@ -155,9 +179,11 @@ class Transport extends Component{
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
   }
+
   componentDidMount(){
     this.tempoMultiplier(this.state.tempoMultiplier)
   }
+
   render(){
     return(<EngineContext.Consumer>
              {engine =>
@@ -165,10 +191,12 @@ class Transport extends Component{
                  {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
                  {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
                  
-                 <button className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'} onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
+                 <button
+                   className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'}
+                   onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
                    {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
                  </button>
-                 <button>PLAY TRACK</button>
+                 <button >PLAY TRACK</button>
                  <button>DELETE NOTES</button>
                  <button onClick={this.startFrom} >START FROM</button>
                  <button>MOVE NOTES</button>
@@ -191,7 +219,7 @@ class Transport extends Component{
                  <div className='panel read-outs'>
                    <div className="label">Tempo: </div><div className="figures">{this.props.tempo}</div>
                    <div className="label">Spawned: </div><div className="figures">{this.state.timers}</div>
-                   <div className="label">StepNo.: </div><div className="figures">{this.state.timer}</div>
+                   <div className="label">StepNo.: </div><div className="figures">{this.state.timer} of {this.props.seq.length}</div>
                  </div>
                  <div className="messages"></div>
                </div>)}

@@ -86,3 +86,11 @@
 .frontdrop .shift-left{
     left: 75px
 }
+
+.sequence-edit.playing button{
+    background: white
+}
+
+.sequence-edit.not-playing button{
+    background: none
+}
