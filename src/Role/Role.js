@@ -29,6 +29,7 @@ class Role extends Component {
       realTime: false,
       editSeq: false,
       currentSeq: '',
+      currentPatternName: '',
       spliceLoc: '',
       newArr: [],
       newArrClips: [],
@@ -213,14 +214,51 @@ class Role extends Component {
       
     }
 
-    this.renameClip = (e) => {
-      let val = e.target.value
-      this.composer.current.setState(state => {
-        state.clipSettings[this.state.currentSeq][2] = val;
+    this.clipNameEdit = (e) => {
+      console.log('keyOp');
+      console.log(e.keyCode);
+      if (e.key === 'Enter'){
+        console.log('Enter')
+      }else if (e.key === 'Backspace' || e.key === 'Delete'){
+        let val  = String(this.clipRef[this.state.currentSeq].current.state.name)
+        val = val.slice(0,val.length-1)
         this.clipRef[this.state.currentSeq].current.setState({name: val});
-        return state})
+        this.setState({currentPatternName: val})
+      }else{
+        if (e.keyCode !== 16 && e.keyCode !== 17 && e.keyCode !== 18 ){
+          console.log('control');
+          let val  = this.clipRef[this.state.currentSeq].current.state.name + e.key
+          this.clipRef[this.state.currentSeq].current.setState({name: val});
+          this.setState({currentPatternName: val})
+        }
+      }
     }
-    
+
+    this.renameClip = (e) => {
+      console.log('renameClip');
+
+      let val = e.target.value
+
+      let seq = this.state.currentSeq
+      let set = this.state.clipSettings
+      let name = set[seq][2]
+      
+      //this.composer.current.setState({clipSettings[seq][2] : val})
+
+      this.composer.current.setState(state => {
+        state.clipSettings[seq][2] = val;
+        return state})
+      
+      //console.log(this.composer.current.state.clipSettings);
+      //this.clipRef[this.state.currentSeq].current.setState({name: val});
+    }
+
+    this.getClipName = () => {
+      let seq = this.state.currentSeq
+      let set = this.composer.current.state.clipSettings
+      let name = set[seq][2]
+      return name
+    }
     
     this.doToClip = (e, ...rest) => {
       if(e === 'drop'){
@@ -256,7 +294,9 @@ class Role extends Component {
         this.setState({
           editSeq : true ,
           currentSeq: String(obj),
-          arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier}})
+          arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier},
+          currentPatternName: this.state.clipSettings[obj][2]
+        })
         
         const itr = this.state.clips[obj].values()
         var notes = []
@@ -364,7 +404,9 @@ class Role extends Component {
     }
   }
 
-  
+  componentDidUpdata(){
+    //console.log('Role Update')
+  }
   render(){
     return(
       <div className={`role ${this.props.module} ${this.state.active ? 'active' : 'inactive'}`}>
@@ -427,10 +469,12 @@ class Role extends Component {
           <div> 
             { this.state.currentSeq !== '' ?
               <div className="group-label">
-                Rename clip:  <input id='rename-a-clip'
-                                     className='text-input'
-                                     value={this.composer.current.state.clipSettings[this.state.currentSeq][2]}
-                                     onChange={this.renameClip} />
+                Rename clip:
+                <input id='rename-a-clip'
+                       className='text-input'
+                       value={this.state.currentPatternName}
+                       onKeyUp={this.clipNameEdit}
+                       onChange={this.renameClip} />
               </div>: null }
           </div>
           <div className='panel'>

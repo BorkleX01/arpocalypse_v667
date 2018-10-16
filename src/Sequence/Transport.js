@@ -23,7 +23,8 @@ class Transport extends Component{
       seq: [],
       cue: [],
       realtime : false,
-      multiplierAdjust: 'function'
+      multiplierAdjust: 'function',
+      conseq: false
     }
 
     this.props = props
@@ -162,7 +163,7 @@ class Transport extends Component{
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
 
-    if ((this.state.timer === this.props.seq.length) && this.state.isPlaying && this.state.timer > 0) {
+    if ((this.state.conseq && this.state.timer === this.props.seq.length) && this.state.isPlaying && this.state.timer > 0) {
       this.stopSequencer()
       this.setState({scheduleRestart: true})
       this.playNextClip()

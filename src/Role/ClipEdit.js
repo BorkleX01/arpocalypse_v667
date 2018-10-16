@@ -68,7 +68,9 @@ export default class ClipEdit extends Component {
     }
     
   }
-  
+  componentDidUpdate(){
+    //console.log(this.state.name)
+  }
   render(){
     return(<div
              ref = {this.widgetRef}
