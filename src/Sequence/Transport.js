@@ -121,8 +121,15 @@ class Transport extends Component{
       console.log(startTime);
     }
 
-    this.transportFunctions = () => {
-      
+    this.transportFunctions = (e) => {
+      switch (e.target.id){
+      case 'conseq':{
+        console.log(e.target.value);
+
+        this.setState({conseq: !this.state.conseq})
+      }
+        
+      }
     }
 
     this.playNextClip = () => {
@@ -184,7 +191,9 @@ class Transport extends Component{
   componentDidMount(){
     this.tempoMultiplier(this.state.tempoMultiplier)
   }
-
+  componentDidUpdata(){
+    console.log(this.state.conseq);
+  }
   render(){
     return(<EngineContext.Consumer>
              {engine =>
@@ -197,7 +206,7 @@ class Transport extends Component{
                    onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
                    {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
                  </button>
-                 <button >PLAY TRACK</button>
+                 <button id='conseq' value={this.state.conseq} onClick={this.transportFunctions}>PLAY CONSEQ ({this.state.conseq ? 'ON':'OFF'})</button>
                  <button>DELETE NOTES</button>
                  <button onClick={this.startFrom} >START FROM</button>
                  <button>MOVE NOTES</button>
