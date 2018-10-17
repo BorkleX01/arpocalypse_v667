@@ -49,9 +49,11 @@ class Keyboard extends Component {
     })
     
     this.state.keyObj = {...keyObj}
+    this.keyRef = {}
+    this.roleRef = {}
     
-    this.keyRef = (ind) => this.keyRef[ind] = React.createRef();
-    this.roleRef = (id) => this.roleRef[id] = React.createRef();
+    this.keyRefMaker = (ind) => this.keyRef[ind] = React.createRef();
+    this.roleRefMaker = (id) => this.roleRef[id] = React.createRef();
 
     this.buttonMap = new Map();
     
@@ -295,7 +297,7 @@ class Keyboard extends Component {
 		     i <= this.state[this.state.mode].range[1]
 		     &&
 		     (<Keys
-                        ref={this.keyRef(i)}
+                        ref={this.keyRefMaker(i)}
                         playNote={engine.playNote}
 		        key={i-this.state[this.state.mode].range[0]}
 		        widget={i-this.state[this.state.mode].range[0]}
@@ -310,7 +312,7 @@ class Keyboard extends Component {
               
               <div className='instruments'>
                 <Role
-                  ref = {this.roleRef('bass')}
+                  ref = {this.roleRefMaker('bass')}
                   modeClick={this.modeClick}
 	          clear={this.clearSeq}
 	          module='bass'
@@ -325,20 +327,19 @@ class Keyboard extends Component {
                   range={this.state['bass'].range}/>
                 
 	        <Role
-                  ref = {this.roleRef('treble')}
+                  ref = {this.roleRefMaker('treble')}
                   modeClick={this.modeClick}
 	          clear={this.clearSeq}
 	          module='treble'
 	          listener={this.roleListener}
 	          freq={this.state.freq}
-	          seq={Object.values(this.state.treble.notes)}
+	          seq={this.state.treble.notes}
 	          cue={this.state.treble.queue}
                   obj={this.state.keyObj}
 	          playNote={engine.playNote}
 	          tempo={engine.tempo}
                   noteOn={engine.noteOn}
-                  range={this.state['treble'].range}
-                  realTime={true}/>
+                  range={this.state['treble'].range}/>
 	      </div>
             </div>
           </div>)}

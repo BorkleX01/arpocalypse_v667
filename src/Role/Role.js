@@ -40,9 +40,11 @@ class Role extends Component {
       insert: 'note'
     }
 
+    this.clipRef = {}
+    this.noteRef = {}
     this.state.span = props.range[1] - props.range[0];
-    this.clipRef = (id) => this.clipRef[id] = React.createRef()
-    this.noteRef = (id) => this.noteRef[id] = React.createRef()
+    this.clipRefMake = (id) => this.clipRef[id] = React.createRef()
+    this.noteRefMake = (id) => this.noteRef[id] = React.createRef()
     this.transportRef = React.createRef();
     this.composer = React.createRef();
 
@@ -233,7 +235,6 @@ class Role extends Component {
         this.setState({currentPatternName: val})
       }else{
         if (e.keyCode !== 16 && e.keyCode !== 17 && e.keyCode !== 18 ){
-          console.log('control');
           let val  = this.clipRef[this.state.currentSeq].current.state.name + e.key
           this.clipRef[this.state.currentSeq].current.setState({name: val});
           this.setState({currentPatternName: val})
@@ -242,8 +243,6 @@ class Role extends Component {
     }
 
     this.renameClip = (e) => {
-      console.log('renameClip');
-
       let val = e.target.value
 
       let seq = this.state.currentSeq
@@ -304,7 +303,7 @@ class Role extends Component {
           arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier},
           currentPatternName: this.state.clipSettings[obj][2]
         })
-        
+
         const itr = this.state.clips[obj].values()
         var notes = []
         var cue = []
@@ -323,7 +322,7 @@ class Role extends Component {
         })
 
         this.clipRef[e].current.setState({playingCss : 'playing'})
-        props.listener(notes, cue, props.module, 'load')
+        this.props.listener(notes, cue, this.props.module, 'load')
       }
       else {
         console.log('clip action no name');
@@ -355,7 +354,7 @@ class Role extends Component {
             this.noteRef[r].current.setState({shiftCss : 'init', statusCss : 'init'})
           }
         }
-        this.noteRef[+this.currentDragging].current.setState({statusCss : 'init'})
+        this.noteRef[this.currentDragging].current.setState({statusCss : 'init'})
       } 
       else if(rest.includes('declareDrag')){
         this.currentDragging = rest[0]
@@ -368,7 +367,7 @@ class Role extends Component {
         }
       }
       else if(e === 'reOrdered'){
-        props.listener(this.state.newSeq, 'i', props.module, 'reseq')
+        this.props.listener(this.state.newSeq, 'i', this.props.module, 'reseq')
         this.setState(state => {
           state.clips[state.currentSeq] = this.state.newSeq;
           return state})
@@ -382,6 +381,7 @@ class Role extends Component {
     
     this.play = (id) => {
       this.setState({noteOn: true});
+      this.transportRef.current.state.noteOn = 't-note-on'
       this.props.playNote(id, this.props.freq[id])
     }
       
@@ -391,11 +391,15 @@ class Role extends Component {
     }
 
     this.tick = (t) => {
+      
       if(this.state.seq.length > 0 ){
-        //console.log(t); //this is cool
-        this.noteRef[t].current.state.noteCss = this.props.module +' note-on'
+        //console.log('tick: ' + t); //this is cool
+        let refInd = t
+        this.noteRef[refInd].current.setState({noteCss : this.props.module +' note-on'})
         let x = t === 0 ? this.state.seq.length-1 : t-1
-        this.noteRef[x].current.state.noteCss = ''
+        let refIndP = x
+        this.noteRef[refIndP].current.setState({noteCss : 'note-off'})
+        this.transportRef.current.setState({noteOn : 't-note-off'})
       }
     }
     
@@ -424,6 +428,8 @@ class Role extends Component {
 
     if (newProps.seq !== this.state.seq){
       this.setState({seq: [], swapSeq : newProps.seq})
+      //console.log('clear ref');
+      //console.log(this.noteRef);
     }
     
   }
@@ -446,14 +452,13 @@ class Role extends Component {
         </div>
         
         <div id={this.props.module+'-clips'} className='sequence-collection'
-             //onDrop={this.clipDrop}
              onDragEnter={this.patternBar}
              onDragLeave={this.patternBar}>
               { this.state.clips.length > 0 && this.composer.current.state.clipSettings != undefined ? 
                 this.state.clips
                 .map((o, i)=>
                      <ClipEdit
-                       ref={this.clipRef(i)}
+                       ref={this.clipRefMake(i)}
                        key={i}
                        id={i}
                        rank={i}
@@ -471,14 +476,13 @@ class Role extends Component {
             
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
           <div id={this.props.module+ '-notes'} className='note-collection'
-               //onDrop={this.noteDrop}
                onDragEnter={this.sequenceBar}
                onDragLeave={this.sequenceBar}>
             { this.state.seq.length > 0 ?
               this.state.seq
               .map((o, i) =>
                    <SeqEdit
-                     ref={this.noteRef(i)}
+                     ref={this.noteRefMake(i)}
                      key={i}
                      id={i}
                      rank={i}
@@ -520,6 +524,7 @@ class Role extends Component {
           
           <Transport
             ref={this.transportRef}
+            module={this.props.module}
             tick={this.tick}
             tempo={this.props.tempo}
             seq={this.props.seq}

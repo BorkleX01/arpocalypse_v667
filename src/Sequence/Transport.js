@@ -5,6 +5,7 @@ import { EngineContext } from '../Engine/EngineContext'
 class Transport extends Component{
   constructor(props){
     super();
+    this.props = props
     this.state = {
       timer: 0,
       isPlaying: false,
@@ -24,14 +25,18 @@ class Transport extends Component{
       cue: [],
       realtime : false,
       multiplierAdjust: 'function',
-      conseq: false
+      conseq: false,
+      //module: this.props.module
+      noteOn: 't-note-off',
+      preservePos: true,
+      deletion: true
     }
 
-    this.props = props
+    
     
     var seqTimerBuffer = [];
     var rtTimerBuffer = [];
-    var startTime = 0;
+    this.startTime = 0;
     var freqCount = 0;
 
     
@@ -46,7 +51,7 @@ class Transport extends Component{
         let seqTimer = setInterval(() => {
           if(seqTimerBuffer.indexOf(seqTimer) === -1) seqTimerBuffer.push(seqTimer);
           playStep();
-          this.setState({timers : seqTimerBuffer.length, timer: startTime, isPlaying: true})
+          this.setState({timers : seqTimerBuffer.length, timer: this.startTime, isPlaying: true})
         }, +period)
       }
     }
@@ -57,25 +62,28 @@ class Transport extends Component{
         let rtTimer = setTimeout(()=>{
           if(rtTimerBuffer.indexOf(rtTimer) === -1) rtTimerBuffer.push(rtTimer)
           playStep();
-          if(startTime ===  Object.keys(this.props.seq).length){
+          if(this.startTime ===  Object.keys(this.props.seq).length){
             this.setState({isPlaying: false});
             this.stopSequencer()
-            startTime = 0;
+            this.startTime = 0;
           }
-          this.setState({timers : rtTimerBuffer.length + seqTimerBuffer.length, timer: startTime});
+          this.setState({timers : rtTimerBuffer.length + seqTimerBuffer.length, timer: this.startTime});
         }, period)
       })
       this.setState({isPlaying: true});
     }
     
     var playStep = () => {
-      if (startTime >= Object.keys(this.props.seq).length ){startTime = 0}
+
+      if (this.startTime >= Object.keys(this.props.seq).length ){this.startTime = 0}
       if (freqCount >= this.state.playFreq ){freqCount = 0}
-      this.setState({timer: startTime})
+
+      this.setState({timer: this.startTime})
       this.props.tick(this.state.timer)
-      if(this.props.seq[startTime] != undefined){
-        this.props.play(this.props.seq[startTime])
-        startTime = startTime+1;
+
+      if(this.props.seq[this.startTime] != undefined){
+        this.props.play(this.props.seq[this.startTime])
+        this.startTime = this.startTime+1;
         freqCount = freqCount + 1;
       }
     }
@@ -118,15 +126,18 @@ class Transport extends Component{
 
     this.startFrom = () => {
       console.log('start from');
-      console.log(startTime);
+      console.log(this.startTime);
     }
 
     this.transportFunctions = (e) => {
       switch (e.target.id){
       case 'conseq':{
-        console.log(e.target.value);
-
         this.setState({conseq: !this.state.conseq})
+        break;
+      }
+      case 'preserve' :{
+        this.setState({preservePos: !this.state.preservePos})
+        break;
       }
         
       }
@@ -170,9 +181,15 @@ class Transport extends Component{
       this.tempoMultiplier(this.state.tempoMultiplier)
     }
 
-    if ((this.state.conseq && this.state.timer === this.props.seq.length) && this.state.isPlaying && this.state.timer > 0) {
+    if ((this.state.conseq && (this.state.timer === this.props.seq.length))
+        && this.state.isPlaying && this.state.timer > 0) {
+      if(this.state.preservePos){
+        this.startTime = 0;
+        this.setState({timer: 0})
+      }
       this.stopSequencer()
-      this.setState({scheduleRestart: true})
+      this.setState({scheduleRestart: true })
+      
       this.playNextClip()
     }
     
@@ -191,29 +208,43 @@ class Transport extends Component{
   componentDidMount(){
     this.tempoMultiplier(this.state.tempoMultiplier)
   }
-  componentDidUpdata(){
-    console.log(this.state.conseq);
-  }
+  
+
   render(){
     return(<EngineContext.Consumer>
              {engine =>
               (<div className='panel'>
                  {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
-                 {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') } 
-                 
+                 {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') }
+
                  <button
-                   className={engine.noteOn[1] === 'note-on' ? 'blink-note-on' : 'blink-note-off'}
+                   className={this.state.noteOn+' transport'}
                    onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
                    {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
                  </button>
-                 <button id='conseq' value={this.state.conseq} onClick={this.transportFunctions}>PLAY CONSEQ ({this.state.conseq ? 'ON':'OFF'})</button>
-                 <button>DELETE NOTES</button>
-                 <button onClick={this.startFrom} >START FROM</button>
-                 <button>MOVE NOTES</button>
+                 <button id='conseq'
+                         value={this.state.conseq}
+                         onClick={this.transportFunctions}>
+                   PLAY CONSEQ ({this.state.conseq ? 'ON':'OFF'})
+                 </button>
+                 <button id='deletion'
+                         value={this.state.deletion}
+                         onClick={this.transportFunctions}>
+                   DELETE NOTES ({this.state.deletion ? 'ON':'OFF'})
+                 </button>
+                 <button id='startFrom'
+                         onClick={this.transportFunctions} >
+                   START FROM
+                 </button>
+                 <button id='preserve'
+                         value={this.state.preservePos}
+                         onClick={this.transportFunctions}>
+                   PRESERVE POS ({this.state.preservePos ? 'ON':'OFF'})
+                 </button>
                  <button>REST</button>
                  <button>SPLIT</button>
                  <button>TIE</button>
-                 <button>COPY</button>
+                 <button>COPY/MOVE</button>
                  <button>INSERT</button>
                  <div className="panel dial-group">
                    <div className="pane">

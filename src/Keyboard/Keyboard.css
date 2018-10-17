@@ -77,7 +77,7 @@ button:hover {
 }
 
 button {
-    transition: all 0.5s;
+    transition: all 0.25s;
 }
 
 
@@ -239,12 +239,12 @@ button {
 
 
 .bass.note-on > .key-inner {
-    background: yellow;
+    background: blue;
     color: black
 }
 
 .treble.note-on > .key-inner {
-    background: yellow;
+    background: red;
     color: black
 }
 

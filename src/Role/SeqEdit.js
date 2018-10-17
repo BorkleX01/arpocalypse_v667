@@ -4,6 +4,7 @@ export default class SeqEdit extends Component {
   constructor(props){
 
     super()
+    this.props = props;
     this.state = {
       value : 'rest',
       patch : '',
@@ -15,13 +16,13 @@ export default class SeqEdit extends Component {
       statusCss: 'init',
       rank: -1
     }
-    this.props = props;
+    
     this.state.value = this.props.value
     this.state.patch = this.props.patch
     this.state.id = this.props.id
     this.state.rank = this.props.rank
 
-    this.widgetRef = React.createRef();
+    //this.widgetRef = React.createRef();
     this.swapMaybe = -1;
 
     this.dragStart = (e) => {
@@ -64,9 +65,14 @@ export default class SeqEdit extends Component {
     }
     
   }
+
+  componentDidUpdate(prevProps){
+
+  }
+
   render(){
     return(<div
-             ref = {this.widgetRef}
+             //ref = {this.widgetRef}
              draggable={"true"}
              onDragStart={this.dragStart}
              onDragEnter={this.dragEnter}
@@ -74,7 +80,7 @@ export default class SeqEdit extends Component {
              onDragOver={this.clipOver}
              onDragEnd={this.dragDrop}
              onClick={this.click}
-             className={'frontdrop role-edit ' + this.state.noteCss+ ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
+             className={'frontdrop role-edit ' + this.state.noteCss + ' ' + this.state.shiftCss + ' ' + this.state.statusCss}
              id = {this.state.id}>
              <button>
                {this.props.label}

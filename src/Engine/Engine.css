@@ -119,6 +119,10 @@ button {
     background: yellow;
 }
 
-button.blink-note-on  {
-    background: yellow;
+button.t-note-on  {
+    background: none;
+}
+
+button.t-note-off  {
+    background: none;
 }
