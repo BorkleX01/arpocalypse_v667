@@ -26,8 +26,13 @@ class Detector extends Component {
     var currentObj = {}
     var currentOp = ''
     
-    this.execute = (settings, clips, doToClip) => {
-      doToClip('reOrdered', 'clips' , {clips: clips, clipSettings: settings})
+    this.execute = (op, ...args) => {
+      if (op === 'moveClip'){
+        args[0].call(this, 'reOrdered', 'clips' , {clips: args[2], clipSettings: args[1]})
+      }else if (op === 'moveNote')
+      {
+        args[0].call(this, 'reOrdered', 'seq' , {seq: args[1]})
+      }
     }
 
     this.register = (e) => {

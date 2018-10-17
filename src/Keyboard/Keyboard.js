@@ -144,12 +144,18 @@ class Keyboard extends Component {
             let newClip = state[mode].notes.map((o,i) => [o, state[mode].queue[i]])
             let seq = this.roleRef[mode].current.state.currentSeq
             let clips = this.roleRef[mode].current.state.clips
-            
             clips[seq] = newClip
             this.roleRef[mode].current.setState({clips: clips })
           }
           return state
         })
+      }
+      else if(rest.includes('reseq')){
+        let newClip = []
+        for (let n of v){
+          newClip.push(n[0])
+        }
+        this.setState({[mode] : {...this.state[mode], notes : newClip}})
       }
     }
     
@@ -231,6 +237,11 @@ class Keyboard extends Component {
 
   componentDidUpdate(){
     this.mapButtons(this.state.octavePage*12 + this.state[this.state.mode].range[0])
+/*
+    if(this.state.notes !== this.state.newClip){
+      this.setState({notes: this.state.newClip})
+    }
+*/
   }
 
   render() {
