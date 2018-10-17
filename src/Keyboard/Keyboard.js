@@ -6,7 +6,7 @@ import { EngineContext } from '../Engine/EngineContext'
 import { Keys } from '../Keys'
 import { qwertyClavier, octavePager }  from './LocalKeyboard'
 import Spinner from '../Widgets/Spinner'
-import { MIDI } from './MIDIKeyboard'
+
 //Render sequence(s)
 class Keyboard extends Component {
   constructor(props){
@@ -81,6 +81,7 @@ class Keyboard extends Component {
         this.keyRef[key].current.setState({button: true})
         this.keyRef[key].current.press()
       }
+      
       if(rest.includes('add')){
         let isEdit = this.roleRef[this.state.mode].current.state.editSeq; 
         this.setState(state=> {

@@ -173,6 +173,7 @@ class Transport extends Component{
   }
 
   componentDidUpdate(prevProps, prevState, snapShot){
+
     if (this.state.scheduleRestart){
       this.startSequencer()
     }
@@ -218,9 +219,9 @@ class Transport extends Component{
                  {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') }
 
                  <button
-                   className={this.state.noteOn+' transport'}
+                   className={this.state.noteOn}
                    onClick={this.state.isPlaying ? this.stopSequencer :  this.startSequencer}>
-                   {this.state.isPlaying ? 'STOP' : 'PLAY'} CLIP
+                   {this.state.isPlaying ? 'STOP (PLAYING)' : 'PLAY (STOPPED)'} 
                  </button>
                  <button id='conseq'
                          value={this.state.conseq}

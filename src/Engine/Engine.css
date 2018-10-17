@@ -120,9 +120,11 @@ button {
 }
 
 button.t-note-on  {
-    background: none;
+    background: yellow;
+    color: black
 }
 
 button.t-note-off  {
     background: none;
+    color: white;
 }

@@ -27,11 +27,16 @@ class Detector extends Component {
     var currentOp = ''
     
     this.execute = (op, ...args) => {
+      console.log(args);
       if (op === 'moveClip'){
-        args[0].call(this, 'reOrdered', 'clips' , {clips: args[2], clipSettings: args[1]})
+        if(args[1].length > 0 && args[2].length > 0){
+          args[0].call(this, 'reOrdered', 'clips' , {clips: args[2], clipSettings: args[1]})
+        }
       }else if (op === 'moveNote')
       {
-        args[0].call(this, 'reOrdered', 'seq' , {seq: args[1]})
+        if(args[1].length > 0){
+          args[0].call(this, 'reOrdered', 'seq' , {seq: args[1]})
+        }
       }
     }
 

@@ -75,7 +75,7 @@ class ComposeClips extends Component{
             <button onClick={this.saveSeq}>{this.props.isEdit ? 'PROPGATE NEW ' : 'CREATE NEW '} CLIP</button>
             <button value = 'load' onClick={this.mode}> DELETE/LOAD CLIPS (LOAD)</button>
             <button value = 'join' onClick={this.mode}> JOIN CLIPS (OFF) </button>
-            <button value = 'join' onClick={this.mode}> TRIGGER CLIPS (OFF) </button>
+            <button value = 'connect' onClick={this.mode}> CONNECT (OFF) </button>
           </React.Fragment>)
         }
       </EngineContext.Consumer>

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import './Engine.css'
 import { EngineContext } from './EngineContext'
-import { Keyboard } from '../Keyboard';
+//import { Keyboard } from '../Keyboard';
 import Spinner from '../Widgets/Spinner'
 import Diagnostics  from './Diagnostics'
-
+import { MIDI } from '../Keyboard/MIDIKeyboard'
 
 class Engine extends Component {
   constructor(props) {
@@ -28,6 +28,18 @@ class Engine extends Component {
       stopAll: false,
       storedConfig: 'default'
     }
+
+    console.log('MIDI access');
+    var midi = new MIDI()
+    var transferFunction = (bpm) => {
+      console.log(bpm)
+      this.setState({tempo : +bpm})
+    }
+    
+    if (navigator.requestMIDIAccess != undefined){
+      midi.stateListener(transferFunction)
+    }
+
     
     var audioCtx = false
     var gainNode = false

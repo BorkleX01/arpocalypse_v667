@@ -82,8 +82,7 @@
 }
 
 .role-edit:hover > button {
-    background: ghostwhite;
-    color: black;
+    color: white;
 }
 
 .role-edit , .sequence-edit {

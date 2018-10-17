@@ -381,7 +381,7 @@ class Role extends Component {
     
     this.play = (id) => {
       this.setState({noteOn: true});
-      this.transportRef.current.state.noteOn = 't-note-on'
+      //this.transportRef.current.state.noteOn = 't-note-on'
       this.props.playNote(id, this.props.freq[id])
     }
       
@@ -391,15 +391,13 @@ class Role extends Component {
     }
 
     this.tick = (t) => {
-      
+      //this.transportRef.current.setState({noteOn : this.state.noteOn ? 't-note-on' : 't-note-off'})
       if(this.state.seq.length > 0 ){
-        //console.log('tick: ' + t); //this is cool
         let refInd = t
         this.noteRef[refInd].current.setState({noteCss : this.props.module +' note-on'})
         let x = t === 0 ? this.state.seq.length-1 : t-1
         let refIndP = x
         this.noteRef[refIndP].current.setState({noteCss : 'note-off'})
-        this.transportRef.current.setState({noteOn : 't-note-off'})
       }
     }
     
