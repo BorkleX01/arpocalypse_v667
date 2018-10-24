@@ -199,8 +199,8 @@ class Role extends Component {
       
       if(e.type === 'dragleave')
       {
-
-        console.log('leaving: ' + e.target.id);
+        //drag leave might help with Chrome dragEvent issue
+        //console.log('leaving: ' + e.target.id);
 
         /*this.transferFunction(
           e.type, e.dataTransfer.getData("text/plain"))*/
@@ -234,7 +234,7 @@ class Role extends Component {
 
       if(e.type === 'dragleave')
       {
-        console.log('leaving ' + e.target.id);
+        //console.log('leaving ' + e.target.id);
         /*this.transferFunction(
           e.type, e.dataTransfer.getData("text/plain"))*/
       }      
@@ -280,12 +280,10 @@ class Role extends Component {
       let name = set[seq][2]
       return name
     }
-    
+
+    //called by pattern and sequence widgets
     this.doToClip = (e, ...rest) => {
-      //console.log(d.currentOp);
       if(e === 'drop'){
-        //console.log('dropped via dotoClip: ' + rest + ' ' + this.state.currentSeq);
-        //console.log(d.currentOp.arg);
         if (d.currentOp.op === 'triggerNote'){
           d.execute('triggerNote', d.currentOp.arg, this.state.clips[rest], this.state.clipSettings[rest], this.state.currentSeq, this.state.seq)
           this.setState(state => {//simple chains
@@ -296,18 +294,27 @@ class Role extends Component {
               state.clipSettings[this.state.currentSeq][3] = [[this.state.currentSeq, rest, d.currentOp.arg.target.id]]
             }
             //console.log(state.clipSettings[rest][2]);
+            for (let r in this.noteRef){
+              //console.log('note: ' + r);
+              if(this.noteRef[r].current){
+                this.noteRef[r].current.setState({trigs : []})
+              }
+            }
             this.noteRef[d.currentOp.arg.target.id].current.setState({trigs: state.clipSettings[rest][2]})
-
             return state})
         }
 
         if (d.currentOp.op === 'reOrder'){
           d.execute('moveClip', this.doToClip, this.state.newArrClips, this.state.newArrSettings)
         }
-        //reset icons and render trigger markers
+        
+        //reset icon positions
         for (let r in this.clipRef){
-          this.clipRef[r].current.setState({shiftCss : 'init'})
+          if(this.clipRef[r].current){
+            this.clipRef[r].current.setState({shiftCss : 'init'})
+          }
         }
+        //reset dragging icon
         this.clipRef[+this.currentDragging].current.setState({statusCss : 'init'})
       } 
       else if(rest.includes('declareDrag')){
@@ -328,29 +335,55 @@ class Role extends Component {
         clips : [],
         clipSettings : []})
       }
+      else if (rest.includes('ClipEditClick'))
+      {
+        if (this.composer.current.state.deletion){
+          this.doToClip(e, 'deleteClip')
+        }
+        else
+        {
+          this.doToClip(e, 'playClip')
+        }
+      }
+      else if (rest.includes('deleteClip'))
+      {
+        for (let s in this.state.clipSettings){
+          if(this.state.clipSettings[s][3] != undefined){
+            let ind = this.state.clipSettings[s][3][0][1][0]
+            //console.log(this.state.clipSettings[s][3]);
+            //console.log(ind);
+            //console.log(s);
+            if(ind === e){
+              //console.log(this.state.clipSettings[s][3]);
+              this.setState(state => {
+                state.clipSettings[+s][3] = null;
+                return state
+              })
+            }
+          }
+        }
+        
+        this.composer.current.loadSimple(
+          this.state.clips.filter((el, i)=>i !== +e),
+          this.state.clipSettings.filter((el, i)=> i !== +e))
+        
+        this.setState({
+          clips : [],
+          clipSettings : []})
+
+        //Deletion of currently playing pattern?
+        //Scrub linkages to non-existent clips
+      }
       else if (rest.includes('playClip')) //this is retarded
       {
-
-        
         let obj = e
         this.setState({
           editSeq : true ,
           currentSeq: String(obj),
           arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier},
-          currentPatternName: this.state.clipSettings[obj][2]
+          currentPatternName: this.state.clipSettings[obj] != undefined && this.state.clipSettings[obj][2] != undefined ? this.state.clipSettings[obj][2] : null
         })
-
-        /*let markedNote = this.state.clipSettings[+obj]
-        if( markedNote != undefined){
-          if (markedNote[3] != undefined){
-            let ind = markedNote[3][0][2]
-            let mark = markedNote[3][0][1]
-            console.log('noteref');
-            this.noteRef[ind].current.setState({trigs : this.state.clipSettings[mark][2]})
-          }
-        }
-        */
-
+        
         const itr = this.state.clips[obj].values()
         var notes = []
         var cue = []
@@ -371,11 +404,13 @@ class Role extends Component {
         this.clipRef[e].current.setState({playingCss : 'playing'})
         this.props.listener(notes, cue, this.props.module, 'load')
       }
-      else {
-        console.log('clip action no name');
+      else
+      {
+        console.log('no action');
       }
     }
-
+    
+    //called by Compose and Transport
     this.clipListener = (val, ...rest) => {
       if(rest.includes('tempoX')){
         this.setState({arpSettings: {tempoX : +val}})
@@ -384,19 +419,16 @@ class Role extends Component {
           this.composer.current.state.clipSettings[this.state.currentSeq][1] = +val
         }
       }
-      
-      this.setState({
-        clips : this.composer.current.state.clips,
-        clipSettings : this.composer.current.state.clipSettings})
+
+      this.setState(state=>{
+        state.clips = this.composer.current.state.clips,
+        state.clipSettings = this.composer.current.state.clipSettings;
+      return state})
     }
         
-    
-    
     this.doToNote = (e, ...rest) => {
-      //console.log(d.currentOp);
       var returnVal
       if(e === 'drop'){
-        console.log('dropped via noteEdit: ' + rest);
         d.execute('moveNote' , this.doToNote, this.state.newSeq)
         for (let r in this.noteRef){
           if (this.noteRef[r].current !== null) {
@@ -424,7 +456,16 @@ class Role extends Component {
       }
       else if (e === 'identify')
       {
-        let name = this.state.clipSettings[rest[0]][2]
+        console.log(rest[0]);
+        console.log(this.state.clipSettings.length);
+        console.log(this.state.clipSettings[rest[0]]);
+        var name
+        if (this.state.clipSettings[rest[0]] != undefined) {
+          name = this.state.clipSettings[rest[0]][2]
+        }else {
+          name = 'not-found'
+        } 
+        
         returnVal = name
         
       }
@@ -433,23 +474,19 @@ class Role extends Component {
       }
       return returnVal
     }
-
-    
     
     this.play = (id, t) => {
-      //console.log(this.state.clipSettings[this.state.currentSeq]);
-      let trigInfo = this.state.clipSettings[this.state.currentSeq][3]
-      if (trigInfo != undefined){
-        //console.log('chain: ' + id + ' ' + t +' ' + trigInfo[0]);
-        if (t === trigInfo[0][2]){
-          //console.log('to: ' + this.state.clipSettings[trigInfo[0][1]][2])
-          this.doToClip(trigInfo[0][1], 'playClip')
+      if (this.state.clipSettings[this.state.currentSeq] != undefined && this.composer.current.state.chain)
+      {
+        let trigInfo = this.state.clipSettings[this.state.currentSeq][3]
+        if (trigInfo != undefined){
+          if (trigInfo[0][2] != undefined && t === trigInfo[0][2]) {
+            this.doToClip(trigInfo[0][1], 'playClip')
+          }
         }
       }
       
-      /**/
       this.setState({noteOn: true});
-      //this.transportRef.current.state.noteOn = 't-note-on'
       this.props.playNote(id, this.props.freq[id])
     }
       
@@ -459,13 +496,14 @@ class Role extends Component {
     }
 
     this.tick = (t) => {
-      //this.transportRef.current.setState({noteOn : this.state.noteOn ? 't-note-on' : 't-note-off'})
       if(this.state.seq.length > 0 ){
         let refInd = t
-        this.noteRef[refInd].current.setState({noteCss : this.props.module +' note-on'})
-        let x = t === 0 ? this.state.seq.length-1 : t-1
-        let refIndP = x
-        this.noteRef[refIndP].current.setState({noteCss : 'note-off'})
+        if(this.noteRef[refInd].current){
+          this.noteRef[refInd].current.setState({noteCss : this.props.module +' note-on'})
+          let x = t === 0 ? this.state.seq.length-1 : t-1
+          let refIndP = x
+          this.noteRef[refIndP].current.setState({noteCss : 'note-off'})
+        }
       }
     }
     
@@ -483,7 +521,6 @@ class Role extends Component {
   }
   
   componentWillReceiveProps(newProps){
-    //console.log(this.state.clips);
     if(newProps.clips && newProps.clips.length > 0 ){
       this.setState({clips : newProps.clips})
     }
@@ -500,7 +537,7 @@ class Role extends Component {
     
   }
 
-  componentDidUpdate(prevProps){
+  componentDidUpdate(prevProps, prevState){
     if(this.state.seq !== this.state.swapSeq){
       this.setState({seq:this.state.swapSeq})
     }
@@ -521,27 +558,27 @@ class Role extends Component {
         <div id={this.props.module+'-clips'} className='sequence-collection'
              onDragEnter={this.patternBar}
              onDragLeave={this.patternBar}>
-              { this.state.clips.length > 0 && this.composer.current.state.clipSettings != undefined ? 
-                this.state.clips
-                .map((o, i)=>
-                     <ClipEdit
-                       ref={this.clipRefMake(i)}
-                       storePayload = {this.storePayload}
-                       key={i}
-                       id={i}
-                       rank={i}
-                       listener={this.doToClip}
-                       transfer={this.transferFunction}
-                       value={i}
-                       patch={this.state.clipSettings != undefined ? this.state.clipSettings : 'default'}
-                       instrument={this.props.module}
-                       name={(this.composer.current.state.clipSettings[i] != undefined ?
-                              this.composer.current.state.clipSettings[i][2] : i)}  />)
-                :
-                <div style={{textAlign:'left'}} className='messages'>CLIP</div>
-              }
-            </div>
-            
+          { this.state.clips.length > 0 && this.composer.current.state.clipSettings != undefined ? 
+            this.state.clips
+            .map((o, i)=>
+                 <ClipEdit
+                   ref={this.clipRefMake(i)}
+                   storePayload = {this.storePayload}
+                   key={i}
+                   id={i}
+                   rank={i}
+                   listener={this.doToClip}
+                   transfer={this.transferFunction}
+                   value={i}
+                   patch={this.state.clipSettings != undefined ? this.state.clipSettings : 'default'}
+                   instrument={this.props.module}
+                   name={(this.composer.current.state.clipSettings[i] != undefined ?
+                          this.composer.current.state.clipSettings[i][2] : i)}  />)
+            :
+            <div style={{textAlign:'left'}} className='messages'>CLIP</div>
+          }
+        </div>
+        
         <div className='ins' style={{display : this.state.visible ? 'block' : 'none'}}>
           <div id={this.props.module+ '-notes'} className='note-collection'
                onDragEnter={this.sequenceBar}
@@ -579,7 +616,7 @@ class Role extends Component {
               </div>: null }
           </div>
           <div className='panel'>
-            <button name='clearAll' onClick={this.clear}>CLEAR SEQ</ button>
+            <button name='clearAll' onClick={this.clear}>CLEAR SPACE</ button>
             <ComposeClips
               ref = {this.composer}
               module = {this.props.module}

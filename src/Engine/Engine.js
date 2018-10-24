@@ -27,7 +27,7 @@ class Engine extends Component {
       playAll : true,
       stopAll: false,
       storedConfig: 'default',
-      midiIn: false
+      midiIn: true
     }
 
     
@@ -164,7 +164,14 @@ class Engine extends Component {
       req.send(fData)
     }
 
-
+    this.toggle = (e) => {
+      switch (e.target.id) {
+      case 'midiIn': 
+        this.setState({midiIn:!this.state.midiIn})
+        break;
+      }
+    }
+    
     this.playAll = () => {
       this.setState({playAll : true, stopAll: false})
     }
@@ -263,6 +270,7 @@ class Engine extends Component {
                 <button onClick={this.saveConfig}>SAVE CONFIG</button>
                 <button onClick={this.loadConfig}>LOAD CONFIG</button>
                 <button onClick={!this.state.engineOn ? this.startEngine : this.stopEngine}>{!this.state.engineOn ? 'START' : 'STOP'} ENGINE </button>
+                <button onClick={this.toggle} id='midiIn' value={this.state.midiIn}>MIDI IN ({this.state.midiIn ? 'IN':'OFF'})</button>
                 <div className="label">PRESET: </div><br/>
                 <input className='text-input'
                        id='stored-config'

@@ -6,29 +6,31 @@ import { Detector } from '../EntityRelations'
 export default class ClipEdit extends Component {
   constructor(props){
     super()
+    this.props = props
     this.state = {
-      name : '',
-      value : '',
-      id : '',
+      name : this.props.name,
+      value : this.props.value,
+      id : this.props.id,
       isStart : false,
       isEnd: false,
       playingCss: 'not-playing',
       shiftCss: 'init',
       statusCss: 'init',
-      rank: -1
+      rank: this.props.rank
     }
 
     this.props = props
-
-    this.state.name = this.props.name
-    this.state.value = this.props.value
-    this.state.id = this.props.id
-    this.state.rank = this.props.rank
+    
+    //this.state.name = this.props.name
+    //this.state.value = this.props.value
+    //this.state.id = this.props.id
+    //this.state.rank = this.props.rank
 
     this.widgetRef = React.createRef();
     this.swapMaybe = -1;
 
-    
+    //console.log(this.state.value);
+    //console.log(this.state.id);
     
     this.dragStart = (e) => {
       
@@ -80,7 +82,7 @@ export default class ClipEdit extends Component {
 
     this.click = (e) => {
       e.preventDefault();
-      this.props.listener(this.props.value, 'playClip') //any abstracted widget should call parent function as a default
+      this.props.listener(this.state.value, 'ClipEditClick') //any abstracted widget should call parent function as a default
     }
     
   }

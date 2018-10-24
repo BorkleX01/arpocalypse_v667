@@ -3,7 +3,7 @@ import Spinner from '../Widgets/Spinner'
 import { EngineContext } from '../Engine/EngineContext'
 
 
-class Transport extends Component{
+class Transport extends Component {
   constructor(props){
     super();
     this.props = props
@@ -35,8 +35,6 @@ class Transport extends Component{
 
     }
 
-    
-    
     var seqTimerBuffer = [];
     var rtTimerBuffer = [];
     this.startTime = 0;
@@ -90,14 +88,12 @@ class Transport extends Component{
         freqCount = freqCount + 1;
       }
     }
-
- 
+    
     this.stopSequencer = () => {
       while(seqTimerBuffer.length > 0){clearInterval(seqTimerBuffer.pop(seqTimerBuffer))}
       while(rtTimerBuffer.length > 0){clearTimeout(rtTimerBuffer.pop(rtTimerBuffer))}
       this.setState({isPlaying: false, timers : seqTimerBuffer.length + rtTimerBuffer.length})
     }
-    
     
     this.doToNote = (e ,o) => {
       props.delete(o.value)
@@ -182,8 +178,6 @@ class Transport extends Component{
   }
 
   componentDidUpdate(prevProps, prevState, snapShot){
-
-    
     if (this.state.scheduleRestart){
       this.startSequencer()
     }
@@ -203,20 +197,17 @@ class Transport extends Component{
       
       this.playNextClip()
     }
-
-    
-    
   }
 
   componentWillReceiveProps(newProps){
     if(newProps.start !== this.props.start){
-        this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
+      this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
     }
 
     if(newProps.tempo !== this.props.tempo){
       //this.tempoMultiplier(this.state.tempoMultiplier)
       //console.log(newProps.tempo - this.props.tempo);
-      if (Math.abs(newProps.tempo - this.props.tempo)>0){ 
+      if (Math.abs(newProps.tempo - this.props.tempo)>2){ 
         console.log('tempo changed: ' + newProps.tempo);
         this.changeTempo(newProps.tempo)
       }
@@ -226,12 +217,11 @@ class Transport extends Component{
   componentDidMount(){
     this.tempoMultiplier(this.state.tempoMultiplier)
   }
-  
 
   render(){
     return(<EngineContext.Consumer>
-             {engine =>
-              (<div className='panel'>
+            {engine =>
+             (<div className='panel'>
                  {engine.stopAll !== this.state.scheduleStop  && this.engSig('stopAll') } 
                  {engine.playAll !== this.state.scheduleStart  && this.engSig('playAll') }
 
@@ -282,8 +272,7 @@ class Transport extends Component{
                  </div>
                  <div className="messages"></div>
                </div>)}
-           </EngineContext.Consumer>)
-    
+          </EngineContext.Consumer>)
   }
 }
 

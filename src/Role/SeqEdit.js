@@ -26,9 +26,16 @@ export default class SeqEdit extends Component {
     //this.widgetRef = React.createRef();
     this.swapMaybe = -1;
 
-    if(this.props.trigs[0] && this.props.trigs[0][2] === this.props.id){
+    if(this.props.trigs[0] != undefined && this.props.trigs[0][2] === this.props.id){
+      console.log('triggers marked here: ');
       let targ = this.props.listener('identify', this.props.trigs[0][1][0])
-      this.state.trigs = targ
+      if (targ !== 'not-found'){
+        this.state.trigs = targ
+      } else
+      {
+        console.log('Not found : ' + this.props.trigs[0][1][0])
+        this.state.trigs = []
+      }
     }
 
     this.dragStart = (e) => {

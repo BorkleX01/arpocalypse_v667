@@ -31,11 +31,10 @@ class Detector extends Component {
       
       if(op === 'triggerNote')
       {
-        console.log('Detector.execute(): ');
+        //console.log('Detector.execute(): ');
         //console.log(op);
         //console.log(args);
-        console.log('Trigger clip ' + args[0].origin.id + '(' + args[2][2] + ') with note ' + args[0].target.id + ' of clip ' + args[3]);
-        
+        //console.log('Trigger clip ' + args[0].origin.id + '(' + args[2][2] + ') with note ' + args[0].target.id + ' of clip ' + args[3]);
       }
       
       if (op === 'moveClip'){
@@ -100,11 +99,8 @@ class Detector extends Component {
           if (target != undefined){
             result = maps.search(origin, target)
           }
-
           this.currentOp = result
-
           return(this.currentOp)
-          
         }
       )
     }

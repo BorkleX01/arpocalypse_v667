@@ -9,6 +9,7 @@ class ComposeClips extends Component{
       clipSettings: [],
       arpSettings: {},
       deletion: false,
+      chain: true
     }
 
     this.state.instrument = props.module;
@@ -26,8 +27,13 @@ class ComposeClips extends Component{
           this.props.clipListener();
           return state })}}
 
-    this.mode = (e) => {
-      //console.log(e.target.value);
+    this.toggle = (e) => {
+      switch (e.target.id) {
+      case 'deletion': this.setState({deletion: !this.state.deletion})
+        break;
+      case 'chain': this.setState({chain: !this.state.chain})
+        break;
+      }
     }
     
     this.loadPresets = (bank) => {
@@ -39,10 +45,10 @@ class ComposeClips extends Component{
           this.props.clipListener() //replicates the clips to Role now 
           return state
         })}
-      
     }
 
     this.loadSimple = (clips, clipSettings) => {
+
       this.setState(state=>{
           state.clips = clips
           state.clipSettings = clipSettings
@@ -56,11 +62,13 @@ class ComposeClips extends Component{
   }
   
   componentDidUpdate(){
-    
-    if(this.state.clips.length !== this.clipLength){
+    if(this.state.clips.length !== this.clipLength)
+    {
       this.updateEngine = true;
       this.clipLength = this.state.clips.length
-    }else{
+    }
+    else
+    {
       this.updateEngine = false;
     }
   }
@@ -73,9 +81,9 @@ class ComposeClips extends Component{
             { this.updateEngine ? engine.saveIns(this.state) : null }
             { engine.message === 'Loaded config' && !this.presetsLoaded ? this.loadPresets(engine.config) : null}
             <button onClick={this.saveSeq}>{this.props.isEdit ? 'PROPGATE NEW ' : 'CREATE NEW '} CLIP</button>
-            <button value = 'load' onClick={this.mode}> DELETE/LOAD CLIPS (LOAD)</button>
-            <button value = 'join' onClick={this.mode}> JOIN CLIPS (OFF) </button>
-            <button value = 'connect' onClick={this.mode}> CONNECT (OFF) </button>
+            <button value = {this.state.deletion} id='deletion' onClick={this.toggle}> DELETE/LOAD CLIPS ({this.state.deletion?'DEL':'LOAD'})</button>
+            <button value = {this.state.chain} id='chain' onClick={this.toggle}> CHAIN CLIPS ({this.state.chain?'ON':'OFF'}) </button>
+            <button value = 'connect' onClick={this.toggle}> ?CONNECT? (OFF) </button>
           </React.Fragment>)
         }
       </EngineContext.Consumer>
