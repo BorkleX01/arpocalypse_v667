@@ -12,7 +12,26 @@
     height: 40px;
     align-items: center;
     user-select: none;
+
 }
+
+.dial {
+    border-radius: 50%;
+    border: 1px solid darkslategrey;
+    height: 85px;
+    margin-bottom: -105%;
+    margin-top: 0%;
+    width: 85px;
+    margin-left: 0px;
+}
+
+.dial-pointer {
+    border: 1px solid white;
+    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+}
+
 .spinner>*{
     user-selectable: none
 }
@@ -93,4 +112,11 @@
 
 .sequence-edit.not-playing button{
     background: none
+}
+
+
+.trigger-marker {
+    border: 1px solid white;
+    position: absolute;
+    top: 0px;
 }

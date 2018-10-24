@@ -26,20 +26,23 @@ class Engine extends Component {
       message : '',
       playAll : true,
       stopAll: false,
-      storedConfig: 'default'
+      storedConfig: 'default',
+      midiIn: false
     }
 
-    console.log('MIDI access');
-    var midi = new MIDI()
-    var transferFunction = (bpm) => {
-      console.log(bpm)
-      this.setState({tempo : +bpm})
-    }
     
-    if (navigator.requestMIDIAccess != undefined){
-      midi.stateListener(transferFunction)
+    if (this.state.midiIn){
+      console.log('MIDI access');
+      var midi = new MIDI()
+      var transferFunction = (bpm) => {
+        //console.log(bpm)
+        this.setState({tempo : +bpm})
+      }
+      
+      if (navigator.requestMIDIAccess != undefined){
+        midi.stateListener(transferFunction)
+      }
     }
-
     
     var audioCtx = false
     var gainNode = false

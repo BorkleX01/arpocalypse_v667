@@ -8,8 +8,8 @@ import { ComposeClips } from '../Sequence/Compose'
 import Spinner from '../Widgets/Spinner'
 import ClipEdit from './ClipEdit'
 import SeqEdit from './SeqEdit'
-import {Detector} from '../EntityRelations'
-import {Triggers} from '../EntityRelations'
+import { Detector } from '../EntityRelations'
+import { Triggers } from '../EntityRelations'
 
 class Role extends Component {
   constructor(props){
@@ -37,7 +37,9 @@ class Role extends Component {
       newArr: [],
       newArrClips: [],
       newArrSettings : [],
-      insert: 'note'
+      insert: 'note',
+      currentOp: '',
+      chain: true
     }
 
     this.clipRef = {}
@@ -154,15 +156,21 @@ class Role extends Component {
     var d = new Detector(this.props, this.state)
 
     this.transferFunction = (typeStr, obj, rest) => {
+
       var res = d.query(typeStr, obj, rest)
 
+      this.setState({currentOp: res().op})
+      
       if (res().op === 'reOrder'){
-        this.setState({insert : res().arg})
+        this.setState({insert : res().arg}) //do I need this?
       }else{
         this.setState({insert : ''})
       }
     }
-    
+
+    this.storePayload = (a) => {
+      d.storePayload(a)
+    }
 
     /*Merge patternBar and sequenceBar to class called ZoneListeners*/
     this.patternBar = (e) => {
@@ -176,11 +184,14 @@ class Role extends Component {
         })
 
         var el;
+
         if(e.target.id !== e.currentTarget.id){
           el = e.target.id
         }
 
         d.register(e)
+
+        let transferPayload = e.dataTransfer.getData('text/plain')
         this.transferFunction(
           e.type, e.dataTransfer.getData("text/plain"),
           { module:this.props.module, zone: e.currentTarget.className, id: el != undefined && +el })
@@ -188,6 +199,9 @@ class Role extends Component {
       
       if(e.type === 'dragleave')
       {
+
+        console.log('leaving: ' + e.target.id);
+
         /*this.transferFunction(
           e.type, e.dataTransfer.getData("text/plain"))*/
       }
@@ -197,6 +211,7 @@ class Role extends Component {
     this.sequenceBar = (e) => {
       if(e.type === 'dragenter')
       {
+
         if(this.state.visible && this.state.currentSeq != ''){
           this.setState({
             targetBank: 'notes',
@@ -211,6 +226,7 @@ class Role extends Component {
         }
 
         d.register(e)
+
         this.transferFunction(
           e.type, e.dataTransfer.getData("text/plain"),
           { module:this.props.module, zone: e.currentTarget.className, id: el != undefined && +el})
@@ -218,11 +234,10 @@ class Role extends Component {
 
       if(e.type === 'dragleave')
       {
+        console.log('leaving ' + e.target.id);
         /*this.transferFunction(
           e.type, e.dataTransfer.getData("text/plain"))*/
       }      
-
-      
     }
 
     this.clipNameEdit = (e) => {
@@ -267,10 +282,29 @@ class Role extends Component {
     }
     
     this.doToClip = (e, ...rest) => {
+      //console.log(d.currentOp);
       if(e === 'drop'){
-        //console.log('dropped via dotoClip: ' + rest);
-        d.execute('moveClip', this.doToClip, this.state.newArrClips, this.state.newArrSettings)
-        
+        //console.log('dropped via dotoClip: ' + rest + ' ' + this.state.currentSeq);
+        //console.log(d.currentOp.arg);
+        if (d.currentOp.op === 'triggerNote'){
+          d.execute('triggerNote', d.currentOp.arg, this.state.clips[rest], this.state.clipSettings[rest], this.state.currentSeq, this.state.seq)
+          this.setState(state => {//simple chains
+            if (state.clipSettings[this.state.currentSeq][3] == undefined){
+              state.clipSettings[this.state.currentSeq][3] = [[this.state.currentSeq, rest, d.currentOp.arg.target.id]]
+            }else {//concurrent
+              //state.clipSettings[this.state.currentSeq][3].push([this.state.currentSeq, rest, d.currentOp.arg.target.id])
+              state.clipSettings[this.state.currentSeq][3] = [[this.state.currentSeq, rest, d.currentOp.arg.target.id]]
+            }
+            //console.log(state.clipSettings[rest][2]);
+            this.noteRef[d.currentOp.arg.target.id].current.setState({trigs: state.clipSettings[rest][2]})
+
+            return state})
+        }
+
+        if (d.currentOp.op === 'reOrder'){
+          d.execute('moveClip', this.doToClip, this.state.newArrClips, this.state.newArrSettings)
+        }
+        //reset icons and render trigger markers
         for (let r in this.clipRef){
           this.clipRef[r].current.setState({shiftCss : 'init'})
         }
@@ -294,8 +328,10 @@ class Role extends Component {
         clips : [],
         clipSettings : []})
       }
-      else if (rest.includes('playClip'))
+      else if (rest.includes('playClip')) //this is retarded
       {
+
+        
         let obj = e
         this.setState({
           editSeq : true ,
@@ -303,6 +339,17 @@ class Role extends Component {
           arpSettings : {tempoX : this.transportRef.current.state.tempoMultiplier},
           currentPatternName: this.state.clipSettings[obj][2]
         })
+
+        /*let markedNote = this.state.clipSettings[+obj]
+        if( markedNote != undefined){
+          if (markedNote[3] != undefined){
+            let ind = markedNote[3][0][2]
+            let mark = markedNote[3][0][1]
+            console.log('noteref');
+            this.noteRef[ind].current.setState({trigs : this.state.clipSettings[mark][2]})
+          }
+        }
+        */
 
         const itr = this.state.clips[obj].values()
         var notes = []
@@ -318,7 +365,7 @@ class Role extends Component {
         })
 
         this.state.clips.map((o, i)=>{
-         this.clipRef[i].current.setState({playingCss : 'not-playing'})
+          this.clipRef[i].current.setState({playingCss : 'not-playing'})
         })
 
         this.clipRef[e].current.setState({playingCss : 'playing'})
@@ -344,8 +391,10 @@ class Role extends Component {
     }
         
     
-
+    
     this.doToNote = (e, ...rest) => {
+      //console.log(d.currentOp);
+      var returnVal
       if(e === 'drop'){
         console.log('dropped via noteEdit: ' + rest);
         d.execute('moveNote' , this.doToNote, this.state.newSeq)
@@ -354,6 +403,7 @@ class Role extends Component {
             this.noteRef[r].current.setState({shiftCss : 'init', statusCss : 'init'})
           }
         }
+        
         this.noteRef[this.currentDragging].current.setState({statusCss : 'init'})
       } 
       else if(rest.includes('declareDrag')){
@@ -372,14 +422,32 @@ class Role extends Component {
           state.clips[state.currentSeq] = this.state.newSeq;
           return state})
       }
+      else if (e === 'identify')
+      {
+        let name = this.state.clipSettings[rest[0]][2]
+        returnVal = name
+        
+      }
       else if(e === 'delete'){
         props.listener(rest[0], rest[1], props.module, 'delete' , this.state.editSeq ? 'edit' : null)
       }
+      return returnVal
     }
 
     
     
-    this.play = (id) => {
+    this.play = (id, t) => {
+      //console.log(this.state.clipSettings[this.state.currentSeq]);
+      let trigInfo = this.state.clipSettings[this.state.currentSeq][3]
+      if (trigInfo != undefined){
+        //console.log('chain: ' + id + ' ' + t +' ' + trigInfo[0]);
+        if (t === trigInfo[0][2]){
+          //console.log('to: ' + this.state.clipSettings[trigInfo[0][1]][2])
+          this.doToClip(trigInfo[0][1], 'playClip')
+        }
+      }
+      
+      /**/
       this.setState({noteOn: true});
       //this.transportRef.current.state.noteOn = 't-note-on'
       this.props.playNote(id, this.props.freq[id])
@@ -447,6 +515,7 @@ class Role extends Component {
         </div>
 
         <div className="messages">
+          MSG: {this.state.currentOp}
         </div>
         
         <div id={this.props.module+'-clips'} className='sequence-collection'
@@ -457,6 +526,7 @@ class Role extends Component {
                 .map((o, i)=>
                      <ClipEdit
                        ref={this.clipRefMake(i)}
+                       storePayload = {this.storePayload}
                        key={i}
                        id={i}
                        rank={i}
@@ -481,6 +551,8 @@ class Role extends Component {
               .map((o, i) =>
                    <SeqEdit
                      ref={this.noteRefMake(i)}
+                     storePayload = {this.storePayload}
+                     trigs = {this.state.clipSettings[this.state.currentSeq] != undefined && this.state.clipSettings[this.state.currentSeq][3] != undefined ? this.state.clipSettings[this.state.currentSeq][3] : [] }
                      key={i}
                      id={i}
                      rank={i}

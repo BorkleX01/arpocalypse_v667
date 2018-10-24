@@ -10,24 +10,34 @@ class Detector extends Component {
       messages : '',
       source: '',
       target: '',
-      id:''
+      id:'',
+      payload:[]
     }
     
-    this.diag = (arg) => {
-      console.log('Detector Up: ' + arg)
-      console.log('Detector has access to: ');
-      console.log(props, state);
-    }
-
+    let parentProps = props
+    let parentState = state
     
     let lookup = new WeakMap()
     let pair = {}
     let maps = new Maps()
     var currentObj = {}
-    var currentOp = ''
+    this.currentOp = ''
+    this.payload = []
     
     this.execute = (op, ...args) => {
-      console.log(args);
+      /*I intended to call execute without arguments but props and state of parent
+      is not accessible as I thought they would be when I instantiated them in Role*/
+      
+      
+      if(op === 'triggerNote')
+      {
+        console.log('Detector.execute(): ');
+        //console.log(op);
+        //console.log(args);
+        console.log('Trigger clip ' + args[0].origin.id + '(' + args[2][2] + ') with note ' + args[0].target.id + ' of clip ' + args[3]);
+        
+      }
+      
       if (op === 'moveClip'){
         if(args[1].length > 0 && args[2].length > 0){
           args[0].call(this, 'reOrdered', 'clips' , {clips: args[2], clipSettings: args[1]})
@@ -44,8 +54,17 @@ class Detector extends Component {
       currentObj = e
     }
 
+    this.storePayload = (a) => {
+      this.payload = a
+    }
+
     this.query = (typeStr, obj, rest) => {
-      let data = obj.split(',')
+      var data
+      if (this.payload[1] != undefined){
+        data = this.payload[1]
+      }else{
+        data = obj.split(',')
+      }
       
       var module = data[1]
       var type = data[0]
@@ -71,16 +90,21 @@ class Detector extends Component {
       }
 
       pair = {origin, target}
+
       lookup.set(currentObj , pair)
 
       return(
         () => {
-          let result = 'no op'
+          let result = {op: 'no target', arg: 'no arg'}
+
           if (target != undefined){
             result = maps.search(origin, target)
           }
-          currentOp = result
-          return(result)
+
+          this.currentOp = result
+
+          return(this.currentOp)
+          
         }
       )
     }

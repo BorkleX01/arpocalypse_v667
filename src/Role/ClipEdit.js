@@ -1,5 +1,8 @@
 /* merge this with SeqEdit. ElementEdit class. */
 import React,  { Component } from 'react'
+
+import { Detector } from '../EntityRelations'
+
 export default class ClipEdit extends Component {
   constructor(props){
     super()
@@ -25,14 +28,28 @@ export default class ClipEdit extends Component {
     this.widgetRef = React.createRef();
     this.swapMaybe = -1;
 
+    
+    
     this.dragStart = (e) => {
+      
       e.dataTransfer.setData(
-        "text/plain",
+        //Chrome security won't allow getData to be called except on 'drop' so I can't use this for drag listeners
+        //Also, I can't delete this callback, drags stop working
+        'text/plain',
         ['clip',
          this.props.instrument,
          this.props.id,
          this.state.rank,
          this.state.value]);
+
+      this.props.storePayload (
+        ['text/plain',
+        ['clip',
+         this.props.instrument,
+         this.props.id,
+         this.state.rank,
+         this.state.value]])
+
       e.dataTransfer.effectAllowed = "all";
       this.props.listener(e, this.state.rank, 'declareDrag')
     }

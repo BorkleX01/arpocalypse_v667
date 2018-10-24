@@ -2,6 +2,7 @@ import React,  { Component } from 'react'
 import Spinner from '../Widgets/Spinner'
 import { EngineContext } from '../Engine/EngineContext'
 
+
 class Transport extends Component{
   constructor(props){
     super();
@@ -29,7 +30,9 @@ class Transport extends Component{
       //module: this.props.module
       noteOn: 't-note-off',
       preservePos: true,
-      deletion: true
+      deletion: true,
+      tempo: this.props.tempo,
+
     }
 
     
@@ -39,14 +42,14 @@ class Transport extends Component{
     this.startTime = 0;
     var freqCount = 0;
 
-    
+
     this.startSequencer = () => {
       if(this.props.type === 'realtime'){
         this.playRT()
       }
       else
       {
-        let period = 60000/this.props.tempo/this.state.tempoMultiplier;
+        let period = 60000/this.state.tempo/this.state.tempoMultiplier;
         this.setState({scheduleRestart: false})
         let seqTimer = setInterval(() => {
           if(seqTimerBuffer.indexOf(seqTimer) === -1) seqTimerBuffer.push(seqTimer);
@@ -82,7 +85,7 @@ class Transport extends Component{
       this.props.tick(this.state.timer)
 
       if(this.props.seq[this.startTime] != undefined){
-        this.props.play(this.props.seq[this.startTime])
+        this.props.play(this.props.seq[this.startTime], this.startTime)
         this.startTime = this.startTime+1;
         freqCount = freqCount + 1;
       }
@@ -106,6 +109,12 @@ class Transport extends Component{
       this.stopSequencer()
       this.props.clipListener(val, 'tempoX')
 
+    }
+
+    this.changeTempo = (v) => {
+      let val = Math.floor(+v)
+      this.stopSequencer()
+      this.setState({tempo: val, scheduleRestart: this.state.isPlaying})
     }
     
     this.state.multiplierAdjust = this.tempoMultiplier;
@@ -174,6 +183,7 @@ class Transport extends Component{
 
   componentDidUpdate(prevProps, prevState, snapShot){
 
+    
     if (this.state.scheduleRestart){
       this.startSequencer()
     }
@@ -193,16 +203,23 @@ class Transport extends Component{
       
       this.playNextClip()
     }
+
+    
     
   }
 
   componentWillReceiveProps(newProps){
     if(newProps.start !== this.props.start){
-      this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
+        this.state.isPlaying ? this.stopSequencer() : this.startSequencer()
     }
 
     if(newProps.tempo !== this.props.tempo){
-      this.tempoMultiplier(this.state.tempoMultiplier)
+      //this.tempoMultiplier(this.state.tempoMultiplier)
+      //console.log(newProps.tempo - this.props.tempo);
+      if (Math.abs(newProps.tempo - this.props.tempo)>0){ 
+        console.log('tempo changed: ' + newProps.tempo);
+        this.changeTempo(newProps.tempo)
+      }
     }
   }
 

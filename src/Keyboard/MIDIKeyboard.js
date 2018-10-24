@@ -26,13 +26,14 @@ class MIDI {
 
       var clockSignalCounter = 0
       var t1 = performance.now()
-
+      var ts1 = 0
       //Why won't this work as an arrow function?
       var passBPM = (bpm) => {
         this.reportBPM(bpm)
       }
       function detectMidiMessage (e) {
         //console.log(e.data[0] + ' ' + e.data[1] + ' ' + e.data[2])
+        //console.log(e.data);
         if (e.data[0] === 248){
 
           if (clockSignalCounter < (24-1)){
@@ -41,12 +42,16 @@ class MIDI {
           else
           {
             clockSignalCounter = 0
+            var ts2 = e.timeStamp;
             var t2 = performance.now()
             let beat = t2-t1
-            let bpm = 60000/beat
+            let beatTS = ts2-ts1
+            let bpm = Math.round(60000/beatTS)
             //console.log('clock tick: ' + beat + ' ' + bpm);
             passBPM(bpm)
-            t1 = performance.now()
+            ts1 = ts2
+            //t1 = performance.now()
+            t1 = t2
           }
         }
       }

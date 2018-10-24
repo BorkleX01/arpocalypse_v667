@@ -1,4 +1,5 @@
 import React,  { Component } from 'react'
+import zingtouch from 'zingtouch'
 import './widgets.css'
 
 export default class Spinner extends Component{
@@ -29,7 +30,9 @@ export default class Spinner extends Component{
     this.formClick = (e) => {
       this.setState({value : ''})
     }
+
     var valStr = '';
+
     this.formKeypress = (e) => {
       
       if(e.key !== 'Enter' && e.key !== 'Backspace' ) {
@@ -43,8 +46,9 @@ export default class Spinner extends Component{
       }
       else if (e.key === 'Backspace')
       {
-
+        console.log('Backspace');
         valStr  = valStr.slice(0, -1)
+        console.log(valStr);
         this.setState({value: valStr})
       }
       else if (e.key === 'Enter')
@@ -78,31 +82,34 @@ export default class Spinner extends Component{
 
   render(){ 
     return(<div className="control">
-             <div className="label">{this.state.label}</div>
-             <div className="spinner" style={{}}>
-               <div className="arrows arrow-left" id={'left'} onClick={this.arrowClick}>
-                 <div className="icon">-</div>
+             <div className='dial'><div className='dial-pointer'/></div>
+               <div className="label">{this.state.label}</div>
+               
+               <div className="spinner" style={{}}>
+                 <div className="arrows arrow-left" id={'left'} onClick={this.arrowClick}>
+                   <div className="icon">-</div>
+                 </div>
+                 <div className="form">
+                   <input
+                     onClick={this.formClick}
+                     onKeyDown={this.formKeypress}
+                     value={this.state.value}
+                     onChange={this.onChange}
+                   />
+                 </div>
+                 <div className="arrows arrow-right" id={'right'} onClick={this.arrowClick}>
+                   <div className="icon">+</div>
+                 </div>
                </div>
-               <div className="form">
-                 <input
-                   onClick={this.formClick}
-                   onKeyDown={this.formKeypress}
-                   value={this.state.value}
-                   onChange={this.onChange}
-                 />
-               </div>
-               <div className="arrows arrow-right" id={'right'} onClick={this.arrowClick}>
-                 <div className="icon">+</div>
-               </div>
-             </div>
-           {this.state.slider === true && 
-            (<input type="range"
-                    min={this.state.min}
-                    max={this.state.max}
-                    value={this.state.value}
-                    className="slider"
-                    onChange={this.slideDrag}
-                    step={this.state.step} />)}
+               {this.state.slider === true && 
+                (<input type="range"
+                          min={this.state.min}
+                          max={this.state.max}
+                          value={this.state.value}
+                          className="slider"
+                          onChange={this.slideDrag}
+                          step={this.state.step} />)}
+             
            </div>
           )
   }
