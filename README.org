@@ -150,3 +150,6 @@ An increasing need to save things is a good sign that meaningful projects can be
 ** First and foremost the Arpocalypse is a tool for ME
 
 [[file:~/org/org-heap.org]]
+** npm run build will command babel transpilers to make distributions
+
+[[file:~/fcg/request/.babelrc::}]]

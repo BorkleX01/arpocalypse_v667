@@ -27,7 +27,7 @@ export default class SeqEdit extends Component {
     this.swapMaybe = -1;
 
     if(this.props.trigs[0] != undefined && this.props.trigs[0][2] === this.props.id){
-      console.log('triggers marked here: ');
+
       let targ = this.props.listener('identify', this.props.trigs[0][1][0])
       if (targ !== 'not-found'){
         this.state.trigs = targ

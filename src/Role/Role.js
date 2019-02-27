@@ -456,9 +456,6 @@ class Role extends Component {
       }
       else if (e === 'identify')
       {
-        console.log(rest[0]);
-        console.log(this.state.clipSettings.length);
-        console.log(this.state.clipSettings[rest[0]]);
         var name
         if (this.state.clipSettings[rest[0]] != undefined) {
           name = this.state.clipSettings[rest[0]][2]

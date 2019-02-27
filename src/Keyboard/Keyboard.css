@@ -13,6 +13,8 @@
 
 .keyboard-outer {
     width: 100%;
+    display: flex;
+    flex-flow: row wrap;
 }
 .keyboard > * {
     padding: 0px 0px;
@@ -151,13 +153,15 @@ button {
     }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1440px) {
     .keyboard-outer {
         display: flex;
         align-items: flex-start;
+        flex-flow: row nowrap;
     }
     .instruments {
-        flex: 1 1 50%
+        flex: 1 1 50%;
+        width: 50%;
     }
     .engine {
         flex: 1 1 50%
@@ -165,7 +169,7 @@ button {
     .engine > .ins-header {
     }
     .keyboard {
-        flex: 1 1 50%
+        flex: 1 0 50%
     }
     .white-key, .black-key {
 	width: 6.9%;
