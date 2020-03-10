@@ -32,7 +32,7 @@ class Engine extends Component {
 
     
     if (this.state.midiIn){
-      console.log('MIDI access');
+      console.log('MIDI access xx');
       var midi = new MIDI()
       var transferFunction = (bpm) => {
         //console.log(bpm)
